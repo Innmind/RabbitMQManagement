@@ -134,7 +134,7 @@ final class Status implements StatusInterface
                         new ConnectionName($connection['name']),
                         $this->clock->at(date(
                             \DateTime::ATOM,
-                            (int) round($connection['connected_at']/1000)
+                            (int) round($connection['connected_at'] / 1000)
                         )),
                         new Timeout($connection['timeout']),
                         new VHostName($connection['vhost']),
