@@ -14,7 +14,10 @@
         "issues": "http://github.com/Innmind/RabbitMQManagement/issues"
     },
     "require": {
-        "php": "~7.1"
+        "php": "~7.1",
+        "innmind/immutable": "^2.3",
+        "innmind/url": "^2.0",
+        "innmind/time-continuum": "^1.0"
     },
     "autoload": {
         "psr-4": {
