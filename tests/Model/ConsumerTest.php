@@ -8,7 +8,8 @@ use Innmind\RabbitMQ\Management\Model\{
     Consumer\Tag,
     Channel\Name as ChannelName,
     Queue\Identity,
-    VHost\Name as VHostName
+    VHost\Name as VHostName,
+    Connection\Name as ConnectionName
 };
 use PHPUnit\Framework\TestCase;
 
@@ -20,6 +21,7 @@ class ConsumerTest extends TestCase
             $tag = new Tag('foo'),
             $channel = new ChannelName('foo'),
             $queue = new Identity('foo', new VHostName('foo')),
+            $connection = new ConnectionName('foo'),
             true,
             false
         );
@@ -27,6 +29,7 @@ class ConsumerTest extends TestCase
         $this->assertSame($tag, $consumer->tag());
         $this->assertSame($channel, $consumer->channel());
         $this->assertSame($queue, $consumer->queue());
+        $this->assertSame($connection, $consumer->connection());
         $this->assertTrue($consumer->ackRequired());
         $this->assertFalse($consumer->exclusive());
     }

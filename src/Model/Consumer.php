@@ -6,29 +6,33 @@ namespace Innmind\RabbitMQ\Management\Model;
 use Innmind\RabbitMQ\Management\Model\{
     Consumer\Tag,
     Channel\Name,
-    Queue\Identity
+    Queue\Identity,
+    Connection\Name as ConnectionName
 };
 
 final class Consumer
 {
     private $tag;
+    private $channel;
     private $queue;
+    private $connection;
     private $ackRequired;
     private $exclusive;
-    private $channel;
 
     public function __construct(
         Tag $tag,
         Name $channel,
         Identity $queue,
+        ConnectionName $connection,
         bool $ackRequired,
         bool $exclusive
     ) {
         $this->tag = $tag;
+        $this->channel = $channel;
         $this->queue = $queue;
+        $this->connection = $connection;
         $this->ackRequired = $ackRequired;
         $this->exclusive = $exclusive;
-        $this->channel = $channel;
     }
 
     public function tag(): Tag
@@ -36,9 +40,19 @@ final class Consumer
         return $this->tag;
     }
 
+    public function channel(): Name
+    {
+        return $this->channel;
+    }
+
     public function queue(): Identity
     {
         return $this->queue;
+    }
+
+    public function connection(): ConnectionName
+    {
+        return $this->connection;
     }
 
     public function ackRequired(): bool
@@ -49,10 +63,5 @@ final class Consumer
     public function exclusive(): bool
     {
         return $this->exclusive;
-    }
-
-    public function channel(): Name
-    {
-        return $this->channel;
     }
 }
