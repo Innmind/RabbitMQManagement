@@ -56,14 +56,17 @@ final class Status implements StatusInterface
 {
     private $server;
     private $clock;
+    private $environment;
     private $command;
 
     public function __construct(
         Server $server,
-        TimeContinuumInterface $clock
+        TimeContinuumInterface $clock,
+        Environment $environment = null
     ) {
         $this->server = $server;
         $this->clock = $clock;
+        $this->environment = $environment ?? new Environment\Local;
         $this->command = (new Command('rabbitmqadmin'))
             ->withShortOption('f', 'raw_json')
             ->withArgument('list');
@@ -311,7 +314,11 @@ final class Status implements StatusInterface
         $process = $this
             ->server
             ->processes()
-            ->execute($this->command->withArgument($element))
+            ->execute(
+                ($this->environment)(
+                    $this->command->withArgument($element)
+                )
+            )
             ->wait();
 
         if (!$process->exitCode()->isSuccessful()) {
