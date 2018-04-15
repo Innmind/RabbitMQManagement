@@ -38,7 +38,7 @@ class RemoteTest extends TestCase
         $this->assertNotSame($command, $environment($command));
         $this->assertInstanceOf(Command::class, $environment($command));
         $this->assertSame(
-            'rabbitmqadmin -f raw_json list users --host=rabbit.innmind.com --port=15672 --username=guest --password=guest',
+            "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
             (string) $environment($command)
         );
     }
@@ -59,7 +59,7 @@ class RemoteTest extends TestCase
         $this->assertNotSame($command, $environment($command));
         $this->assertInstanceOf(Command::class, $environment($command));
         $this->assertSame(
-            'rabbitmqadmin -f raw_json list users --host=rabbit.innmind.com --port=42 --username=foo --password=bar',
+            "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--host=rabbit.innmind.com' '--port=42' '--username=foo' '--password=bar'",
             (string) $environment($command)
         );
     }
