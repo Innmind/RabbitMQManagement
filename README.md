@@ -17,12 +17,15 @@ composer require innmind/rabbitmq-management
 ## Usage
 
 ```php
-use Innmind\RabbitMQ\Management\Status\Status;
+use Innmind\RabbitMQ\Management\{
+    Status\Status,
+    Control\Control
+};
 use Innmind\Server\Control\ServerFactory;
 use Innmind\TimeContinuum\TimeContinuum\Earth;
 
 $status = new Status(
-    (new ServerFactory)->make(),
+    $server = (new ServerFactory)->make(),
     new Earth
 );
 $status->users();
@@ -34,6 +37,11 @@ $status->channels();
 $status->consumers();
 $status->queues();
 $status->nodes();
+
+$control = new Control($server);
+$control->users();
+$control->vhosts();
+$control->permissions();
 ```
 
 Essentially this will run `rabbitmqadmin list {element}` on the server and extract informations.
