@@ -62,7 +62,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list users';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'users'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -121,7 +121,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list users --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -182,7 +182,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list users';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'users'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -215,7 +215,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list vhosts';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -268,7 +268,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list vhosts --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -323,7 +323,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list vhosts';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -356,7 +356,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list connections';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'connections'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -427,7 +427,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list connections --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'connections' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -500,7 +500,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list connections';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'connections'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -533,7 +533,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list exchanges';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -587,7 +587,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list exchanges --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -643,7 +643,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list exchanges';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -676,7 +676,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list permissions';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -729,7 +729,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list permissions --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -784,7 +784,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list permissions';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -817,7 +817,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list channels';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'channels'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -890,7 +890,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list channels --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'channels' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -965,7 +965,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list channels';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'channels'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -998,7 +998,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list consumers';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -1068,7 +1068,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list consumers --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -1140,7 +1140,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list consumers';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -1173,7 +1173,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list queues';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'queues'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -1256,7 +1256,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list queues --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'queues' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -1341,7 +1341,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list queues';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'queues'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -1374,7 +1374,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list nodes';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -1431,7 +1431,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list nodes --host=rabbit.innmind.com --port=15672 --username=guest --password=guest';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
@@ -1490,7 +1490,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function(Command $command): bool {
-                return (string) $command === 'rabbitmqadmin -f raw_json list nodes';
+                return (string) $command === "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes'";
             }))
             ->willReturn(
                 $process = $this->createMock(Process::class)
