@@ -143,7 +143,7 @@ final class Status implements StatusInterface
                         new VHostName($connection['vhost']),
                         new UserName($connection['user']),
                         new Protocol($connection['protocol']),
-                        AuthenticationMechanism::fromString($connection['auth_mechanism']),
+                        AuthenticationMechanism::of($connection['auth_mechanism']),
                         $connection['ssl'],
                         new Peer(
                             new Host($connection['peer_host']),
