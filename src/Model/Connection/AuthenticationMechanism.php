@@ -37,7 +37,7 @@ final class AuthenticationMechanism
         return self::$amqplain ?? self::$amqplain = new self(self::AMQPLAIN);
     }
 
-    public static function fromString(string $value): self
+    public static function of(string $value): self
     {
         switch ($value) {
             case self::DEMO:
@@ -52,6 +52,15 @@ final class AuthenticationMechanism
             default:
                 throw new UnknownAuthenticationMechanism;
         }
+    }
+
+    /**
+     * @deprecated
+     * @see self::of()
+     */
+    public static function fromString(string $value): self
+    {
+        return self::of($value);
     }
 
     public function __toString(): string
