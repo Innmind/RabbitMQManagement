@@ -71,17 +71,16 @@ final class Status implements StatusInterface
             ->withArgument('list');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function users(): Set
     {
+        /** @var Set<User> */
         return $this
             ->list('users')
             ->reduce(
                 Set::of(User::class),
                 static function(Set $users, array $user): Set {
-                    $tags = Set::of('string');
+                    /** @var array{name: string, password_hash: string, hashing_algorithm: string, tags: string} $user */
+                    $tags = Set::strings();
 
                     foreach (explode(',', $user['tags']) as $tag) {
                         $tags = $tags->add($tag);
@@ -99,16 +98,15 @@ final class Status implements StatusInterface
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function vhosts(): Set
     {
+        /** @var Set<VHost> */
         return $this
             ->list('vhosts')
             ->reduce(
                 Set::of(VHost::class),
                 static function(Set $vhosts, array $vhost): Set {
+                    /** @var array{name: string, messages: int, messages_ready: int, messages_unacknowledged: int, tracing: bool} $vhost */
                     return $vhosts->add(new VHost(
                         new VHostName($vhost['name']),
                         new VHostMessages(
@@ -122,21 +120,24 @@ final class Status implements StatusInterface
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function connections(): Set
     {
+        /** @var Set<Connection> */
         return $this
             ->list('connections')
             ->reduce(
                 Set::of(Connection::class),
                 function(Set $connections, array $connection): Set {
+                    /** @var array{name: string, connected_at: int, timeout: int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'} $connection */
+
+                    $connectedAt = $connection['connected_at'];
+
+                    /** @psalm-suppress MixedArgument */
                     return $connections->add(new Connection(
                         new ConnectionName($connection['name']),
                         $this->clock->at(date(
                             \DateTime::ATOM,
-                            (int) round($connection['connected_at'] / 1000)
+                            (int) round($connectedAt / 1000)
                         )),
                         new Timeout($connection['timeout']),
                         new VHostName($connection['vhost']),
@@ -158,16 +159,17 @@ final class Status implements StatusInterface
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function exchanges(): Set
     {
+        /** @var Set<Exchange> */
         return $this
             ->list('exchanges')
             ->reduce(
                 Set::of(Exchange::class),
                 static function(Set $exchanges, array $exchange): Set {
+                    /** @var array{name: string, vhost: string, type: 'topic'|'headers'|'direct'|'fanout', durable: bool, auto_delete: bool, internal: bool} $exchange */
+
+                    /** @psalm-suppress MixedArgument */
                     return $exchanges->add(new Exchange(
                         new ExchangeName($exchange['name']),
                         new VHostName($exchange['vhost']),
@@ -180,16 +182,15 @@ final class Status implements StatusInterface
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function permissions(): Set
     {
+        /** @var Set<Permission> */
         return $this
             ->list('permissions')
             ->reduce(
                 Set::of(Permission::class),
                 static function(Set $permissions, array $permission): Set {
+                    /** @var array{user: string, vhost: string, configure: string, write: string, read: string} $permission */
                     return $permissions->add(new Permission(
                         new UserName($permission['user']),
                         new VHostName($permission['vhost']),
@@ -201,16 +202,17 @@ final class Status implements StatusInterface
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function channels(): Set
     {
+        /** @var Set<Channel> */
         return $this
             ->list('channels')
             ->reduce(
                 Set::of(Channel::class),
                 function(Set $channels, array $channel): Set {
+                    /** @var array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: int, messages_unconfirmed: int, messages_unacknowledged: int, consumer_count: 1, confirm: bool, transactional: bool, idle_since: string} $channel */
+
+                    /** @psalm-suppress MixedArgument */
                     return $channels->add(new Channel(
                         new ChannelName($channel['name']),
                         new VHostName($channel['vhost']),
@@ -232,16 +234,15 @@ final class Status implements StatusInterface
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function consumers(): Set
     {
+        /** @var Set<Consumer> */
         return $this
             ->list('consumers')
             ->reduce(
                 Set::of(Consumer::class),
                 static function(Set $consumers, array $consumer): Set {
+                    /** @var array{consumer_tag: string, channel_details: array{name: string, connection_name: string}, queue: array{name: string, vhost: string}, ack_required: bool, exclusive: bool} $consumer */
                     return $consumers->add(new Consumer(
                         new Tag($consumer['consumer_tag']),
                         new ChannelName($consumer['channel_details']['name']),
@@ -257,16 +258,17 @@ final class Status implements StatusInterface
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function queues(): Set
     {
+        /** @var Set<Queue> */
         return $this
             ->list('queues')
             ->reduce(
                 Set::of(Queue::class),
                 function(Set $queues, array $queue): Set {
+                    /** @var array{name: string, vhost: string, messages: int, messages_ready: int, messages_unacknowledged: int, idle_since: string, consumers: int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool} $queue */
+
+                    /** @psalm-suppress MixedArgument */
                     return $queues->add(new Queue(
                         new Identity(
                             $queue['name'],
@@ -289,16 +291,17 @@ final class Status implements StatusInterface
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function nodes(): Set
     {
+        /** @var Set<Node> */
         return $this
             ->list('nodes')
             ->reduce(
                 Set::of(Node::class),
                 static function(Set $nodes, array $node): Set {
+                    /** @var array{name: string, type: 'disc'|'ram', running: bool} $node */
+
+                    /** @psalm-suppress MixedArgument */
                     return $nodes->add(new Node(
                         new NodeName($node['name']),
                         NodeType::{$node['type']}(),
@@ -324,8 +327,9 @@ final class Status implements StatusInterface
             throw new ManagementPluginFailedToRun;
         }
 
-        return Sequence::mixed(
-            ...json_decode($process->output()->toString(), true),
-        );
+        /** @var array */
+        $elements = json_decode($process->output()->toString(), true);
+
+        return Sequence::mixed(...$elements);
     }
 }

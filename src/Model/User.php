@@ -14,8 +14,12 @@ final class User
 {
     private Name $name;
     private Password $password;
+    /** @var Set<string> */
     private Set $tags;
 
+    /**
+     * @param Set<string> $tags
+     */
     public function __construct(
         Name $name,
         Password $password,

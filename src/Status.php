@@ -3,6 +3,17 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management;
 
+use Innmind\RabbitMQ\Management\Model\{
+    User,
+    VHost,
+    Connection,
+    Exchange,
+    Permission,
+    Channel,
+    Consumer,
+    Queue,
+    Node,
+};
 use Innmind\Immutable\Set;
 
 interface Status
