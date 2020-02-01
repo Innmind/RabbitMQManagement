@@ -22,20 +22,20 @@ use Innmind\Url\Authority\{
 
 final class Connection
 {
-    private $name;
-    private $connectedAt;
-    private $timeout;
-    private $vhost;
-    private $user;
-    private $protocol;
-    private $authenticationMechanism;
-    private $ssl;
-    private $peer;
-    private $host;
-    private $port;
-    private $node;
-    private $type;
-    private $state;
+    private Name $name;
+    private PointInTimeInterface $connectedAt;
+    private Timeout $timeout;
+    private VHostName $vhost;
+    private UserName $user;
+    private Protocol $protocol;
+    private AuthenticationMechanism $authenticationMechanism;
+    private bool $ssl;
+    private Peer $peer;
+    private HostInterface $host;
+    private PortInterface $port;
+    private NodeName $node;
+    private Type $type;
+    private State $state;
 
     public function __construct(
         Name $name,

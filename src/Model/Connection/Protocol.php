@@ -7,14 +7,14 @@ use Innmind\RabbitMQ\Management\Exception\UnknownProtocol;
 
 final class Protocol
 {
-    private static $allowed = [
+    private static array $allowed = [
         'AMQP 0-9-1 (incl. extensions)',
         'AMQP 0-9-1',
         'AMQP 0-9',
         'AMQP 0-8',
     ];
 
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {

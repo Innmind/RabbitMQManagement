@@ -5,10 +5,10 @@ namespace Innmind\RabbitMQ\Management\Model\Node;
 
 final class Type
 {
-    private static $disc;
-    private static $ram;
+    private static ?self $disc = null;
+    private static ?self $ram = null;
 
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {

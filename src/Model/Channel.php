@@ -14,17 +14,17 @@ use Innmind\TimeContinuum\PointInTimeInterface;
 
 final class Channel
 {
-    private $name;
-    private $vhost;
-    private $user;
-    private $number;
-    private $node;
-    private $state;
-    private $messages;
-    private $consumers;
-    private $confirm;
-    private $transactional;
-    private $idleSince;
+    private Name $name;
+    private VHostName $vhost;
+    private UserName $user;
+    private int $number;
+    private NodeName $node;
+    private State $state;
+    private Messages $messages;
+    private Count $consumers;
+    private bool $confirm;
+    private bool $transactional;
+    private PointInTimeInterface $idleSince;
 
     public function __construct(
         Name $name,

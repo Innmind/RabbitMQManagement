@@ -12,9 +12,9 @@ use Innmind\Immutable\SetInterface;
 
 final class User
 {
-    private $name;
-    private $password;
-    private $tags;
+    private Name $name;
+    private Password $password;
+    private SetInterface $tags;
 
     public function __construct(
         Name $name,

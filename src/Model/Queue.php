@@ -12,15 +12,15 @@ use Innmind\TimeContinuum\PointInTimeInterface;
 
 final class Queue
 {
-    private $identity;
-    private $messages;
-    private $idleSince;
-    private $consumers;
-    private $state;
-    private $node;
-    private $exclusive;
-    private $autoDelete;
-    private $durable;
+    private Identity $identity;
+    private Messages $messages;
+    private PointInTimeInterface $idleSince;
+    private Count $consumers;
+    private State $state;
+    private NodeName $node;
+    private bool $exclusive;
+    private bool $autoDelete;
+    private bool $durable;
 
     public function __construct(
         Identity $identity,

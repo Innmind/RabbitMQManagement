@@ -14,8 +14,8 @@ final class Name
 {
     private const PATTERN = '~^rabbit@(?<host>.*)$~';
 
-    private $value;
-    private $host;
+    private string $value;
+    private Host $host;
 
     public function __construct(string $value)
     {

@@ -7,7 +7,7 @@ use Innmind\RabbitMQ\Management\Exception\TimeoutCantBeNegative;
 
 final class Timeout
 {
-    private $value;
+    private int $value;
 
     public function __construct(int $value)
     {

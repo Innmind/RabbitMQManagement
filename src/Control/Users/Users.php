@@ -14,8 +14,8 @@ use Innmind\Server\Control\{
 
 final class Users implements UsersInterface
 {
-    private $server;
-    private $command;
+    private Server $server;
+    private Command $command;
 
     public function __construct(Server $server)
     {

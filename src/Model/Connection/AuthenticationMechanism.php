@@ -11,11 +11,11 @@ final class AuthenticationMechanism
     private const PLAIN = 'PLAIN';
     private const AMQPLAIN = 'AMQPLAIN';
 
-    private static $demo;
-    private static $plain;
-    private static $amqplain;
+    private static ?self $demo = null;
+    private static ?self $plain = null;
+    private static ?self $amqplain = null;
 
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {

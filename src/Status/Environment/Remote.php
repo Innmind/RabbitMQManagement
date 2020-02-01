@@ -13,10 +13,10 @@ use Innmind\Url\Authority\{
 
 final class Remote implements Environment
 {
-    private $host;
-    private $port;
-    private $username;
-    private $password;
+    private HostInterface $host;
+    private PortInterface $port;
+    private string $username;
+    private string $password;
 
     public function __construct(
         HostInterface $host,

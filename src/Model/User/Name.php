@@ -5,7 +5,7 @@ namespace Innmind\RabbitMQ\Management\Model\User;
 
 final class Name
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {

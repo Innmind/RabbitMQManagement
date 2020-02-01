@@ -5,12 +5,12 @@ namespace Innmind\RabbitMQ\Management\Model\Exchange;
 
 final class Type
 {
-    private static $topic;
-    private static $headers;
-    private static $direct;
-    private static $fanout;
+    private static ?self $topic = null;
+    private static ?self $headers = null;
+    private static ?self $direct = null;
+    private static ?self $fanout = null;
 
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {

@@ -12,12 +12,12 @@ use Innmind\RabbitMQ\Management\Model\{
 
 final class Consumer
 {
-    private $tag;
-    private $channel;
-    private $queue;
-    private $connection;
-    private $ackRequired;
-    private $exclusive;
+    private Tag $tag;
+    private Name $channel;
+    private Identity $queue;
+    private ConnectionName $connection;
+    private bool $ackRequired;
+    private bool $exclusive;
 
     public function __construct(
         Tag $tag,

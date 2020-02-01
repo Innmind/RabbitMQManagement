@@ -10,9 +10,9 @@ use Innmind\RabbitMQ\Management\Model\VHost\{
 
 final class VHost
 {
-    private $name;
-    private $messages;
-    private $tracing;
+    private Name $name;
+    private Messages $messages;
+    private bool $tracing;
 
     public function __construct(
         Name $name,

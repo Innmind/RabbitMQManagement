@@ -8,9 +8,9 @@ use Innmind\Server\Control\Server;
 
 final class Control implements ControlInterface
 {
-    private $users;
-    private $vhosts;
-    private $permissions;
+    private Users $users;
+    private VHosts $vhosts;
+    private Permissions $permissions;
 
     public function __construct(Server $server)
     {

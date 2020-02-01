@@ -10,8 +10,8 @@ use Innmind\Url\Authority\{
 
 final class Peer
 {
-    private $host;
-    private $port;
+    private HostInterface $host;
+    private PortInterface $port;
 
     public function __construct(HostInterface $host, PortInterface $port)
     {

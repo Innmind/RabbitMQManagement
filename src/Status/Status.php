@@ -54,10 +54,10 @@ use Innmind\Immutable\{
 
 final class Status implements StatusInterface
 {
-    private $server;
-    private $clock;
-    private $environment;
-    private $command;
+    private Server $server;
+    private TimeContinuumInterface $clock;
+    private Environment $environment;
+    private Command $command;
 
     public function __construct(
         Server $server,

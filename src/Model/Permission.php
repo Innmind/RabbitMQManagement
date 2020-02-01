@@ -10,11 +10,11 @@ use Innmind\RabbitMQ\Management\Model\{
 
 final class Permission
 {
-    private $user;
-    private $vhost;
-    private $configure;
-    private $write;
-    private $read;
+    private UserName $user;
+    private VHostName $vhost;
+    private string $configure;
+    private string $write;
+    private string $read;
 
     public function __construct(
         UserName $user,

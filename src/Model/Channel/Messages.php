@@ -7,9 +7,9 @@ use Innmind\RabbitMQ\Management\Model\Count;
 
 final class Messages
 {
-    private $uncommitted;
-    private $unconfirmed;
-    private $unacknowledged;
+    private Count $uncommitted;
+    private Count $unconfirmed;
+    private Count $unacknowledged;
 
     public function __construct(
         Count $uncommitted,

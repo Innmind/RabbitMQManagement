@@ -7,7 +7,7 @@ use Innmind\RabbitMQ\Management\Exception\CountCantBeNegative;
 
 final class Count
 {
-    private $value;
+    private int $value;
 
     public function __construct(int $value)
     {
