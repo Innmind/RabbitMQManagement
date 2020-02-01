@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\RabbitMQ\Management\Model\Connection;
 
-use Innmind\RabbitMQ\Management\Model\Connection\Timeout;
+use Innmind\RabbitMQ\Management\{
+    Model\Connection\Timeout,
+    Exception\TimeoutCantBeNegative
+};
 use PHPUnit\Framework\TestCase;
 
 class TimeoutTest extends TestCase
@@ -14,11 +17,10 @@ class TimeoutTest extends TestCase
         $this->assertSame(42, (new Timeout(42))->toInt());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\TimeoutCantBeNegative
-     */
     public function testThrowWhenNegativeTimeout()
     {
+        $this->expectException(TimeoutCantBeNegative::class);
+
         new Timeout(-1);
     }
 }

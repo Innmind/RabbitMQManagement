@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\RabbitMQ\Management\Model\Node;
 
-use Innmind\RabbitMQ\Management\Model\Node\Name;
+use Innmind\RabbitMQ\Management\{
+    Model\Node\Name,
+    Exception\InvalidName,
+};
 use Innmind\Url\Authority\HostInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -18,12 +21,11 @@ class NameTest extends TestCase
         $this->assertSame('whatever', (string) $name->host());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\InvalidName
-     * @expectedExceptionMessage whatever
-     */
     public function testThrowWhenInvalidName()
     {
+        $this->expectException(InvalidName::class);
+        $this->expectExceptionMessage('whatever');
+
         new Name('whatever');
     }
 }

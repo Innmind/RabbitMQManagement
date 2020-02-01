@@ -15,7 +15,8 @@ use Innmind\RabbitMQ\Management\{
     Model\Consumer,
     Model\Queue,
     Model\Node,
-    Status\Environment\Remote
+    Status\Environment\Remote,
+    Exception\ManagementPluginFailedToRun
 };
 use Innmind\Server\Control\{
     Server,
@@ -163,9 +164,6 @@ class StatusTest extends TestCase
         $this->assertSame(['administrator'], $users->current()->tags()->toPrimitive());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListUsers()
     {
         $status = new Status(
@@ -195,6 +193,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->users();
     }
@@ -304,9 +304,6 @@ class StatusTest extends TestCase
         $this->assertSame(3, $vhosts->current()->messages()->unacknowledged()->toInt());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListVhosts()
     {
         $status = new Status(
@@ -336,6 +333,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->vhosts();
     }
@@ -481,9 +480,6 @@ class StatusTest extends TestCase
         $this->assertSame('running', (string) $connections->current()->state());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListConnections()
     {
         $status = new Status(
@@ -513,6 +509,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->connections();
     }
@@ -624,9 +622,6 @@ class StatusTest extends TestCase
         $this->assertFalse($exchanges->current()->internal());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListExchanges()
     {
         $status = new Status(
@@ -656,6 +651,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->exchanges();
     }
@@ -765,9 +762,6 @@ class StatusTest extends TestCase
         $this->assertSame('.*', (string) $permissions->current()->read());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListPermissions()
     {
         $status = new Status(
@@ -797,6 +791,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->permissions();
     }
@@ -946,9 +942,6 @@ class StatusTest extends TestCase
         $this->assertSame($date, $channels->current()->idleSince());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListChannels()
     {
         $status = new Status(
@@ -978,6 +971,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->channels();
     }
@@ -1121,9 +1116,6 @@ class StatusTest extends TestCase
         $this->assertFalse($consumers->current()->exclusive());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListConsumers()
     {
         $status = new Status(
@@ -1153,6 +1145,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->consumers();
     }
@@ -1322,9 +1316,6 @@ class StatusTest extends TestCase
         $this->assertTrue($queues->current()->durable());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListQueues()
     {
         $status = new Status(
@@ -1354,6 +1345,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->queues();
     }
@@ -1471,9 +1464,6 @@ class StatusTest extends TestCase
         $this->assertTrue($nodes->current()->running());
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun
-     */
     public function testThrowWhenFailToListNodes()
     {
         $status = new Status(
@@ -1503,6 +1493,8 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
+
+        $this->expectException(ManagementPluginFailedToRun::class);
 
         $status->nodes();
     }

@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\RabbitMQ\Management\Model\Connection;
 
-use Innmind\RabbitMQ\Management\Model\Connection\Protocol;
+use Innmind\RabbitMQ\Management\{
+    Model\Connection\Protocol,
+    Exception\UnknownProtocol
+};
 use PHPUnit\Framework\TestCase;
 
 class ProtocolTest extends TestCase
@@ -28,11 +31,10 @@ class ProtocolTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\UnknownProtocol
-     */
     public function testThrowForUnknownProtocol()
     {
+        $this->expectException(UnknownProtocol::class);
+
         new Protocol('foo');
     }
 }
