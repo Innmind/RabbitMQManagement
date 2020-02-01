@@ -5,14 +5,14 @@ namespace Innmind\RabbitMQ\Management\Model;
 
 use Innmind\RabbitMQ\Management\Model\Node\{
     Name,
-    Type
+    Type,
 };
 
 final class Node
 {
-    private $name;
-    private $type;
-    private $running;
+    private Name $name;
+    private Type $type;
+    private bool $running;
 
     public function __construct(
         Name $name,

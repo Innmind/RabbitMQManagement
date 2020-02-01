@@ -5,17 +5,17 @@ namespace Innmind\RabbitMQ\Management\Control\Permissions;
 
 use Innmind\RabbitMQ\Management\{
     Control\Permissions as PermissionsInterface,
-    Exception\ManagementPluginFailedToRun
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
-    Server\Command
+    Server\Command,
 };
 
 final class Permissions implements PermissionsInterface
 {
-    private $server;
-    private $command;
+    private Server $server;
+    private Command $command;
 
     public function __construct(Server $server)
     {
@@ -29,8 +29,8 @@ final class Permissions implements PermissionsInterface
         string $configure,
         string $write,
         string $read
-    ): PermissionsInterface {
-        $exitCode = $this
+    ): void {
+        $process = $this
             ->server
             ->processes()
             ->execute(
@@ -42,21 +42,19 @@ final class Permissions implements PermissionsInterface
                     ->withArgument('user='.$user)
                     ->withArgument('configure='.$configure)
                     ->withArgument('write='.$write)
-                    ->withArgument('read='.$read)
-            )
-            ->wait()
-            ->exitCode();
+                    ->withArgument('read='.$read),
+            );
+        $process->wait();
+        $exitCode = $process->exitCode();
 
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
-
-        return $this;
     }
 
-    public function delete(string $vhost, string $user): PermissionsInterface
+    public function delete(string $vhost, string $user): void
     {
-        $exitCode = $this
+        $process = $this
             ->server
             ->processes()
             ->execute(
@@ -65,15 +63,13 @@ final class Permissions implements PermissionsInterface
                     ->withArgument('delete')
                     ->withArgument('permission')
                     ->withArgument('vhost='.$vhost)
-                    ->withArgument('user='.$user)
-            )
-            ->wait()
-            ->exitCode();
+                    ->withArgument('user='.$user),
+            );
+        $process->wait();
+        $exitCode = $process->exitCode();
 
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
-
-        return $this;
     }
 }

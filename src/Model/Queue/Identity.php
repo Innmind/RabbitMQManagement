@@ -7,8 +7,8 @@ use Innmind\RabbitMQ\Management\Model\VHost\Name;
 
 final class Identity
 {
-    private $name;
-    private $vhost;
+    private string $name;
+    private Name $vhost;
 
     public function __construct(string $name, Name $vhost)
     {

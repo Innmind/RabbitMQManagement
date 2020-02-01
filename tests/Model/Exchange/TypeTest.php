@@ -16,7 +16,7 @@ class TypeTest extends TestCase
         $instance = Type::{$type}();
 
         $this->assertInstanceOf(Type::class, $instance);
-        $this->assertSame($type, (string) $instance);
+        $this->assertSame($type, $instance->toString());
         $this->assertSame($instance, Type::{$type}());
     }
 

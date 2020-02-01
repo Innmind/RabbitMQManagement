@@ -16,10 +16,10 @@ use Innmind\RabbitMQ\Management\Model\{
     Node\Name as NodeName,
     State
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 use Innmind\Url\Authority\{
-    HostInterface,
-    PortInterface
+    Host,
+    Port
 };
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +29,7 @@ class ConnectionTest extends TestCase
     {
         $connection = new Connection(
             $name = new Name('foo'),
-            $connectedAt = $this->createMock(PointInTimeInterface::class),
+            $connectedAt = $this->createMock(PointInTime::class),
             $timeout = new Timeout(42),
             $vhost = new VHostName('foo'),
             $user = new UserName('foo'),
@@ -37,11 +37,11 @@ class ConnectionTest extends TestCase
             $authenticationMechanism = AuthenticationMechanism::plain(),
             true,
             $peer = new Peer(
-                $this->createMock(HostInterface::class),
-                $this->createMock(PortInterface::class)
+                Host::none(),
+                Port::none()
             ),
-            $host = $this->createMock(HostInterface::class),
-            $port = $this->createMock(PortInterface::class),
+            $host = Host::none(),
+            $port = Port::none(),
             $node = new NodeName('rabbit@foo'),
             $type = Type::network(),
             $state = State::running()

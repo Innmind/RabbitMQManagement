@@ -7,12 +7,12 @@ use Innmind\RabbitMQ\Management\Exception\TimeoutCantBeNegative;
 
 final class Timeout
 {
-    private $value;
+    private int $value;
 
     public function __construct(int $value)
     {
         if ($value < 0) {
-            throw new TimeoutCantBeNegative;
+            throw new TimeoutCantBeNegative((string) $value);
         }
 
         $this->value = $value;

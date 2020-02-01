@@ -13,7 +13,7 @@ class StateTest extends TestCase
         $state = State::running();
 
         $this->assertInstanceOf(State::class, $state);
-        $this->assertSame('running', (string) $state);
+        $this->assertSame('running', $state->toString());
         $this->assertSame($state, State::running());
     }
 
@@ -22,7 +22,7 @@ class StateTest extends TestCase
         $state = State::idle();
 
         $this->assertInstanceOf(State::class, $state);
-        $this->assertSame('idle', (string) $state);
+        $this->assertSame('idle', $state->toString());
         $this->assertSame($state, State::idle());
     }
 }

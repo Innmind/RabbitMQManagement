@@ -6,28 +6,24 @@ namespace Innmind\RabbitMQ\Management\Model;
 use Innmind\RabbitMQ\Management\{
     Model\User\Name,
     Model\User\Password,
-    Exception\InvalidArgumentException
 };
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
 
 final class User
 {
-    private $name;
-    private $password;
-    private $tags;
+    private Name $name;
+    private Password $password;
+    /** @var Set<string> */
+    private Set $tags;
 
     public function __construct(
         Name $name,
         Password $password,
-        SetInterface $tags
+        string ...$tags
     ) {
-        if ((string) $tags->type() !== 'string') {
-            throw new InvalidArgumentException;
-        }
-
         $this->name = $name;
         $this->password = $password;
-        $this->tags = $tags;
+        $this->tags = Set::strings(...$tags);
     }
 
     public function name(): Name
@@ -41,9 +37,9 @@ final class User
     }
 
     /**
-     * @return SetInterface<string>
+     * @return Set<string>
      */
-    public function tags(): SetInterface
+    public function tags(): Set
     {
         return $this->tags;
     }

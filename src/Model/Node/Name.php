@@ -4,39 +4,36 @@ declare(strict_types = 1);
 namespace Innmind\RabbitMQ\Management\Model\Node;
 
 use Innmind\RabbitMQ\Management\Exception\InvalidName;
-use Innmind\Url\Authority\{
-    Host,
-    HostInterface
-};
+use Innmind\Url\Authority\Host;
 use Innmind\Immutable\Str;
 
 final class Name
 {
     private const PATTERN = '~^rabbit@(?<host>.*)$~';
 
-    private $value;
-    private $host;
+    private string $value;
+    private Host $host;
 
     public function __construct(string $value)
     {
-        $value = new Str($value);
+        $value = Str::of($value);
 
         if (!$value->matches(self::PATTERN)) {
-            throw new InvalidName((string) $value);
+            throw new InvalidName($value->toString());
         }
 
-        $this->value = (string) $value;
-        $this->host = new Host(
-            (string) $value->capture(self::PATTERN)->get('host')
+        $this->value = $value->toString();
+        $this->host = Host::of(
+            $value->capture(self::PATTERN)->get('host')->toString(),
         );
     }
 
-    public function host(): HostInterface
+    public function host(): Host
     {
         return $this->host;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

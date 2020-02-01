@@ -10,46 +10,43 @@ use Innmind\RabbitMQ\Management\Model\{
     Connection\Protocol,
     Connection\AuthenticationMechanism,
     Connection\Type,
-    Node\Name as NodeName,
-    VHost\Name as VHostName,
-    User\Name as UserName
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 use Innmind\Url\Authority\{
-    HostInterface,
-    PortInterface
+    Host,
+    Port,
 };
 
 final class Connection
 {
-    private $name;
-    private $connectedAt;
-    private $timeout;
-    private $vhost;
-    private $user;
-    private $protocol;
-    private $authenticationMechanism;
-    private $ssl;
-    private $peer;
-    private $host;
-    private $port;
-    private $node;
-    private $type;
-    private $state;
+    private Name $name;
+    private PointInTime $connectedAt;
+    private Timeout $timeout;
+    private VHost\Name $vhost;
+    private User\Name $user;
+    private Protocol $protocol;
+    private AuthenticationMechanism $authenticationMechanism;
+    private bool $ssl;
+    private Peer $peer;
+    private Host $host;
+    private Port $port;
+    private Node\Name $node;
+    private Type $type;
+    private State $state;
 
     public function __construct(
         Name $name,
-        PointInTimeInterface $connectedAt,
+        PointInTime $connectedAt,
         Timeout $timeout,
-        VHostName $vhost,
-        UserName $user,
+        VHost\Name $vhost,
+        User\Name $user,
         Protocol $protocol,
         AuthenticationMechanism $authenticationMechanism,
         bool $ssl,
         Peer $peer,
-        HostInterface $host,
-        PortInterface $port,
-        NodeName $node,
+        Host $host,
+        Port $port,
+        Node\Name $node,
         Type $type,
         State $state
     ) {
@@ -74,7 +71,7 @@ final class Connection
         return $this->name;
     }
 
-    public function connectedAt(): PointInTimeInterface
+    public function connectedAt(): PointInTime
     {
         return $this->connectedAt;
     }
@@ -84,12 +81,12 @@ final class Connection
         return $this->timeout;
     }
 
-    public function vhost(): VHostName
+    public function vhost(): VHost\Name
     {
         return $this->vhost;
     }
 
-    public function user(): UserName
+    public function user(): User\Name
     {
         return $this->user;
     }
@@ -114,17 +111,17 @@ final class Connection
         return $this->peer;
     }
 
-    public function host(): HostInterface
+    public function host(): Host
     {
         return $this->host;
     }
 
-    public function port(): PortInterface
+    public function port(): Port
     {
         return $this->port;
     }
 
-    public function node(): NodeName
+    public function node(): Node\Name
     {
         return $this->node;
     }

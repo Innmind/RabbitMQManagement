@@ -5,14 +5,14 @@ namespace Innmind\RabbitMQ\Management\Model;
 
 use Innmind\RabbitMQ\Management\Model\VHost\{
     Name,
-    Messages
+    Messages,
 };
 
 final class VHost
 {
-    private $name;
-    private $messages;
-    private $tracing;
+    private Name $name;
+    private Messages $messages;
+    private bool $tracing;
 
     public function __construct(
         Name $name,
@@ -39,8 +39,8 @@ final class VHost
         return $this->messages;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return (string) $this->name;
+        return $this->name->toString();
     }
 }

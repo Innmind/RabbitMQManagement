@@ -6,306 +6,289 @@ namespace Innmind\RabbitMQ\Management\Status;
 use Innmind\RabbitMQ\Management\{
     Status as StatusInterface,
     Model\User,
-    Model\User\Name as UserName,
-    Model\User\Password,
     Model\VHost,
-    Model\VHost\Name as VHostName,
-    Model\VHost\Messages as VHostMessages,
     Model\Count,
     Model\Connection,
-    Model\Connection\Name as ConnectionName,
     Model\Connection\Timeout,
     Model\Connection\Protocol,
     Model\Connection\AuthenticationMechanism,
     Model\Connection\Peer,
-    Model\Connection\Type as ConnectionType,
     Model\State,
     Model\Node,
-    Model\Node\Name as NodeName,
-    Model\Node\Type as NodeType,
     Model\Exchange,
-    Model\Exchange\Name as ExchangeName,
-    Model\Exchange\Type as ExchangeType,
     Model\Permission,
     Model\Channel,
-    Model\Channel\Name as ChannelName,
-    Model\Channel\Messages as ChannelMessages,
     Model\Consumer,
     Model\Consumer\Tag,
     Model\Queue,
     Model\Queue\Identity,
-    Model\Queue\Messages as QueueMessages,
-    Exception\ManagementPluginFailedToRun
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
-    Server\Command
+    Server\Command,
 };
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Authority\{
     Host,
-    Port
+    Port,
 };
 use Innmind\Immutable\{
-    SetInterface,
     Set,
-    Sequence
+    Sequence,
 };
 
 final class Status implements StatusInterface
 {
-    private $server;
-    private $clock;
-    private $environment;
-    private $command;
+    private Server $server;
+    private Clock $clock;
+    private Environment $environment;
+    private Command $command;
 
     public function __construct(
         Server $server,
-        TimeContinuumInterface $clock,
+        Clock $clock,
         Environment $environment = null
     ) {
         $this->server = $server;
         $this->clock = $clock;
         $this->environment = $environment ?? new Environment\Local;
-        $this->command = (new Command('rabbitmqadmin'))
+        $this->command = Command::foreground('rabbitmqadmin')
             ->withShortOption('f', 'raw_json')
             ->withArgument('list');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function users(): SetInterface
+    public function users(): Set
     {
+        /** @var Set<User> */
         return $this
             ->list('users')
-            ->reduce(
-                new Set(User::class),
-                static function(Set $users, array $user): Set {
-                    $tags = new Set('string');
-
-                    foreach (explode(',', $user['tags']) as $tag) {
-                        $tags = $tags->add($tag);
-                    }
-
-                    return $users->add(new User(
-                        new UserName($user['name']),
-                        new Password(
+            ->toSetOf(
+                User::class,
+                static function(array $user): \Generator {
+                    /** @var array{name: string, password_hash: string, hashing_algorithm: string, tags: string} $user */
+                    yield new User(
+                        new User\Name($user['name']),
+                        new User\Password(
                             $user['password_hash'],
-                            $user['hashing_algorithm']
+                            $user['hashing_algorithm'],
                         ),
-                        $tags
-                    ));
-                }
+                        ...\explode(',', $user['tags']),
+                    );
+                },
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function vhosts(): SetInterface
+    public function vhosts(): Set
     {
+        /** @var Set<VHost> */
         return $this
             ->list('vhosts')
-            ->reduce(
-                new Set(VHost::class),
-                static function(Set $vhosts, array $vhost): Set {
-                    return $vhosts->add(new VHost(
-                        new VHostName($vhost['name']),
-                        new VHostMessages(
+            ->toSetOf(
+                VHost::class,
+                static function(array $vhost): \Generator {
+                    /** @var array{name: string, messages: int, messages_ready: int, messages_unacknowledged: int, tracing: bool} $vhost */
+                    yield new VHost(
+                        new VHost\Name($vhost['name']),
+                        new VHost\Messages(
                             new Count($vhost['messages']),
                             new Count($vhost['messages_ready']),
-                            new Count($vhost['messages_unacknowledged'])
+                            new Count($vhost['messages_unacknowledged']),
                         ),
-                        $vhost['tracing']
-                    ));
-                }
+                        $vhost['tracing'],
+                    );
+                },
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function connections(): SetInterface
+    public function connections(): Set
     {
+        /** @var Set<Connection> */
         return $this
             ->list('connections')
-            ->reduce(
-                new Set(Connection::class),
-                function(Set $connections, array $connection): Set {
-                    return $connections->add(new Connection(
-                        new ConnectionName($connection['name']),
+            ->toSetOf(
+                Connection::class,
+                function(array $connection): \Generator {
+                    /** @var array{name: string, connected_at: int, timeout: int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'} $connection */
+
+                    $connectedAt = $connection['connected_at'];
+
+                    /** @psalm-suppress MixedArgument */
+                    yield new Connection(
+                        new Connection\Name($connection['name']),
                         $this->clock->at(date(
                             \DateTime::ATOM,
-                            (int) round($connection['connected_at'] / 1000)
+                            (int) round($connectedAt / 1000),
                         )),
                         new Timeout($connection['timeout']),
-                        new VHostName($connection['vhost']),
-                        new UserName($connection['user']),
+                        new VHost\Name($connection['vhost']),
+                        new User\Name($connection['user']),
                         new Protocol($connection['protocol']),
                         AuthenticationMechanism::of($connection['auth_mechanism']),
                         $connection['ssl'],
                         new Peer(
-                            new Host($connection['peer_host']),
-                            new Port($connection['peer_port'])
+                            Host::of($connection['peer_host']),
+                            Port::of($connection['peer_port']),
                         ),
-                        new Host($connection['host']),
-                        new Port($connection['port']),
-                        new NodeName($connection['node']),
-                        ConnectionType::{$connection['type']}(),
-                        State::{$connection['state']}()
-                    ));
-                }
+                        Host::of($connection['host']),
+                        Port::of($connection['port']),
+                        new Node\Name($connection['node']),
+                        Connection\Type::{$connection['type']}(),
+                        State::{$connection['state']}(),
+                    );
+                },
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function exchanges(): SetInterface
+    public function exchanges(): Set
     {
+        /** @var Set<Exchange> */
         return $this
             ->list('exchanges')
-            ->reduce(
-                new Set(Exchange::class),
-                static function(Set $exchanges, array $exchange): Set {
-                    return $exchanges->add(new Exchange(
-                        new ExchangeName($exchange['name']),
-                        new VHostName($exchange['vhost']),
-                        ExchangeType::{$exchange['type']}(),
+            ->toSetOf(
+                Exchange::class,
+                static function(array $exchange): \Generator {
+                    /** @var array{name: string, vhost: string, type: 'topic'|'headers'|'direct'|'fanout', durable: bool, auto_delete: bool, internal: bool} $exchange */
+
+                    /** @psalm-suppress MixedArgument */
+                    yield new Exchange(
+                        new Exchange\Name($exchange['name']),
+                        new VHost\Name($exchange['vhost']),
+                        Exchange\Type::{$exchange['type']}(),
                         $exchange['durable'],
                         $exchange['auto_delete'],
-                        $exchange['internal']
-                    ));
-                }
+                        $exchange['internal'],
+                    );
+                },
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function permissions(): SetInterface
+    public function permissions(): Set
     {
+        /** @var Set<Permission> */
         return $this
             ->list('permissions')
-            ->reduce(
-                new Set(Permission::class),
-                static function(Set $permissions, array $permission): Set {
-                    return $permissions->add(new Permission(
-                        new UserName($permission['user']),
-                        new VHostName($permission['vhost']),
+            ->toSetOf(
+                Permission::class,
+                static function(array $permission): \Generator {
+                    /** @var array{user: string, vhost: string, configure: string, write: string, read: string} $permission */
+                    yield new Permission(
+                        new User\Name($permission['user']),
+                        new VHost\Name($permission['vhost']),
                         $permission['configure'],
                         $permission['write'],
-                        $permission['read']
-                    ));
-                }
+                        $permission['read'],
+                    );
+                },
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function channels(): SetInterface
+    public function channels(): Set
     {
+        /** @var Set<Channel> */
         return $this
             ->list('channels')
-            ->reduce(
-                new Set(Channel::class),
-                function(Set $channels, array $channel): Set {
-                    return $channels->add(new Channel(
-                        new ChannelName($channel['name']),
-                        new VHostName($channel['vhost']),
-                        new UserName($channel['user']),
+            ->toSetOf(
+                Channel::class,
+                function(array $channel): \Generator {
+                    /** @var array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: int, messages_unconfirmed: int, messages_unacknowledged: int, consumer_count: 1, confirm: bool, transactional: bool, idle_since: string} $channel */
+
+                    /** @psalm-suppress MixedArgument */
+                    yield new Channel(
+                        new Channel\Name($channel['name']),
+                        new VHost\Name($channel['vhost']),
+                        new User\Name($channel['user']),
                         $channel['number'],
-                        new NodeName($channel['node']),
+                        new Node\Name($channel['node']),
                         State::{$channel['state']}(),
-                        new ChannelMessages(
+                        new Channel\Messages(
                             new Count($channel['messages_uncommitted']),
                             new Count($channel['messages_unconfirmed']),
-                            new Count($channel['messages_unacknowledged'])
+                            new Count($channel['messages_unacknowledged']),
                         ),
                         new Count($channel['consumer_count']),
                         $channel['confirm'],
                         $channel['transactional'],
-                        $this->clock->at($channel['idle_since'])
-                    ));
-                }
+                        $this->clock->at($channel['idle_since']),
+                    );
+                },
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function consumers(): SetInterface
+    public function consumers(): Set
     {
+        /** @var Set<Consumer> */
         return $this
             ->list('consumers')
-            ->reduce(
-                new Set(Consumer::class),
-                static function(Set $consumers, array $consumer): Set {
-                    return $consumers->add(new Consumer(
+            ->toSetOf(
+                Consumer::class,
+                static function(array $consumer): \Generator {
+                    /** @var array{consumer_tag: string, channel_details: array{name: string, connection_name: string}, queue: array{name: string, vhost: string}, ack_required: bool, exclusive: bool} $consumer */
+                    yield new Consumer(
                         new Tag($consumer['consumer_tag']),
-                        new ChannelName($consumer['channel_details']['name']),
+                        new Channel\Name($consumer['channel_details']['name']),
                         new Identity(
                             $consumer['queue']['name'],
-                            new VHostName($consumer['queue']['vhost'])
+                            new VHost\Name($consumer['queue']['vhost']),
                         ),
-                        new ConnectionName($consumer['channel_details']['connection_name']),
+                        new Connection\Name($consumer['channel_details']['connection_name']),
                         $consumer['ack_required'],
-                        $consumer['exclusive']
-                    ));
-                }
+                        $consumer['exclusive'],
+                    );
+                },
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function queues(): SetInterface
+    public function queues(): Set
     {
+        /** @var Set<Queue> */
         return $this
             ->list('queues')
-            ->reduce(
-                new Set(Queue::class),
-                function(Set $queues, array $queue): Set {
-                    return $queues->add(new Queue(
+            ->toSetOf(
+                Queue::class,
+                function(array $queue): \Generator {
+                    /** @var array{name: string, vhost: string, messages: int, messages_ready: int, messages_unacknowledged: int, idle_since: string, consumers: int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool} $queue */
+
+                    /** @psalm-suppress MixedArgument */
+                    yield new Queue(
                         new Identity(
                             $queue['name'],
-                            new VHostName($queue['vhost'])
+                            new VHost\Name($queue['vhost']),
                         ),
-                        new QueueMessages(
+                        new Queue\Messages(
                             new Count($queue['messages']),
                             new Count($queue['messages_ready']),
-                            new Count($queue['messages_unacknowledged'])
+                            new Count($queue['messages_unacknowledged']),
                         ),
                         $this->clock->at($queue['idle_since']),
                         new Count($queue['consumers']),
                         State::{$queue['state']}(),
-                        new NodeName($queue['node']),
+                        new Node\Name($queue['node']),
                         $queue['exclusive'],
                         $queue['auto_delete'],
-                        $queue['durable']
-                    ));
-                }
+                        $queue['durable'],
+                    );
+                },
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function nodes(): SetInterface
+    public function nodes(): Set
     {
+        /** @var Set<Node> */
         return $this
             ->list('nodes')
-            ->reduce(
-                new Set(Node::class),
-                static function(Set $nodes, array $node): Set {
-                    return $nodes->add(new Node(
-                        new NodeName($node['name']),
-                        NodeType::{$node['type']}(),
-                        $node['running']
-                    ));
-                }
+            ->toSetOf(
+                Node::class,
+                static function(array $node): \Generator {
+                    /** @var array{name: string, type: 'disc'|'ram', running: bool} $node */
+
+                    /** @psalm-suppress MixedArgument */
+                    yield new Node(
+                        new Node\Name($node['name']),
+                        Node\Type::{$node['type']}(),
+                        $node['running'],
+                    );
+                },
             );
     }
 
@@ -316,17 +299,18 @@ final class Status implements StatusInterface
             ->processes()
             ->execute(
                 ($this->environment)(
-                    $this->command->withArgument($element)
-                )
-            )
-            ->wait();
+                    $this->command->withArgument($element),
+                ),
+            );
+        $process->wait();
 
         if (!$process->exitCode()->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
 
-        return new Sequence(
-            ...json_decode((string) $process->output(), true)
-        );
+        /** @var array */
+        $elements = \json_decode($process->output()->toString(), true);
+
+        return Sequence::mixed(...$elements);
     }
 }

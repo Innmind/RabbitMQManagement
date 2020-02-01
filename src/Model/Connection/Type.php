@@ -5,10 +5,10 @@ namespace Innmind\RabbitMQ\Management\Model\Connection;
 
 final class Type
 {
-    private static $network;
-    private static $direct;
+    private static ?self $network = null;
+    private static ?self $direct = null;
 
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {
@@ -17,15 +17,15 @@ final class Type
 
     public static function network(): self
     {
-        return self::$network ?? self::$network = new self('network');
+        return self::$network ??= new self('network');
     }
 
     public static function direct(): self
     {
-        return self::$direct ?? self::$direct = new self('direct');
+        return self::$direct ??= new self('direct');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

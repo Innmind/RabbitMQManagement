@@ -6,21 +6,20 @@ namespace Innmind\RabbitMQ\Management\Model;
 use Innmind\RabbitMQ\Management\Model\{
     Exchange\Name,
     Exchange\Type,
-    VHost\Name as VHostName
 };
 
 final class Exchange
 {
-    private $name;
-    private $vhost;
-    private $type;
-    private $durable;
-    private $autoDelete;
-    private $internal;
+    private Name $name;
+    private VHost\Name $vhost;
+    private Type $type;
+    private bool $durable;
+    private bool $autoDelete;
+    private bool $internal;
 
     public function __construct(
         Name $name,
-        VHostName $vhost,
+        VHost\Name $vhost,
         Type $type,
         bool $durable,
         bool $autoDelete,
@@ -39,7 +38,7 @@ final class Exchange
         return $this->name;
     }
 
-    public function vhost(): VHostName
+    public function vhost(): VHost\Name
     {
         return $this->vhost;
     }

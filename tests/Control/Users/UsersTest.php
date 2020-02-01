@@ -39,19 +39,18 @@ class UsersTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'declare' 'user' 'name=foo' 'password=bar' 'tags=baz,foobar'";
+                return $command->toString() === "rabbitmqadmin 'declare' 'user' 'name=foo' 'password=bar' 'tags=baz,foobar'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame($users, $users->declare('foo', 'bar', 'baz', 'foobar'));
+        $this->assertNull($users->declare('foo', 'bar', 'baz', 'foobar'));
     }
 
     public function testThrowWhenFailToDeclare()
@@ -67,13 +66,12 @@ class UsersTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'declare' 'user' 'name=foo' 'password=bar' 'tags=baz,foobar'";
+                return $command->toString() === "rabbitmqadmin 'declare' 'user' 'name=foo' 'password=bar' 'tags=baz,foobar'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -97,19 +95,18 @@ class UsersTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'delete' 'user' 'name=foo'";
+                return $command->toString() === "rabbitmqadmin 'delete' 'user' 'name=foo'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame($users, $users->delete('foo'));
+        $this->assertNull($users->delete('foo'));
     }
 
     public function testThrowWhenFailToDelete()
@@ -125,13 +122,12 @@ class UsersTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'delete' 'user' 'name=foo'";
+                return $command->toString() === "rabbitmqadmin 'delete' 'user' 'name=foo'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')

@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\RabbitMQ\Management\Model\Connection;
 
-use Innmind\RabbitMQ\Management\Model\Connection\AuthenticationMechanism;
+use Innmind\RabbitMQ\Management\{
+    Model\Connection\AuthenticationMechanism,
+    Exception\UnknownAuthenticationMechanism,
+};
 use PHPUnit\Framework\TestCase;
 
 class AuthenticationMechanismTest extends TestCase
@@ -17,8 +20,8 @@ class AuthenticationMechanismTest extends TestCase
 
         $this->assertInstanceOf(AuthenticationMechanism::class, $mechanism);
         $this->assertSame($mechanism, AuthenticationMechanism::{$type}());
-        $this->assertSame($mechanism, AuthenticationMechanism::fromString($expected));
-        $this->assertSame($expected, (string) $mechanism);
+        $this->assertSame($mechanism, AuthenticationMechanism::of($expected));
+        $this->assertSame($expected, $mechanism->toString());
     }
 
     public function mechanisms(): array
@@ -30,11 +33,10 @@ class AuthenticationMechanismTest extends TestCase
         ];
     }
 
-    /**
-     * @expectedException Innmind\RabbitMQ\Management\Exception\UnknownAuthenticationMechanism
-     */
-    public function throwWhenUnknownMechanism()
+    public function testThrowWhenUnknownMechanism()
     {
-        AuthenticationMechanism::fromString('foo');
+        $this->expectException(UnknownAuthenticationMechanism::class);
+
+        AuthenticationMechanism::of('foo');
     }
 }

@@ -4,27 +4,27 @@ declare(strict_types = 1);
 namespace Innmind\RabbitMQ\Management\Model\Connection;
 
 use Innmind\Url\Authority\{
-    HostInterface,
-    PortInterface
+    Host,
+    Port,
 };
 
 final class Peer
 {
-    private $host;
-    private $port;
+    private Host $host;
+    private Port $port;
 
-    public function __construct(HostInterface $host, PortInterface $port)
+    public function __construct(Host $host, Port $port)
     {
         $this->host = $host;
         $this->port = $port;
     }
 
-    public function host(): HostInterface
+    public function host(): Host
     {
         return $this->host;
     }
 
-    public function port(): PortInterface
+    public function port(): Port
     {
         return $this->port;
     }

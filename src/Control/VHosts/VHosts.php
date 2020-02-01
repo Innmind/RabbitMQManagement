@@ -5,17 +5,17 @@ namespace Innmind\RabbitMQ\Management\Control\VHosts;
 
 use Innmind\RabbitMQ\Management\{
     Control\VHosts as VHostsInterface,
-    Exception\ManagementPluginFailedToRun
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
-    Server\Command
+    Server\Command,
 };
 
 final class VHosts implements VHostsInterface
 {
-    private $server;
-    private $command;
+    private Server $server;
+    private Command $command;
 
     public function __construct(Server $server)
     {
@@ -23,9 +23,9 @@ final class VHosts implements VHostsInterface
         $this->command = Command::foreground('rabbitmqadmin');
     }
 
-    public function declare(string $name): VHostsInterface
+    public function declare(string $name): void
     {
-        $exitCode = $this
+        $process = $this
             ->server
             ->processes()
             ->execute(
@@ -33,21 +33,19 @@ final class VHosts implements VHostsInterface
                     ->command
                     ->withArgument('declare')
                     ->withArgument('vhost')
-                    ->withArgument('name='.$name)
-            )
-            ->wait()
-            ->exitCode();
+                    ->withArgument('name='.$name),
+            );
+        $process->wait();
+        $exitCode = $process->exitCode();
 
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
-
-        return $this;
     }
 
-    public function delete(string $name): VHostsInterface
+    public function delete(string $name): void
     {
-        $exitCode = $this
+        $process = $this
             ->server
             ->processes()
             ->execute(
@@ -55,15 +53,13 @@ final class VHosts implements VHostsInterface
                     ->command
                     ->withArgument('delete')
                     ->withArgument('vhost')
-                    ->withArgument('name='.$name)
-            )
-            ->wait()
-            ->exitCode();
+                    ->withArgument('name='.$name),
+            );
+        $process->wait();
+        $exitCode = $process->exitCode();
 
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
-
-        return $this;
     }
 }

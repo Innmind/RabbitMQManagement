@@ -39,20 +39,18 @@ class PermissionsTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'declare' 'permission' 'vhost=/' 'user=foo' 'configure=.{1}' 'write=.{2}' 'read=.{3}'";
+                return $command->toString() === "rabbitmqadmin 'declare' 'permission' 'vhost=/' 'user=foo' 'configure=.{1}' 'write=.{2}' 'read=.{3}'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame(
-            $permissions,
+        $this->assertNull(
             $permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}')
         );
     }
@@ -70,13 +68,12 @@ class PermissionsTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'declare' 'permission' 'vhost=/' 'user=foo' 'configure=.{1}' 'write=.{2}' 'read=.{3}'";
+                return $command->toString() === "rabbitmqadmin 'declare' 'permission' 'vhost=/' 'user=foo' 'configure=.{1}' 'write=.{2}' 'read=.{3}'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -100,19 +97,18 @@ class PermissionsTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'delete' 'permission' 'vhost=/' 'user=foo'";
+                return $command->toString() === "rabbitmqadmin 'delete' 'permission' 'vhost=/' 'user=foo'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame($permissions, $permissions->delete('/', 'foo'));
+        $this->assertNull($permissions->delete('/', 'foo'));
     }
 
     public function testThrowWhenFailToDelete()
@@ -128,13 +124,12 @@ class PermissionsTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'delete' 'permission' 'vhost=/' 'user=foo'";
+                return $command->toString() === "rabbitmqadmin 'delete' 'permission' 'vhost=/' 'user=foo'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')

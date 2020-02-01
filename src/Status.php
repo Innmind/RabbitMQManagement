@@ -3,52 +3,63 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management;
 
-use Innmind\Immutable\SetInterface;
+use Innmind\RabbitMQ\Management\Model\{
+    User,
+    VHost,
+    Connection,
+    Exchange,
+    Permission,
+    Channel,
+    Consumer,
+    Queue,
+    Node,
+};
+use Innmind\Immutable\Set;
 
 interface Status
 {
     /**
-     * @return SetInterface<User>
+     * @return Set<User>
      */
-    public function users(): SetInterface;
+    public function users(): Set;
 
     /**
-     * @return SetInterface<VHost>
+     * @return Set<VHost>
      */
-    public function vhosts(): SetInterface;
+    public function vhosts(): Set;
 
     /**
-     * @return SetInterface<Connection>
+     * @return Set<Connection>
      */
-    public function connections(): SetInterface;
+    public function connections(): Set;
 
     /**
-     * @return SetInterface<Exchange>
+     * @return Set<Exchange>
      */
-    public function exchanges(): SetInterface;
+    public function exchanges(): Set;
 
     /**
-     * @return SetInterface<Permission>
+     * @return Set<Permission>
      */
-    public function permissions(): SetInterface;
+    public function permissions(): Set;
 
     /**
-     * @return SetInterface<Channel>
+     * @return Set<Channel>
      */
-    public function channels(): SetInterface;
+    public function channels(): Set;
 
     /**
-     * @return SetInterface<Consumer>
+     * @return Set<Consumer>
      */
-    public function consumers(): SetInterface;
+    public function consumers(): Set;
 
     /**
-     * @return SetInterface<Queue>
+     * @return Set<Queue>
      */
-    public function queues(): SetInterface;
+    public function queues(): Set;
 
     /**
-     * @return SetInterface<Node>
+     * @return Set<Node>
      */
-    public function nodes(): SetInterface;
+    public function nodes(): Set;
 }

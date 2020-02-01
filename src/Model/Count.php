@@ -7,12 +7,12 @@ use Innmind\RabbitMQ\Management\Exception\CountCantBeNegative;
 
 final class Count
 {
-    private $value;
+    private int $value;
 
     public function __construct(int $value)
     {
         if ($value < 0) {
-            throw new CountCantBeNegative;
+            throw new CountCantBeNegative((string) $value);
         }
 
         $this->value = $value;

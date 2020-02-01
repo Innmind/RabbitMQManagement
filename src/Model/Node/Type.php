@@ -5,10 +5,10 @@ namespace Innmind\RabbitMQ\Management\Model\Node;
 
 final class Type
 {
-    private static $disc;
-    private static $ram;
+    private static ?self $disc = null;
+    private static ?self $ram = null;
 
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {
@@ -17,15 +17,15 @@ final class Type
 
     public static function disc(): self
     {
-        return self::$disc ?? self::$disc = new self('disc');
+        return self::$disc ??= new self('disc');
     }
 
     public static function ram(): self
     {
-        return self::$ram ?? self::$ram = new self('ram');
+        return self::$ram ??= new self('ram');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

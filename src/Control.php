@@ -6,7 +6,7 @@ namespace Innmind\RabbitMQ\Management;
 use Innmind\RabbitMQ\Management\Control\{
     Users,
     VHosts,
-    Permissions
+    Permissions,
 };
 
 interface Control

@@ -5,6 +5,6 @@ namespace Innmind\RabbitMQ\Management\Control;
 
 interface Users
 {
-    public function declare(string $name, string $password, string ...$tags): self;
-    public function delete(string $name): self;
+    public function declare(string $name, string $password, string ...$tags): void;
+    public function delete(string $name): void;
 }

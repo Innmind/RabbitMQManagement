@@ -5,10 +5,10 @@ namespace Innmind\RabbitMQ\Management\Model;
 
 final class State
 {
-    private static $running;
-    private static $idle;
+    private static ?self $running = null;
+    private static ?self $idle = null;
 
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {
@@ -17,15 +17,15 @@ final class State
 
     public static function running(): self
     {
-        return self::$running ?? self::$running = new self('running');
+        return self::$running ??= new self('running');
     }
 
     public static function idle(): self
     {
-        return self::$idle ?? self::$idle = new self('idle');
+        return self::$idle ??= new self('idle');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

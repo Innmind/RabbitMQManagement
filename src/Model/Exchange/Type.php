@@ -5,12 +5,12 @@ namespace Innmind\RabbitMQ\Management\Model\Exchange;
 
 final class Type
 {
-    private static $topic;
-    private static $headers;
-    private static $direct;
-    private static $fanout;
+    private static ?self $topic = null;
+    private static ?self $headers = null;
+    private static ?self $direct = null;
+    private static ?self $fanout = null;
 
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {
@@ -19,25 +19,25 @@ final class Type
 
     public static function topic(): self
     {
-        return self::$topic ?? self::$topic = new self('topic');
+        return self::$topic ??= new self('topic');
     }
 
     public static function headers(): self
     {
-        return self::$headers ?? self::$headers = new self('headers');
+        return self::$headers ??= new self('headers');
     }
 
     public static function direct(): self
     {
-        return self::$direct ?? self::$direct = new self('direct');
+        return self::$direct ??= new self('direct');
     }
 
     public static function fanout(): self
     {
-        return self::$fanout ?? self::$fanout = new self('fanout');
+        return self::$fanout ??= new self('fanout');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

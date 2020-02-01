@@ -22,7 +22,7 @@ class LocalTest extends TestCase
 
     public function testInvokation()
     {
-        $command = new Command('rabbitmqadmin');
+        $command = Command::foreground('rabbitmqadmin');
 
         $this->assertSame($command, (new Local)($command));
     }

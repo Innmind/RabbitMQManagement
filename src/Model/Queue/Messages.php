@@ -7,9 +7,9 @@ use Innmind\RabbitMQ\Management\Model\Count;
 
 final class Messages
 {
-    private $total;
-    private $ready;
-    private $unacknowledged;
+    private Count $total;
+    private Count $ready;
+    private Count $unacknowledged;
 
     public function __construct(
         Count $total,

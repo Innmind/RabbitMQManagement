@@ -6,38 +6,35 @@ namespace Innmind\RabbitMQ\Management\Model;
 use Innmind\RabbitMQ\Management\Model\{
     Channel\Name,
     Channel\Messages,
-    Node\Name as NodeName,
-    VHost\Name as VHostName,
-    User\Name as UserName
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 
 final class Channel
 {
-    private $name;
-    private $vhost;
-    private $user;
-    private $number;
-    private $node;
-    private $state;
-    private $messages;
-    private $consumers;
-    private $confirm;
-    private $transactional;
-    private $idleSince;
+    private Name $name;
+    private VHost\Name $vhost;
+    private User\Name $user;
+    private int $number;
+    private Node\Name $node;
+    private State $state;
+    private Messages $messages;
+    private Count $consumers;
+    private bool $confirm;
+    private bool $transactional;
+    private PointInTime $idleSince;
 
     public function __construct(
         Name $name,
-        VHostName $vhost,
-        UserName $user,
+        VHost\Name $vhost,
+        User\Name $user,
         int $number,
-        NodeName $node,
+        Node\Name $node,
         State $state,
         Messages $messages,
         Count $consumers,
         bool $confirm,
         bool $transactional,
-        PointInTimeInterface $idleSince
+        PointInTime $idleSince
     ) {
         $this->name = $name;
         $this->vhost = $vhost;
@@ -57,12 +54,12 @@ final class Channel
         return $this->name;
     }
 
-    public function vhost(): VHostName
+    public function vhost(): VHost\Name
     {
         return $this->vhost;
     }
 
-    public function user(): UserName
+    public function user(): User\Name
     {
         return $this->user;
     }
@@ -72,7 +69,7 @@ final class Channel
         return $this->number;
     }
 
-    public function node(): NodeName
+    public function node(): Node\Name
     {
         return $this->node;
     }
@@ -102,7 +99,7 @@ final class Channel
         return $this->transactional;
     }
 
-    public function idleSince(): PointInTimeInterface
+    public function idleSince(): PointInTime
     {
         return $this->idleSince;
     }
