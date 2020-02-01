@@ -25,7 +25,7 @@ final class Users implements UsersInterface
 
     public function declare(string $name, string $password, string ...$tags): UsersInterface
     {
-        $exitCode = $this
+        $process = $this
             ->server
             ->processes()
             ->execute(
@@ -36,9 +36,9 @@ final class Users implements UsersInterface
                     ->withArgument('name='.$name)
                     ->withArgument('password='.$password)
                     ->withArgument('tags='.implode(',', $tags))
-            )
-            ->wait()
-            ->exitCode();
+            );
+        $process->wait();
+        $exitCode = $process->exitCode();
 
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
@@ -49,7 +49,7 @@ final class Users implements UsersInterface
 
     public function delete(string $name): UsersInterface
     {
-        $exitCode = $this
+        $process = $this
             ->server
             ->processes()
             ->execute(
@@ -58,9 +58,9 @@ final class Users implements UsersInterface
                     ->withArgument('delete')
                     ->withArgument('user')
                     ->withArgument('name='.$name)
-            )
-            ->wait()
-            ->exitCode();
+            );
+        $process->wait();
+        $exitCode = $process->exitCode();
 
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;

@@ -39,13 +39,12 @@ class VHostsTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'declare' 'vhost' 'name=foo'";
+                return $command->toString() === "rabbitmqadmin 'declare' 'vhost' 'name=foo'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -67,13 +66,12 @@ class VHostsTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'declare' 'vhost' 'name=foo'";
+                return $command->toString() === "rabbitmqadmin 'declare' 'vhost' 'name=foo'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -97,13 +95,12 @@ class VHostsTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'delete' 'vhost' 'name=foo'";
+                return $command->toString() === "rabbitmqadmin 'delete' 'vhost' 'name=foo'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -125,13 +122,12 @@ class VHostsTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command): bool {
-                return (string) $command === "rabbitmqadmin 'delete' 'vhost' 'name=foo'";
+                return $command->toString() === "rabbitmqadmin 'delete' 'vhost' 'name=foo'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')

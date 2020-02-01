@@ -19,7 +19,7 @@ class UserTest extends TestCase
         $user = new User(
             $name = new Name('foo'),
             $password = new Password('foo', 'bar'),
-            $tags = new Set('string')
+            $tags = Set::of('string')
         );
 
         $this->assertSame($name, $user->name());
@@ -34,7 +34,7 @@ class UserTest extends TestCase
         new User(
             new Name('foo'),
             new Password('foo', 'bar'),
-            new Set('int')
+            Set::of('int')
         );
     }
 }

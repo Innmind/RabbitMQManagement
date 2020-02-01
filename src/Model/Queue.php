@@ -8,13 +8,13 @@ use Innmind\RabbitMQ\Management\Model\{
     Queue\Messages,
     Node\Name as NodeName
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 
 final class Queue
 {
     private Identity $identity;
     private Messages $messages;
-    private PointInTimeInterface $idleSince;
+    private PointInTime $idleSince;
     private Count $consumers;
     private State $state;
     private NodeName $node;
@@ -25,7 +25,7 @@ final class Queue
     public function __construct(
         Identity $identity,
         Messages $messages,
-        PointInTimeInterface $idleSince,
+        PointInTime $idleSince,
         Count $consumers,
         State $state,
         NodeName $node,
@@ -54,7 +54,7 @@ final class Queue
         return $this->messages;
     }
 
-    public function idleSince(): PointInTimeInterface
+    public function idleSince(): PointInTime
     {
         return $this->idleSince;
     }

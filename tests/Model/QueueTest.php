@@ -12,7 +12,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Node\Name as NodeName,
     State
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 use PHPUnit\Framework\TestCase;
 
 class QueueTest extends TestCase
@@ -26,7 +26,7 @@ class QueueTest extends TestCase
                 new Count(0),
                 new Count(0)
             ),
-            $idleSince = $this->createMock(PointInTimeInterface::class),
+            $idleSince = $this->createMock(PointInTime::class),
             $consumers = new Count(0),
             $state = State::running(),
             $node = new NodeName('rabbit@foo'),

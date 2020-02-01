@@ -25,7 +25,7 @@ final class VHosts implements VHostsInterface
 
     public function declare(string $name): VHostsInterface
     {
-        $exitCode = $this
+        $process = $this
             ->server
             ->processes()
             ->execute(
@@ -34,9 +34,9 @@ final class VHosts implements VHostsInterface
                     ->withArgument('declare')
                     ->withArgument('vhost')
                     ->withArgument('name='.$name)
-            )
-            ->wait()
-            ->exitCode();
+            );
+        $process->wait();
+        $exitCode = $process->exitCode();
 
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
@@ -47,7 +47,7 @@ final class VHosts implements VHostsInterface
 
     public function delete(string $name): VHostsInterface
     {
-        $exitCode = $this
+        $process = $this
             ->server
             ->processes()
             ->execute(
@@ -56,9 +56,9 @@ final class VHosts implements VHostsInterface
                     ->withArgument('delete')
                     ->withArgument('vhost')
                     ->withArgument('name='.$name)
-            )
-            ->wait()
-            ->exitCode();
+            );
+        $process->wait();
+        $exitCode = $process->exitCode();
 
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;

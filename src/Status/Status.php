@@ -41,33 +41,32 @@ use Innmind\Server\Control\{
     Server,
     Server\Command
 };
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Authority\{
     Host,
     Port
 };
 use Innmind\Immutable\{
-    SetInterface,
     Set,
-    Sequence
+    Sequence,
 };
 
 final class Status implements StatusInterface
 {
     private Server $server;
-    private TimeContinuumInterface $clock;
+    private Clock $clock;
     private Environment $environment;
     private Command $command;
 
     public function __construct(
         Server $server,
-        TimeContinuumInterface $clock,
+        Clock $clock,
         Environment $environment = null
     ) {
         $this->server = $server;
         $this->clock = $clock;
         $this->environment = $environment ?? new Environment\Local;
-        $this->command = (new Command('rabbitmqadmin'))
+        $this->command = Command::foreground('rabbitmqadmin')
             ->withShortOption('f', 'raw_json')
             ->withArgument('list');
     }
@@ -75,14 +74,14 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function users(): SetInterface
+    public function users(): Set
     {
         return $this
             ->list('users')
             ->reduce(
-                new Set(User::class),
+                Set::of(User::class),
                 static function(Set $users, array $user): Set {
-                    $tags = new Set('string');
+                    $tags = Set::of('string');
 
                     foreach (explode(',', $user['tags']) as $tag) {
                         $tags = $tags->add($tag);
@@ -103,12 +102,12 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function vhosts(): SetInterface
+    public function vhosts(): Set
     {
         return $this
             ->list('vhosts')
             ->reduce(
-                new Set(VHost::class),
+                Set::of(VHost::class),
                 static function(Set $vhosts, array $vhost): Set {
                     return $vhosts->add(new VHost(
                         new VHostName($vhost['name']),
@@ -126,12 +125,12 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function connections(): SetInterface
+    public function connections(): Set
     {
         return $this
             ->list('connections')
             ->reduce(
-                new Set(Connection::class),
+                Set::of(Connection::class),
                 function(Set $connections, array $connection): Set {
                     return $connections->add(new Connection(
                         new ConnectionName($connection['name']),
@@ -146,11 +145,11 @@ final class Status implements StatusInterface
                         AuthenticationMechanism::of($connection['auth_mechanism']),
                         $connection['ssl'],
                         new Peer(
-                            new Host($connection['peer_host']),
-                            new Port($connection['peer_port'])
+                            Host::of($connection['peer_host']),
+                            Port::of($connection['peer_port'])
                         ),
-                        new Host($connection['host']),
-                        new Port($connection['port']),
+                        Host::of($connection['host']),
+                        Port::of($connection['port']),
                         new NodeName($connection['node']),
                         ConnectionType::{$connection['type']}(),
                         State::{$connection['state']}()
@@ -162,12 +161,12 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function exchanges(): SetInterface
+    public function exchanges(): Set
     {
         return $this
             ->list('exchanges')
             ->reduce(
-                new Set(Exchange::class),
+                Set::of(Exchange::class),
                 static function(Set $exchanges, array $exchange): Set {
                     return $exchanges->add(new Exchange(
                         new ExchangeName($exchange['name']),
@@ -184,12 +183,12 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function permissions(): SetInterface
+    public function permissions(): Set
     {
         return $this
             ->list('permissions')
             ->reduce(
-                new Set(Permission::class),
+                Set::of(Permission::class),
                 static function(Set $permissions, array $permission): Set {
                     return $permissions->add(new Permission(
                         new UserName($permission['user']),
@@ -205,12 +204,12 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function channels(): SetInterface
+    public function channels(): Set
     {
         return $this
             ->list('channels')
             ->reduce(
-                new Set(Channel::class),
+                Set::of(Channel::class),
                 function(Set $channels, array $channel): Set {
                     return $channels->add(new Channel(
                         new ChannelName($channel['name']),
@@ -236,12 +235,12 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function consumers(): SetInterface
+    public function consumers(): Set
     {
         return $this
             ->list('consumers')
             ->reduce(
-                new Set(Consumer::class),
+                Set::of(Consumer::class),
                 static function(Set $consumers, array $consumer): Set {
                     return $consumers->add(new Consumer(
                         new Tag($consumer['consumer_tag']),
@@ -261,12 +260,12 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function queues(): SetInterface
+    public function queues(): Set
     {
         return $this
             ->list('queues')
             ->reduce(
-                new Set(Queue::class),
+                Set::of(Queue::class),
                 function(Set $queues, array $queue): Set {
                     return $queues->add(new Queue(
                         new Identity(
@@ -293,12 +292,12 @@ final class Status implements StatusInterface
     /**
      * {@inheritdoc}
      */
-    public function nodes(): SetInterface
+    public function nodes(): Set
     {
         return $this
             ->list('nodes')
             ->reduce(
-                new Set(Node::class),
+                Set::of(Node::class),
                 static function(Set $nodes, array $node): Set {
                     return $nodes->add(new Node(
                         new NodeName($node['name']),
@@ -318,15 +317,15 @@ final class Status implements StatusInterface
                 ($this->environment)(
                     $this->command->withArgument($element)
                 )
-            )
-            ->wait();
+            );
+        $process->wait();
 
         if (!$process->exitCode()->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
 
-        return new Sequence(
-            ...json_decode((string) $process->output(), true)
+        return Sequence::mixed(
+            ...json_decode($process->output()->toString(), true),
         );
     }
 }

@@ -13,7 +13,7 @@ use Innmind\RabbitMQ\Management\Model\{
     State,
     Count
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 use PHPUnit\Framework\TestCase;
 
 class ChannelTest extends TestCase
@@ -35,7 +35,7 @@ class ChannelTest extends TestCase
             $consumers = new Count(0),
             true,
             false,
-            $idle = $this->createMock(PointInTimeInterface::class)
+            $idle = $this->createMock(PointInTime::class)
         );
 
         $this->assertSame($name, $channel->name());

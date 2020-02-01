@@ -9,7 +9,6 @@ use Innmind\RabbitMQ\Management\Status\{
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Url\Authority\{
-    HostInterface,
     Host,
     Port
 };
@@ -22,36 +21,36 @@ class RemoteTest extends TestCase
         $this->assertInstanceOf(
             Environment::class,
             new Remote(
-                $this->createMock(HostInterface::class)
+                Host::none(),
             )
         );
     }
 
     public function testInvokation()
     {
-        $command = (new Command('rabbitmqadmin'))
+        $command = Command::foreground('rabbitmqadmin')
             ->withShortOption('f', 'raw_json')
             ->withArgument('list')
             ->withArgument('users');
-        $environment = new Remote(new Host('rabbit.innmind.com'));
+        $environment = new Remote(Host::of('rabbit.innmind.com'));
 
         $this->assertNotSame($command, $environment($command));
         $this->assertInstanceOf(Command::class, $environment($command));
         $this->assertSame(
             "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
-            (string) $environment($command)
+            $environment($command)->toString(),
         );
     }
 
     public function testInvokationWithCustomSerevr()
     {
-        $command = (new Command('rabbitmqadmin'))
+        $command = Command::foreground('rabbitmqadmin')
             ->withShortOption('f', 'raw_json')
             ->withArgument('list')
             ->withArgument('users');
         $environment = new Remote(
-            new Host('rabbit.innmind.com'),
-            new Port(42),
+            Host::of('rabbit.innmind.com'),
+            Port::of(42),
             'foo',
             'bar'
         );
@@ -60,7 +59,7 @@ class RemoteTest extends TestCase
         $this->assertInstanceOf(Command::class, $environment($command));
         $this->assertSame(
             "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--host=rabbit.innmind.com' '--port=42' '--username=foo' '--password=bar'",
-            (string) $environment($command)
+            $environment($command)->toString(),
         );
     }
 }

@@ -5,8 +5,8 @@ namespace Tests\Innmind\RabbitMQ\Management\Model\Connection;
 
 use Innmind\RabbitMQ\Management\Model\Connection\Peer;
 use Innmind\Url\Authority\{
-    HostInterface,
-    PortInterface
+    Host,
+    Port
 };
 use PHPUnit\Framework\TestCase;
 
@@ -15,8 +15,8 @@ class PeerTest extends TestCase
     public function testInterface()
     {
         $peer = new Peer(
-            $host = $this->createMock(HostInterface::class),
-            $port = $this->createMock(PortInterface::class)
+            $host = Host::none(),
+            $port = Port::none(),
         );
 
         $this->assertSame($host, $peer->host());

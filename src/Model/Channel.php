@@ -10,7 +10,7 @@ use Innmind\RabbitMQ\Management\Model\{
     VHost\Name as VHostName,
     User\Name as UserName
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 
 final class Channel
 {
@@ -24,7 +24,7 @@ final class Channel
     private Count $consumers;
     private bool $confirm;
     private bool $transactional;
-    private PointInTimeInterface $idleSince;
+    private PointInTime $idleSince;
 
     public function __construct(
         Name $name,
@@ -37,7 +37,7 @@ final class Channel
         Count $consumers,
         bool $confirm,
         bool $transactional,
-        PointInTimeInterface $idleSince
+        PointInTime $idleSince
     ) {
         $this->name = $name;
         $this->vhost = $vhost;
@@ -102,7 +102,7 @@ final class Channel
         return $this->transactional;
     }
 
-    public function idleSince(): PointInTimeInterface
+    public function idleSince(): PointInTime
     {
         return $this->idleSince;
     }

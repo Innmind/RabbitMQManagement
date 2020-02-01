@@ -8,18 +8,18 @@ use Innmind\RabbitMQ\Management\{
     Model\User\Password,
     Exception\InvalidArgumentException
 };
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
 
 final class User
 {
     private Name $name;
     private Password $password;
-    private SetInterface $tags;
+    private Set $tags;
 
     public function __construct(
         Name $name,
         Password $password,
-        SetInterface $tags
+        Set $tags
     ) {
         if ((string) $tags->type() !== 'string') {
             throw new InvalidArgumentException;
@@ -41,9 +41,9 @@ final class User
     }
 
     /**
-     * @return SetInterface<string>
+     * @return Set<string>
      */
-    public function tags(): SetInterface
+    public function tags(): Set
     {
         return $this->tags;
     }

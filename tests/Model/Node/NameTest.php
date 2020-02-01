@@ -7,7 +7,7 @@ use Innmind\RabbitMQ\Management\{
     Model\Node\Name,
     Exception\InvalidName,
 };
-use Innmind\Url\Authority\HostInterface;
+use Innmind\Url\Authority\Host;
 use PHPUnit\Framework\TestCase;
 
 class NameTest extends TestCase
@@ -17,8 +17,8 @@ class NameTest extends TestCase
         $name = new Name('rabbit@whatever');
 
         $this->assertSame('rabbit@whatever', (string) $name);
-        $this->assertInstanceOf(HostInterface::class, $name->host());
-        $this->assertSame('whatever', (string) $name->host());
+        $this->assertInstanceOf(Host::class, $name->host());
+        $this->assertSame('whatever', $name->host()->toString());
     }
 
     public function testThrowWhenInvalidName()

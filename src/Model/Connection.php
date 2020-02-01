@@ -14,16 +14,16 @@ use Innmind\RabbitMQ\Management\Model\{
     VHost\Name as VHostName,
     User\Name as UserName
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 use Innmind\Url\Authority\{
-    HostInterface,
-    PortInterface
+    Host,
+    Port,
 };
 
 final class Connection
 {
     private Name $name;
-    private PointInTimeInterface $connectedAt;
+    private PointInTime $connectedAt;
     private Timeout $timeout;
     private VHostName $vhost;
     private UserName $user;
@@ -31,15 +31,15 @@ final class Connection
     private AuthenticationMechanism $authenticationMechanism;
     private bool $ssl;
     private Peer $peer;
-    private HostInterface $host;
-    private PortInterface $port;
+    private Host $host;
+    private Port $port;
     private NodeName $node;
     private Type $type;
     private State $state;
 
     public function __construct(
         Name $name,
-        PointInTimeInterface $connectedAt,
+        PointInTime $connectedAt,
         Timeout $timeout,
         VHostName $vhost,
         UserName $user,
@@ -47,8 +47,8 @@ final class Connection
         AuthenticationMechanism $authenticationMechanism,
         bool $ssl,
         Peer $peer,
-        HostInterface $host,
-        PortInterface $port,
+        Host $host,
+        Port $port,
         NodeName $node,
         Type $type,
         State $state
@@ -74,7 +74,7 @@ final class Connection
         return $this->name;
     }
 
-    public function connectedAt(): PointInTimeInterface
+    public function connectedAt(): PointInTime
     {
         return $this->connectedAt;
     }
@@ -114,12 +114,12 @@ final class Connection
         return $this->peer;
     }
 
-    public function host(): HostInterface
+    public function host(): Host
     {
         return $this->host;
     }
 
-    public function port(): PortInterface
+    public function port(): Port
     {
         return $this->port;
     }
