@@ -5,7 +5,7 @@ namespace Innmind\RabbitMQ\Management\Model;
 
 use Innmind\RabbitMQ\Management\Model\Node\{
     Name,
-    Type
+    Type,
 };
 
 final class Node

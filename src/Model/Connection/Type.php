@@ -17,12 +17,12 @@ final class Type
 
     public static function network(): self
     {
-        return self::$network ?? self::$network = new self('network');
+        return self::$network ??= new self('network');
     }
 
     public static function direct(): self
     {
-        return self::$direct ?? self::$direct = new self('direct');
+        return self::$direct ??= new self('direct');
     }
 
     public function toString(): string

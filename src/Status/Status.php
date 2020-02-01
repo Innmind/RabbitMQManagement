@@ -6,45 +6,32 @@ namespace Innmind\RabbitMQ\Management\Status;
 use Innmind\RabbitMQ\Management\{
     Status as StatusInterface,
     Model\User,
-    Model\User\Name as UserName,
-    Model\User\Password,
     Model\VHost,
-    Model\VHost\Name as VHostName,
-    Model\VHost\Messages as VHostMessages,
     Model\Count,
     Model\Connection,
-    Model\Connection\Name as ConnectionName,
     Model\Connection\Timeout,
     Model\Connection\Protocol,
     Model\Connection\AuthenticationMechanism,
     Model\Connection\Peer,
-    Model\Connection\Type as ConnectionType,
     Model\State,
     Model\Node,
-    Model\Node\Name as NodeName,
-    Model\Node\Type as NodeType,
     Model\Exchange,
-    Model\Exchange\Name as ExchangeName,
-    Model\Exchange\Type as ExchangeType,
     Model\Permission,
     Model\Channel,
-    Model\Channel\Name as ChannelName,
-    Model\Channel\Messages as ChannelMessages,
     Model\Consumer,
     Model\Consumer\Tag,
     Model\Queue,
     Model\Queue\Identity,
-    Model\Queue\Messages as QueueMessages,
-    Exception\ManagementPluginFailedToRun
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
-    Server\Command
+    Server\Command,
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Authority\{
     Host,
-    Port
+    Port,
 };
 use Innmind\Immutable\{
     Set,
@@ -76,25 +63,25 @@ final class Status implements StatusInterface
         /** @var Set<User> */
         return $this
             ->list('users')
-            ->reduce(
-                Set::of(User::class),
-                static function(Set $users, array $user): Set {
+            ->toSetOf(
+                User::class,
+                static function(array $user): \Generator {
                     /** @var array{name: string, password_hash: string, hashing_algorithm: string, tags: string} $user */
                     $tags = Set::strings();
 
-                    foreach (explode(',', $user['tags']) as $tag) {
+                    foreach (\explode(',', $user['tags']) as $tag) {
                         $tags = $tags->add($tag);
                     }
 
-                    return $users->add(new User(
-                        new UserName($user['name']),
-                        new Password(
+                    yield new User(
+                        new User\Name($user['name']),
+                        new User\Password(
                             $user['password_hash'],
-                            $user['hashing_algorithm']
+                            $user['hashing_algorithm'],
                         ),
-                        $tags
-                    ));
-                }
+                        $tags,
+                    );
+                },
             );
     }
 
@@ -103,20 +90,20 @@ final class Status implements StatusInterface
         /** @var Set<VHost> */
         return $this
             ->list('vhosts')
-            ->reduce(
-                Set::of(VHost::class),
-                static function(Set $vhosts, array $vhost): Set {
+            ->toSetOf(
+                VHost::class,
+                static function(array $vhost): \Generator {
                     /** @var array{name: string, messages: int, messages_ready: int, messages_unacknowledged: int, tracing: bool} $vhost */
-                    return $vhosts->add(new VHost(
-                        new VHostName($vhost['name']),
-                        new VHostMessages(
+                    yield new VHost(
+                        new VHost\Name($vhost['name']),
+                        new VHost\Messages(
                             new Count($vhost['messages']),
                             new Count($vhost['messages_ready']),
-                            new Count($vhost['messages_unacknowledged'])
+                            new Count($vhost['messages_unacknowledged']),
                         ),
-                        $vhost['tracing']
-                    ));
-                }
+                        $vhost['tracing'],
+                    );
+                },
             );
     }
 
@@ -125,37 +112,37 @@ final class Status implements StatusInterface
         /** @var Set<Connection> */
         return $this
             ->list('connections')
-            ->reduce(
-                Set::of(Connection::class),
-                function(Set $connections, array $connection): Set {
+            ->toSetOf(
+                Connection::class,
+                function(array $connection): \Generator {
                     /** @var array{name: string, connected_at: int, timeout: int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'} $connection */
 
                     $connectedAt = $connection['connected_at'];
 
                     /** @psalm-suppress MixedArgument */
-                    return $connections->add(new Connection(
-                        new ConnectionName($connection['name']),
+                    yield new Connection(
+                        new Connection\Name($connection['name']),
                         $this->clock->at(date(
                             \DateTime::ATOM,
-                            (int) round($connectedAt / 1000)
+                            (int) round($connectedAt / 1000),
                         )),
                         new Timeout($connection['timeout']),
-                        new VHostName($connection['vhost']),
-                        new UserName($connection['user']),
+                        new VHost\Name($connection['vhost']),
+                        new User\Name($connection['user']),
                         new Protocol($connection['protocol']),
                         AuthenticationMechanism::of($connection['auth_mechanism']),
                         $connection['ssl'],
                         new Peer(
                             Host::of($connection['peer_host']),
-                            Port::of($connection['peer_port'])
+                            Port::of($connection['peer_port']),
                         ),
                         Host::of($connection['host']),
                         Port::of($connection['port']),
-                        new NodeName($connection['node']),
-                        ConnectionType::{$connection['type']}(),
-                        State::{$connection['state']}()
-                    ));
-                }
+                        new Node\Name($connection['node']),
+                        Connection\Type::{$connection['type']}(),
+                        State::{$connection['state']}(),
+                    );
+                },
             );
     }
 
@@ -164,21 +151,21 @@ final class Status implements StatusInterface
         /** @var Set<Exchange> */
         return $this
             ->list('exchanges')
-            ->reduce(
-                Set::of(Exchange::class),
-                static function(Set $exchanges, array $exchange): Set {
+            ->toSetOf(
+                Exchange::class,
+                static function(array $exchange): \Generator {
                     /** @var array{name: string, vhost: string, type: 'topic'|'headers'|'direct'|'fanout', durable: bool, auto_delete: bool, internal: bool} $exchange */
 
                     /** @psalm-suppress MixedArgument */
-                    return $exchanges->add(new Exchange(
-                        new ExchangeName($exchange['name']),
-                        new VHostName($exchange['vhost']),
-                        ExchangeType::{$exchange['type']}(),
+                    yield new Exchange(
+                        new Exchange\Name($exchange['name']),
+                        new VHost\Name($exchange['vhost']),
+                        Exchange\Type::{$exchange['type']}(),
                         $exchange['durable'],
                         $exchange['auto_delete'],
-                        $exchange['internal']
-                    ));
-                }
+                        $exchange['internal'],
+                    );
+                },
             );
     }
 
@@ -187,18 +174,18 @@ final class Status implements StatusInterface
         /** @var Set<Permission> */
         return $this
             ->list('permissions')
-            ->reduce(
-                Set::of(Permission::class),
-                static function(Set $permissions, array $permission): Set {
+            ->toSetOf(
+                Permission::class,
+                static function(array $permission): \Generator {
                     /** @var array{user: string, vhost: string, configure: string, write: string, read: string} $permission */
-                    return $permissions->add(new Permission(
-                        new UserName($permission['user']),
-                        new VHostName($permission['vhost']),
+                    yield new Permission(
+                        new User\Name($permission['user']),
+                        new VHost\Name($permission['vhost']),
                         $permission['configure'],
                         $permission['write'],
-                        $permission['read']
-                    ));
-                }
+                        $permission['read'],
+                    );
+                },
             );
     }
 
@@ -207,30 +194,30 @@ final class Status implements StatusInterface
         /** @var Set<Channel> */
         return $this
             ->list('channels')
-            ->reduce(
-                Set::of(Channel::class),
-                function(Set $channels, array $channel): Set {
+            ->toSetOf(
+                Channel::class,
+                function(array $channel): \Generator {
                     /** @var array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: int, messages_unconfirmed: int, messages_unacknowledged: int, consumer_count: 1, confirm: bool, transactional: bool, idle_since: string} $channel */
 
                     /** @psalm-suppress MixedArgument */
-                    return $channels->add(new Channel(
-                        new ChannelName($channel['name']),
-                        new VHostName($channel['vhost']),
-                        new UserName($channel['user']),
+                    yield new Channel(
+                        new Channel\Name($channel['name']),
+                        new VHost\Name($channel['vhost']),
+                        new User\Name($channel['user']),
                         $channel['number'],
-                        new NodeName($channel['node']),
+                        new Node\Name($channel['node']),
                         State::{$channel['state']}(),
-                        new ChannelMessages(
+                        new Channel\Messages(
                             new Count($channel['messages_uncommitted']),
                             new Count($channel['messages_unconfirmed']),
-                            new Count($channel['messages_unacknowledged'])
+                            new Count($channel['messages_unacknowledged']),
                         ),
                         new Count($channel['consumer_count']),
                         $channel['confirm'],
                         $channel['transactional'],
-                        $this->clock->at($channel['idle_since'])
-                    ));
-                }
+                        $this->clock->at($channel['idle_since']),
+                    );
+                },
             );
     }
 
@@ -239,22 +226,22 @@ final class Status implements StatusInterface
         /** @var Set<Consumer> */
         return $this
             ->list('consumers')
-            ->reduce(
-                Set::of(Consumer::class),
-                static function(Set $consumers, array $consumer): Set {
+            ->toSetOf(
+                Consumer::class,
+                static function(array $consumer): \Generator {
                     /** @var array{consumer_tag: string, channel_details: array{name: string, connection_name: string}, queue: array{name: string, vhost: string}, ack_required: bool, exclusive: bool} $consumer */
-                    return $consumers->add(new Consumer(
+                    yield new Consumer(
                         new Tag($consumer['consumer_tag']),
-                        new ChannelName($consumer['channel_details']['name']),
+                        new Channel\Name($consumer['channel_details']['name']),
                         new Identity(
                             $consumer['queue']['name'],
-                            new VHostName($consumer['queue']['vhost'])
+                            new VHost\Name($consumer['queue']['vhost']),
                         ),
-                        new ConnectionName($consumer['channel_details']['connection_name']),
+                        new Connection\Name($consumer['channel_details']['connection_name']),
                         $consumer['ack_required'],
-                        $consumer['exclusive']
-                    ));
-                }
+                        $consumer['exclusive'],
+                    );
+                },
             );
     }
 
@@ -263,31 +250,31 @@ final class Status implements StatusInterface
         /** @var Set<Queue> */
         return $this
             ->list('queues')
-            ->reduce(
-                Set::of(Queue::class),
-                function(Set $queues, array $queue): Set {
+            ->toSetOf(
+                Queue::class,
+                function(array $queue): \Generator {
                     /** @var array{name: string, vhost: string, messages: int, messages_ready: int, messages_unacknowledged: int, idle_since: string, consumers: int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool} $queue */
 
                     /** @psalm-suppress MixedArgument */
-                    return $queues->add(new Queue(
+                    yield new Queue(
                         new Identity(
                             $queue['name'],
-                            new VHostName($queue['vhost'])
+                            new VHost\Name($queue['vhost']),
                         ),
-                        new QueueMessages(
+                        new Queue\Messages(
                             new Count($queue['messages']),
                             new Count($queue['messages_ready']),
-                            new Count($queue['messages_unacknowledged'])
+                            new Count($queue['messages_unacknowledged']),
                         ),
                         $this->clock->at($queue['idle_since']),
                         new Count($queue['consumers']),
                         State::{$queue['state']}(),
-                        new NodeName($queue['node']),
+                        new Node\Name($queue['node']),
                         $queue['exclusive'],
                         $queue['auto_delete'],
-                        $queue['durable']
-                    ));
-                }
+                        $queue['durable'],
+                    );
+                },
             );
     }
 
@@ -296,18 +283,18 @@ final class Status implements StatusInterface
         /** @var Set<Node> */
         return $this
             ->list('nodes')
-            ->reduce(
-                Set::of(Node::class),
-                static function(Set $nodes, array $node): Set {
+            ->toSetOf(
+                Node::class,
+                static function(array $node): \Generator {
                     /** @var array{name: string, type: 'disc'|'ram', running: bool} $node */
 
                     /** @psalm-suppress MixedArgument */
-                    return $nodes->add(new Node(
-                        new NodeName($node['name']),
-                        NodeType::{$node['type']}(),
-                        $node['running']
-                    ));
-                }
+                    yield new Node(
+                        new Node\Name($node['name']),
+                        Node\Type::{$node['type']}(),
+                        $node['running'],
+                    );
+                },
             );
     }
 
@@ -318,8 +305,8 @@ final class Status implements StatusInterface
             ->processes()
             ->execute(
                 ($this->environment)(
-                    $this->command->withArgument($element)
-                )
+                    $this->command->withArgument($element),
+                ),
             );
         $process->wait();
 
@@ -328,7 +315,7 @@ final class Status implements StatusInterface
         }
 
         /** @var array */
-        $elements = json_decode($process->output()->toString(), true);
+        $elements = \json_decode($process->output()->toString(), true);
 
         return Sequence::mixed(...$elements);
     }

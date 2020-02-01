@@ -5,11 +5,11 @@ namespace Innmind\RabbitMQ\Management\Control\VHosts;
 
 use Innmind\RabbitMQ\Management\{
     Control\VHosts as VHostsInterface,
-    Exception\ManagementPluginFailedToRun
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
-    Server\Command
+    Server\Command,
 };
 
 final class VHosts implements VHostsInterface
@@ -33,7 +33,7 @@ final class VHosts implements VHostsInterface
                     ->command
                     ->withArgument('declare')
                     ->withArgument('vhost')
-                    ->withArgument('name='.$name)
+                    ->withArgument('name='.$name),
             );
         $process->wait();
         $exitCode = $process->exitCode();
@@ -53,7 +53,7 @@ final class VHosts implements VHostsInterface
                     ->command
                     ->withArgument('delete')
                     ->withArgument('vhost')
-                    ->withArgument('name='.$name)
+                    ->withArgument('name='.$name),
             );
         $process->wait();
         $exitCode = $process->exitCode();

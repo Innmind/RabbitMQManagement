@@ -17,12 +17,12 @@ final class Type
 
     public static function disc(): self
     {
-        return self::$disc ?? self::$disc = new self('disc');
+        return self::$disc ??= new self('disc');
     }
 
     public static function ram(): self
     {
-        return self::$ram ?? self::$ram = new self('ram');
+        return self::$ram ??= new self('ram');
     }
 
     public function toString(): string

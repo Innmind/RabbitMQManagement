@@ -18,7 +18,7 @@ final class Protocol
 
     public function __construct(string $value)
     {
-        if (!in_array($value, self::$allowed, true)) {
+        if (!\in_array($value, self::$allowed, true)) {
             throw new UnknownProtocol($value);
         }
 

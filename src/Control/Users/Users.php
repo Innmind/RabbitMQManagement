@@ -5,11 +5,11 @@ namespace Innmind\RabbitMQ\Management\Control\Users;
 
 use Innmind\RabbitMQ\Management\{
     Control\Users as UsersInterface,
-    Exception\ManagementPluginFailedToRun
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
-    Server\Command
+    Server\Command,
 };
 
 final class Users implements UsersInterface
@@ -35,7 +35,7 @@ final class Users implements UsersInterface
                     ->withArgument('user')
                     ->withArgument('name='.$name)
                     ->withArgument('password='.$password)
-                    ->withArgument('tags='.implode(',', $tags))
+                    ->withArgument('tags='.implode(',', $tags)),
             );
         $process->wait();
         $exitCode = $process->exitCode();
@@ -55,7 +55,7 @@ final class Users implements UsersInterface
                     ->command
                     ->withArgument('delete')
                     ->withArgument('user')
-                    ->withArgument('name='.$name)
+                    ->withArgument('name='.$name),
             );
         $process->wait();
         $exitCode = $process->exitCode();

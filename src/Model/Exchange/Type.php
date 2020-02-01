@@ -19,22 +19,22 @@ final class Type
 
     public static function topic(): self
     {
-        return self::$topic ?? self::$topic = new self('topic');
+        return self::$topic ??= new self('topic');
     }
 
     public static function headers(): self
     {
-        return self::$headers ?? self::$headers = new self('headers');
+        return self::$headers ??= new self('headers');
     }
 
     public static function direct(): self
     {
-        return self::$direct ?? self::$direct = new self('direct');
+        return self::$direct ??= new self('direct');
     }
 
     public static function fanout(): self
     {
-        return self::$fanout ?? self::$fanout = new self('fanout');
+        return self::$fanout ??= new self('fanout');
     }
 
     public function toString(): string

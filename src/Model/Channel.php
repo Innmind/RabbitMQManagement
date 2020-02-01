@@ -6,19 +6,16 @@ namespace Innmind\RabbitMQ\Management\Model;
 use Innmind\RabbitMQ\Management\Model\{
     Channel\Name,
     Channel\Messages,
-    Node\Name as NodeName,
-    VHost\Name as VHostName,
-    User\Name as UserName
 };
 use Innmind\TimeContinuum\PointInTime;
 
 final class Channel
 {
     private Name $name;
-    private VHostName $vhost;
-    private UserName $user;
+    private VHost\Name $vhost;
+    private User\Name $user;
     private int $number;
-    private NodeName $node;
+    private Node\Name $node;
     private State $state;
     private Messages $messages;
     private Count $consumers;
@@ -28,10 +25,10 @@ final class Channel
 
     public function __construct(
         Name $name,
-        VHostName $vhost,
-        UserName $user,
+        VHost\Name $vhost,
+        User\Name $user,
         int $number,
-        NodeName $node,
+        Node\Name $node,
         State $state,
         Messages $messages,
         Count $consumers,
@@ -57,12 +54,12 @@ final class Channel
         return $this->name;
     }
 
-    public function vhost(): VHostName
+    public function vhost(): VHost\Name
     {
         return $this->vhost;
     }
 
-    public function user(): UserName
+    public function user(): User\Name
     {
         return $this->user;
     }
@@ -72,7 +69,7 @@ final class Channel
         return $this->number;
     }
 
-    public function node(): NodeName
+    public function node(): Node\Name
     {
         return $this->node;
     }

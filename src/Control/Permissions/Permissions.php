@@ -5,11 +5,11 @@ namespace Innmind\RabbitMQ\Management\Control\Permissions;
 
 use Innmind\RabbitMQ\Management\{
     Control\Permissions as PermissionsInterface,
-    Exception\ManagementPluginFailedToRun
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
-    Server\Command
+    Server\Command,
 };
 
 final class Permissions implements PermissionsInterface
@@ -42,7 +42,7 @@ final class Permissions implements PermissionsInterface
                     ->withArgument('user='.$user)
                     ->withArgument('configure='.$configure)
                     ->withArgument('write='.$write)
-                    ->withArgument('read='.$read)
+                    ->withArgument('read='.$read),
             );
         $process->wait();
         $exitCode = $process->exitCode();
@@ -63,7 +63,7 @@ final class Permissions implements PermissionsInterface
                     ->withArgument('delete')
                     ->withArgument('permission')
                     ->withArgument('vhost='.$vhost)
-                    ->withArgument('user='.$user)
+                    ->withArgument('user='.$user),
             );
         $process->wait();
         $exitCode = $process->exitCode();

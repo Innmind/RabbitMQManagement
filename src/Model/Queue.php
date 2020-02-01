@@ -6,7 +6,6 @@ namespace Innmind\RabbitMQ\Management\Model;
 use Innmind\RabbitMQ\Management\Model\{
     Queue\Identity,
     Queue\Messages,
-    Node\Name as NodeName
 };
 use Innmind\TimeContinuum\PointInTime;
 
@@ -17,7 +16,7 @@ final class Queue
     private PointInTime $idleSince;
     private Count $consumers;
     private State $state;
-    private NodeName $node;
+    private Node\Name $node;
     private bool $exclusive;
     private bool $autoDelete;
     private bool $durable;
@@ -28,7 +27,7 @@ final class Queue
         PointInTime $idleSince,
         Count $consumers,
         State $state,
-        NodeName $node,
+        Node\Name $node,
         bool $exclusive,
         bool $autoDelete,
         bool $durable
@@ -69,7 +68,7 @@ final class Queue
         return $this->state;
     }
 
-    public function node(): NodeName
+    public function node(): Node\Name
     {
         return $this->node;
     }

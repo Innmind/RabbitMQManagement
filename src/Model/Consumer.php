@@ -7,7 +7,6 @@ use Innmind\RabbitMQ\Management\Model\{
     Consumer\Tag,
     Channel\Name,
     Queue\Identity,
-    Connection\Name as ConnectionName
 };
 
 final class Consumer
@@ -15,7 +14,7 @@ final class Consumer
     private Tag $tag;
     private Name $channel;
     private Identity $queue;
-    private ConnectionName $connection;
+    private Connection\Name $connection;
     private bool $ackRequired;
     private bool $exclusive;
 
@@ -23,7 +22,7 @@ final class Consumer
         Tag $tag,
         Name $channel,
         Identity $queue,
-        ConnectionName $connection,
+        Connection\Name $connection,
         bool $ackRequired,
         bool $exclusive
     ) {
@@ -50,7 +49,7 @@ final class Consumer
         return $this->queue;
     }
 
-    public function connection(): ConnectionName
+    public function connection(): Connection\Name
     {
         return $this->connection;
     }

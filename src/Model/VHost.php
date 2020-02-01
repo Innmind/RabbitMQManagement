@@ -5,7 +5,7 @@ namespace Innmind\RabbitMQ\Management\Model;
 
 use Innmind\RabbitMQ\Management\Model\VHost\{
     Name,
-    Messages
+    Messages,
 };
 
 final class VHost

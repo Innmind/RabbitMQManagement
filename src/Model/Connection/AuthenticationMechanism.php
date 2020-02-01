@@ -24,17 +24,17 @@ final class AuthenticationMechanism
 
     public static function demo(): self
     {
-        return self::$demo ?? self::$demo = new self(self::DEMO);
+        return self::$demo ??= new self(self::DEMO);
     }
 
     public static function plain(): self
     {
-        return self::$plain ?? self::$plain = new self(self::PLAIN);
+        return self::$plain ??= new self(self::PLAIN);
     }
 
     public static function amqplain(): self
     {
-        return self::$amqplain ?? self::$amqplain = new self(self::AMQPLAIN);
+        return self::$amqplain ??= new self(self::AMQPLAIN);
     }
 
     public static function of(string $value): self

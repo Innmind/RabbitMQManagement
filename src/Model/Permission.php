@@ -3,22 +3,17 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model;
 
-use Innmind\RabbitMQ\Management\Model\{
-    User\Name as UserName,
-    VHost\Name as VHostName
-};
-
 final class Permission
 {
-    private UserName $user;
-    private VHostName $vhost;
+    private User\Name $user;
+    private VHost\Name $vhost;
     private string $configure;
     private string $write;
     private string $read;
 
     public function __construct(
-        UserName $user,
-        VHostName $vhost,
+        User\Name $user,
+        VHost\Name $vhost,
         string $configure,
         string $write,
         string $read
@@ -30,12 +25,12 @@ final class Permission
         $this->read = $read;
     }
 
-    public function user(): UserName
+    public function user(): User\Name
     {
         return $this->user;
     }
 
-    public function vhost(): VHostName
+    public function vhost(): VHost\Name
     {
         return $this->vhost;
     }
