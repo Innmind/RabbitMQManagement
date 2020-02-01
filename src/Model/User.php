@@ -6,7 +6,6 @@ namespace Innmind\RabbitMQ\Management\Model;
 use Innmind\RabbitMQ\Management\{
     Model\User\Name,
     Model\User\Password,
-    Exception\InvalidArgumentException,
 };
 use Innmind\Immutable\Set;
 
@@ -17,21 +16,14 @@ final class User
     /** @var Set<string> */
     private Set $tags;
 
-    /**
-     * @param Set<string> $tags
-     */
     public function __construct(
         Name $name,
         Password $password,
-        Set $tags
+        string ...$tags
     ) {
-        if ((string) $tags->type() !== 'string') {
-            throw new InvalidArgumentException;
-        }
-
         $this->name = $name;
         $this->password = $password;
-        $this->tags = $tags;
+        $this->tags = Set::strings(...$tags);
     }
 
     public function name(): Name

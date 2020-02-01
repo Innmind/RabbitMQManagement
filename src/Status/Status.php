@@ -67,19 +67,13 @@ final class Status implements StatusInterface
                 User::class,
                 static function(array $user): \Generator {
                     /** @var array{name: string, password_hash: string, hashing_algorithm: string, tags: string} $user */
-                    $tags = Set::strings();
-
-                    foreach (\explode(',', $user['tags']) as $tag) {
-                        $tags = $tags->add($tag);
-                    }
-
                     yield new User(
                         new User\Name($user['name']),
                         new User\Password(
                             $user['password_hash'],
                             $user['hashing_algorithm'],
                         ),
-                        $tags,
+                        ...\explode(',', $user['tags']),
                     );
                 },
             );
