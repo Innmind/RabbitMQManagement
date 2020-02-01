@@ -17,7 +17,7 @@ class AuthenticationMechanismTest extends TestCase
 
         $this->assertInstanceOf(AuthenticationMechanism::class, $mechanism);
         $this->assertSame($mechanism, AuthenticationMechanism::{$type}());
-        $this->assertSame($mechanism, AuthenticationMechanism::fromString($expected));
+        $this->assertSame($mechanism, AuthenticationMechanism::of($expected));
         $this->assertSame($expected, (string) $mechanism);
     }
 
@@ -35,6 +35,6 @@ class AuthenticationMechanismTest extends TestCase
      */
     public function throwWhenUnknownMechanism()
     {
-        AuthenticationMechanism::fromString('foo');
+        AuthenticationMechanism::of('foo');
     }
 }
