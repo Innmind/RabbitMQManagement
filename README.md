@@ -1,10 +1,9 @@
 # RabbitMQManagement
 
-| `master` | `develop` |
-|----------|-----------|
-| [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/?branch=master) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/?branch=develop) |
-| [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/?branch=master) | [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/?branch=develop) |
-| [![Build Status](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/build-status/master) | [![Build Status](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/RabbitMQManagement/build-status/develop) |
+| `develop` |
+|-----------|
+| [![codecov](https://codecov.io/gh/Innmind/RabbitMQManagement/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/RabbitMQManagement) |
+| [![Build Status](https://github.com/Innmind/RabbitMQManagement/workflows/CI/badge.svg)](https://github.com/Innmind/RabbitMQManagement/actions?query=workflow%3ACI) |
 
 Wrapper for the `rabbitmqadmin` command.
 
