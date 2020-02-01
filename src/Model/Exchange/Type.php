@@ -37,7 +37,7 @@ final class Type
         return self::$fanout ?? self::$fanout = new self('fanout');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

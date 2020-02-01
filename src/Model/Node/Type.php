@@ -25,7 +25,7 @@ final class Type
         return self::$ram ?? self::$ram = new self('ram');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

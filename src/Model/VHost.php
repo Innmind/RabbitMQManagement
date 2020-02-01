@@ -39,8 +39,8 @@ final class VHost
         return $this->messages;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return (string) $this->name;
+        return $this->name->toString();
     }
 }

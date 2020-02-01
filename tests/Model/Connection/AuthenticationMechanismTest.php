@@ -18,7 +18,7 @@ class AuthenticationMechanismTest extends TestCase
         $this->assertInstanceOf(AuthenticationMechanism::class, $mechanism);
         $this->assertSame($mechanism, AuthenticationMechanism::{$type}());
         $this->assertSame($mechanism, AuthenticationMechanism::of($expected));
-        $this->assertSame($expected, (string) $mechanism);
+        $this->assertSame($expected, $mechanism->toString());
     }
 
     public function mechanisms(): array

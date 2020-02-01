@@ -95,7 +95,7 @@ class StatusTest extends TestCase
         $this->assertInstanceOf(Set::class, $users);
         $this->assertSame(User::class, (string) $users->type());
         $this->assertCount(1, $users);
-        $this->assertSame('guest', (string) first($users)->name());
+        $this->assertSame('guest', first($users)->name()->toString());
         $this->assertSame(
             'ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+',
             first($users)->password()->hash()
@@ -153,7 +153,7 @@ class StatusTest extends TestCase
         $this->assertInstanceOf(Set::class, $users);
         $this->assertSame(User::class, (string) $users->type());
         $this->assertCount(1, $users);
-        $this->assertSame('guest', (string) first($users)->name());
+        $this->assertSame('guest', first($users)->name()->toString());
         $this->assertSame(
             'ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+',
             first($users)->password()->hash()
@@ -244,7 +244,7 @@ class StatusTest extends TestCase
         $this->assertInstanceOf(Set::class, $vhosts);
         $this->assertSame(VHost::class, (string) $vhosts->type());
         $this->assertCount(1, $vhosts);
-        $this->assertSame('/', (string) first($vhosts)->name());
+        $this->assertSame('/', first($vhosts)->name()->toString());
         $this->assertFalse(first($vhosts)->tracing());
         $this->assertSame(1, first($vhosts)->messages()->total()->toInt());
         $this->assertSame(2, first($vhosts)->messages()->ready()->toInt());
@@ -296,7 +296,7 @@ class StatusTest extends TestCase
         $this->assertInstanceOf(Set::class, $vhosts);
         $this->assertSame(VHost::class, (string) $vhosts->type());
         $this->assertCount(1, $vhosts);
-        $this->assertSame('/', (string) first($vhosts)->name());
+        $this->assertSame('/', first($vhosts)->name()->toString());
         $this->assertFalse(first($vhosts)->tracing());
         $this->assertSame(1, first($vhosts)->messages()->total()->toInt());
         $this->assertSame(2, first($vhosts)->messages()->ready()->toInt());
@@ -388,22 +388,22 @@ class StatusTest extends TestCase
         $this->assertCount(1, $connections);
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672',
-            (string) first($connections)->name()
+            first($connections)->name()->toString(),
         );
         $this->assertSame($date, first($connections)->connectedAt());
         $this->assertSame(60, first($connections)->timeout()->toInt());
-        $this->assertSame('/', (string) first($connections)->vhost());
-        $this->assertSame('guest', (string) first($connections)->user());
-        $this->assertSame('AMQP 0-9-1', (string) first($connections)->protocol());
-        $this->assertSame('AMQPLAIN', (string) first($connections)->authenticationMechanism());
+        $this->assertSame('/', first($connections)->vhost()->toString());
+        $this->assertSame('guest', first($connections)->user()->toString());
+        $this->assertSame('AMQP 0-9-1', first($connections)->protocol()->toString());
+        $this->assertSame('AMQPLAIN', first($connections)->authenticationMechanism()->toString());
         $this->assertFalse(first($connections)->ssl());
         $this->assertSame('172.19.0.1', first($connections)->peer()->host()->toString());
         $this->assertSame(32788, first($connections)->peer()->port()->value());
         $this->assertSame('172.19.0.2', first($connections)->host()->toString());
         $this->assertSame(5672, first($connections)->port()->value());
-        $this->assertSame('rabbit@050becbb9cb3', (string) first($connections)->node());
-        $this->assertSame('network', (string) first($connections)->type());
-        $this->assertSame('running', (string) first($connections)->state());
+        $this->assertSame('rabbit@050becbb9cb3', first($connections)->node()->toString());
+        $this->assertSame('network', first($connections)->type()->toString());
+        $this->assertSame('running', first($connections)->state()->toString());
     }
 
     public function testRemoteConnections()
@@ -458,22 +458,22 @@ class StatusTest extends TestCase
         $this->assertCount(1, $connections);
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672',
-            (string) first($connections)->name()
+            first($connections)->name()->toString(),
         );
         $this->assertSame($date, first($connections)->connectedAt());
         $this->assertSame(60, first($connections)->timeout()->toInt());
-        $this->assertSame('/', (string) first($connections)->vhost());
-        $this->assertSame('guest', (string) first($connections)->user());
-        $this->assertSame('AMQP 0-9-1', (string) first($connections)->protocol());
-        $this->assertSame('AMQPLAIN', (string) first($connections)->authenticationMechanism());
+        $this->assertSame('/', first($connections)->vhost()->toString());
+        $this->assertSame('guest', first($connections)->user()->toString());
+        $this->assertSame('AMQP 0-9-1', first($connections)->protocol()->toString());
+        $this->assertSame('AMQPLAIN', first($connections)->authenticationMechanism()->toString());
         $this->assertFalse(first($connections)->ssl());
         $this->assertSame('172.19.0.1', first($connections)->peer()->host()->toString());
         $this->assertSame(32788, first($connections)->peer()->port()->value());
         $this->assertSame('172.19.0.2', first($connections)->host()->toString());
         $this->assertSame(5672, first($connections)->port()->value());
-        $this->assertSame('rabbit@050becbb9cb3', (string) first($connections)->node());
-        $this->assertSame('network', (string) first($connections)->type());
-        $this->assertSame('running', (string) first($connections)->state());
+        $this->assertSame('rabbit@050becbb9cb3', first($connections)->node()->toString());
+        $this->assertSame('network', first($connections)->type()->toString());
+        $this->assertSame('running', first($connections)->state()->toString());
     }
 
     public function testThrowWhenFailToListConnections()
@@ -554,9 +554,9 @@ class StatusTest extends TestCase
         $this->assertInstanceOf(Set::class, $exchanges);
         $this->assertSame(Exchange::class, (string) $exchanges->type());
         $this->assertCount(9, $exchanges);
-        $this->assertSame('', (string) first($exchanges)->name());
-        $this->assertSame('/', (string) first($exchanges)->vhost());
-        $this->assertSame('direct', (string) first($exchanges)->type());
+        $this->assertSame('', first($exchanges)->name()->toString());
+        $this->assertSame('/', first($exchanges)->vhost()->toString());
+        $this->assertSame('direct', first($exchanges)->type()->toString());
         $this->assertTrue(first($exchanges)->durable());
         $this->assertFalse(first($exchanges)->autoDelete());
         $this->assertFalse(first($exchanges)->internal());
@@ -607,9 +607,9 @@ class StatusTest extends TestCase
         $this->assertInstanceOf(Set::class, $exchanges);
         $this->assertSame(Exchange::class, (string) $exchanges->type());
         $this->assertCount(9, $exchanges);
-        $this->assertSame('', (string) first($exchanges)->name());
-        $this->assertSame('/', (string) first($exchanges)->vhost());
-        $this->assertSame('direct', (string) first($exchanges)->type());
+        $this->assertSame('', first($exchanges)->name()->toString());
+        $this->assertSame('/', first($exchanges)->vhost()->toString());
+        $this->assertSame('direct', first($exchanges)->type()->toString());
         $this->assertTrue(first($exchanges)->durable());
         $this->assertFalse(first($exchanges)->autoDelete());
         $this->assertFalse(first($exchanges)->internal());
@@ -691,13 +691,13 @@ class StatusTest extends TestCase
         $permissions = $status->permissions();
 
         $this->assertInstanceOf(Set::class, $permissions);
-        $this->assertSame(Permission::class, (string) $permissions->type());
+        $this->assertSame(Permission::class, $permissions->type());
         $this->assertCount(1, $permissions);
-        $this->assertSame('guest', (string) first($permissions)->user());
-        $this->assertSame('/', (string) first($permissions)->vhost());
-        $this->assertSame('.*', (string) first($permissions)->configure());
-        $this->assertSame('.*', (string) first($permissions)->write());
-        $this->assertSame('.*', (string) first($permissions)->read());
+        $this->assertSame('guest', first($permissions)->user()->toString());
+        $this->assertSame('/', first($permissions)->vhost()->toString());
+        $this->assertSame('.*', first($permissions)->configure());
+        $this->assertSame('.*', first($permissions)->write());
+        $this->assertSame('.*', first($permissions)->read());
     }
 
     public function testRemotePermissions()
@@ -743,13 +743,13 @@ class StatusTest extends TestCase
         $permissions = $status->permissions();
 
         $this->assertInstanceOf(Set::class, $permissions);
-        $this->assertSame(Permission::class, (string) $permissions->type());
+        $this->assertSame(Permission::class, $permissions->type());
         $this->assertCount(1, $permissions);
-        $this->assertSame('guest', (string) first($permissions)->user());
-        $this->assertSame('/', (string) first($permissions)->vhost());
-        $this->assertSame('.*', (string) first($permissions)->configure());
-        $this->assertSame('.*', (string) first($permissions)->write());
-        $this->assertSame('.*', (string) first($permissions)->read());
+        $this->assertSame('guest', first($permissions)->user()->toString());
+        $this->assertSame('/', first($permissions)->vhost()->toString());
+        $this->assertSame('.*', first($permissions)->configure());
+        $this->assertSame('.*', first($permissions)->write());
+        $this->assertSame('.*', first($permissions)->read());
     }
 
     public function testThrowWhenFailToListPermissions()
@@ -841,13 +841,13 @@ class StatusTest extends TestCase
         $this->assertCount(2, $channels);
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672 (1)',
-            (string) first($channels)->name()
+            first($channels)->name()->toString(),
         );
-        $this->assertSame('/', (string) first($channels)->vhost());
-        $this->assertSame('guest', (string) first($channels)->user());
+        $this->assertSame('/', first($channels)->vhost()->toString());
+        $this->assertSame('guest', first($channels)->user()->toString());
         $this->assertSame(1, first($channels)->number());
-        $this->assertSame('rabbit@050becbb9cb3', (string) first($channels)->node());
-        $this->assertSame('running', (string) first($channels)->state());
+        $this->assertSame('rabbit@050becbb9cb3', first($channels)->node()->toString());
+        $this->assertSame('running', first($channels)->state()->toString());
         $this->assertSame(2, first($channels)->messages()->uncommitted()->toInt());
         $this->assertSame(3, first($channels)->messages()->unconfirmed()->toInt());
         $this->assertSame(4, first($channels)->messages()->unacknowledged()->toInt());
@@ -913,13 +913,13 @@ class StatusTest extends TestCase
         $this->assertCount(2, $channels);
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672 (1)',
-            (string) first($channels)->name()
+            first($channels)->name()->toString(),
         );
-        $this->assertSame('/', (string) first($channels)->vhost());
-        $this->assertSame('guest', (string) first($channels)->user());
+        $this->assertSame('/', first($channels)->vhost()->toString());
+        $this->assertSame('guest', first($channels)->user()->toString());
         $this->assertSame(1, first($channels)->number());
-        $this->assertSame('rabbit@050becbb9cb3', (string) first($channels)->node());
-        $this->assertSame('running', (string) first($channels)->state());
+        $this->assertSame('rabbit@050becbb9cb3', first($channels)->node()->toString());
+        $this->assertSame('running', first($channels)->state()->toString());
         $this->assertSame(2, first($channels)->messages()->uncommitted()->toInt());
         $this->assertSame(3, first($channels)->messages()->unconfirmed()->toInt());
         $this->assertSame(4, first($channels)->messages()->unacknowledged()->toInt());
@@ -1009,23 +1009,23 @@ class StatusTest extends TestCase
         $this->assertCount(1, $consumers);
         $this->assertSame(
             'PHPPROCESS_Baptouuuu.local_7267',
-            (string) first($consumers)->tag()
+            first($consumers)->tag()->toString(),
         );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672 (1)',
-            (string) first($consumers)->channel()
+            first($consumers)->channel()->toString(),
         );
         $this->assertSame(
             'crawl',
-            (string) first($consumers)->queue()->name()
+            first($consumers)->queue()->name(),
         );
         $this->assertSame(
             '/',
-            (string) first($consumers)->queue()->vhost()
+            first($consumers)->queue()->vhost()->toString(),
         );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672',
-            (string) first($consumers)->connection()
+            first($consumers)->connection()->toString(),
         );
         $this->assertTrue(first($consumers)->ackRequired());
         $this->assertFalse(first($consumers)->exclusive());
@@ -1078,23 +1078,23 @@ class StatusTest extends TestCase
         $this->assertCount(1, $consumers);
         $this->assertSame(
             'PHPPROCESS_Baptouuuu.local_7267',
-            (string) first($consumers)->tag()
+            first($consumers)->tag()->toString(),
         );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672 (1)',
-            (string) first($consumers)->channel()
+            first($consumers)->channel()->toString(),
         );
         $this->assertSame(
             'crawl',
-            (string) first($consumers)->queue()->name()
+            first($consumers)->queue()->name(),
         );
         $this->assertSame(
             '/',
-            (string) first($consumers)->queue()->vhost()
+            first($consumers)->queue()->vhost()->toString(),
         );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672',
-            (string) first($consumers)->connection()
+            first($consumers)->connection()->toString(),
         );
         $this->assertTrue(first($consumers)->ackRequired());
         $this->assertFalse(first($consumers)->exclusive());
@@ -1185,11 +1185,11 @@ class StatusTest extends TestCase
         $this->assertCount(1, $queues);
         $this->assertSame(
             'crawl',
-            (string) first($queues)->identity()->name()
+            first($queues)->identity()->name()
         );
         $this->assertSame(
             '/',
-            (string) first($queues)->identity()->vhost()
+            first($queues)->identity()->vhost()->toString(),
         );
         $this->assertSame(
             1,
@@ -1208,8 +1208,8 @@ class StatusTest extends TestCase
             first($queues)->idleSince()
         );
         $this->assertSame(1, first($queues)->consumers()->toInt());
-        $this->assertSame('running', (string) first($queues)->state());
-        $this->assertSame('rabbit@050becbb9cb3', (string) first($queues)->node());
+        $this->assertSame('running', first($queues)->state()->toString());
+        $this->assertSame('rabbit@050becbb9cb3', first($queues)->node()->toString());
         $this->assertFalse(first($queues)->exclusive());
         $this->assertFalse(first($queues)->autoDelete());
         $this->assertTrue(first($queues)->durable());
@@ -1267,11 +1267,11 @@ class StatusTest extends TestCase
         $this->assertCount(1, $queues);
         $this->assertSame(
             'crawl',
-            (string) first($queues)->identity()->name()
+            first($queues)->identity()->name(),
         );
         $this->assertSame(
             '/',
-            (string) first($queues)->identity()->vhost()
+            first($queues)->identity()->vhost()->toString(),
         );
         $this->assertSame(
             1,
@@ -1290,8 +1290,8 @@ class StatusTest extends TestCase
             first($queues)->idleSince()
         );
         $this->assertSame(1, first($queues)->consumers()->toInt());
-        $this->assertSame('running', (string) first($queues)->state());
-        $this->assertSame('rabbit@050becbb9cb3', (string) first($queues)->node());
+        $this->assertSame('running', first($queues)->state()->toString());
+        $this->assertSame('rabbit@050becbb9cb3', first($queues)->node()->toString());
         $this->assertFalse(first($queues)->exclusive());
         $this->assertFalse(first($queues)->autoDelete());
         $this->assertTrue(first($queues)->durable());
@@ -1377,11 +1377,11 @@ class StatusTest extends TestCase
         $this->assertCount(1, $nodes);
         $this->assertSame(
             'rabbit@050becbb9cb3',
-            (string) first($nodes)->name()
+            first($nodes)->name()->toString(),
         );
         $this->assertSame(
             'disc',
-            (string) first($nodes)->type()
+            first($nodes)->type()->toString(),
         );
         $this->assertTrue(first($nodes)->running());
     }
@@ -1433,11 +1433,11 @@ class StatusTest extends TestCase
         $this->assertCount(1, $nodes);
         $this->assertSame(
             'rabbit@050becbb9cb3',
-            (string) first($nodes)->name()
+            first($nodes)->name()->toString(),
         );
         $this->assertSame(
             'disc',
-            (string) first($nodes)->type()
+            first($nodes)->type()->toString(),
         );
         $this->assertTrue(first($nodes)->running());
     }

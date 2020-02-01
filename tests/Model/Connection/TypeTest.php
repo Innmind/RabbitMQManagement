@@ -13,7 +13,7 @@ class TypeTest extends TestCase
         $type = Type::network();
 
         $this->assertInstanceOf(Type::class, $type);
-        $this->assertSame('network', (string) $type);
+        $this->assertSame('network', $type->toString());
         $this->assertSame($type, Type::network());
     }
 
@@ -22,7 +22,7 @@ class TypeTest extends TestCase
         $type = Type::direct();
 
         $this->assertInstanceOf(Type::class, $type);
-        $this->assertSame('direct', (string) $type);
+        $this->assertSame('direct', $type->toString());
         $this->assertSame($type, Type::direct());
     }
 }

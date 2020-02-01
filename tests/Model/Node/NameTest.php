@@ -16,7 +16,7 @@ class NameTest extends TestCase
     {
         $name = new Name('rabbit@whatever');
 
-        $this->assertSame('rabbit@whatever', (string) $name);
+        $this->assertSame('rabbit@whatever', $name->toString());
         $this->assertInstanceOf(Host::class, $name->host());
         $this->assertSame('whatever', $name->host()->toString());
     }

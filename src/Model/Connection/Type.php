@@ -25,7 +25,7 @@ final class Type
         return self::$direct ?? self::$direct = new self('direct');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

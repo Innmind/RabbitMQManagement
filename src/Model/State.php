@@ -25,7 +25,7 @@ final class State
         return self::$idle ?? self::$idle = new self('idle');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

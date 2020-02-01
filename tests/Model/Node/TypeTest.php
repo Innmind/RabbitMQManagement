@@ -13,7 +13,7 @@ class TypeTest extends TestCase
         $type = Type::disc();
 
         $this->assertInstanceOf(Type::class, $type);
-        $this->assertSame('disc', (string) $type);
+        $this->assertSame('disc', $type->toString());
         $this->assertSame($type, Type::disc());
     }
 
@@ -22,7 +22,7 @@ class TypeTest extends TestCase
         $type = Type::ram();
 
         $this->assertInstanceOf(Type::class, $type);
-        $this->assertSame('ram', (string) $type);
+        $this->assertSame('ram', $type->toString());
         $this->assertSame($type, Type::ram());
     }
 }

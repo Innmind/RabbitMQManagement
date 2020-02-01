@@ -15,19 +15,19 @@ class ProtocolTest extends TestCase
     {
         $this->assertSame(
             'AMQP 0-9-1 (incl. extensions)',
-            (string) new Protocol('AMQP 0-9-1 (incl. extensions)')
+            (new Protocol('AMQP 0-9-1 (incl. extensions)'))->toString(),
         );
         $this->assertSame(
             'AMQP 0-9-1',
-            (string) new Protocol('AMQP 0-9-1')
+            (new Protocol('AMQP 0-9-1'))->toString(),
         );
         $this->assertSame(
             'AMQP 0-9',
-            (string) new Protocol('AMQP 0-9')
+            (new Protocol('AMQP 0-9'))->toString(),
         );
         $this->assertSame(
             'AMQP 0-8',
-            (string) new Protocol('AMQP 0-8')
+            (new Protocol('AMQP 0-8'))->toString(),
         );
     }
 

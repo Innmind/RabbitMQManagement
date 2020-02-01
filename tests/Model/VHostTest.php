@@ -27,7 +27,7 @@ class VHostTest extends TestCase
 
         $this->assertSame($name, $vhost->name());
         $this->assertSame($messages, $vhost->messages());
-        $this->assertSame('foo', (string) $vhost);
+        $this->assertSame('foo', $vhost->toString());
         $this->assertTrue($vhost->tracing());
     }
 }
