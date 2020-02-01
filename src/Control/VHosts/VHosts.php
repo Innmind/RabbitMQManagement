@@ -23,7 +23,7 @@ final class VHosts implements VHostsInterface
         $this->command = Command::foreground('rabbitmqadmin');
     }
 
-    public function declare(string $name): VHostsInterface
+    public function declare(string $name): void
     {
         $process = $this
             ->server
@@ -41,11 +41,9 @@ final class VHosts implements VHostsInterface
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
-
-        return $this;
     }
 
-    public function delete(string $name): VHostsInterface
+    public function delete(string $name): void
     {
         $process = $this
             ->server
@@ -63,7 +61,5 @@ final class VHosts implements VHostsInterface
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
-
-        return $this;
     }
 }

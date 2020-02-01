@@ -50,8 +50,7 @@ class PermissionsTest extends TestCase
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame(
-            $permissions,
+        $this->assertNull(
             $permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}')
         );
     }
@@ -109,7 +108,7 @@ class PermissionsTest extends TestCase
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame($permissions, $permissions->delete('/', 'foo'));
+        $this->assertNull($permissions->delete('/', 'foo'));
     }
 
     public function testThrowWhenFailToDelete()

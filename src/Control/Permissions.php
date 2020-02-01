@@ -11,6 +11,6 @@ interface Permissions
         string $configure,
         string $write,
         string $read
-    ): self;
-    public function delete(string $vhost, string $user): self;
+    ): void;
+    public function delete(string $vhost, string $user): void;
 }

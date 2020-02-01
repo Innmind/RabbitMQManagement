@@ -50,7 +50,7 @@ class UsersTest extends TestCase
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame($users, $users->declare('foo', 'bar', 'baz', 'foobar'));
+        $this->assertNull($users->declare('foo', 'bar', 'baz', 'foobar'));
     }
 
     public function testThrowWhenFailToDeclare()
@@ -106,7 +106,7 @@ class UsersTest extends TestCase
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame($users, $users->delete('foo'));
+        $this->assertNull($users->delete('foo'));
     }
 
     public function testThrowWhenFailToDelete()

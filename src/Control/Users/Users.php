@@ -23,7 +23,7 @@ final class Users implements UsersInterface
         $this->command = Command::foreground('rabbitmqadmin');
     }
 
-    public function declare(string $name, string $password, string ...$tags): UsersInterface
+    public function declare(string $name, string $password, string ...$tags): void
     {
         $process = $this
             ->server
@@ -43,11 +43,9 @@ final class Users implements UsersInterface
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
-
-        return $this;
     }
 
-    public function delete(string $name): UsersInterface
+    public function delete(string $name): void
     {
         $process = $this
             ->server
@@ -65,7 +63,5 @@ final class Users implements UsersInterface
         if (!$exitCode->isSuccessful()) {
             throw new ManagementPluginFailedToRun;
         }
-
-        return $this;
     }
 }

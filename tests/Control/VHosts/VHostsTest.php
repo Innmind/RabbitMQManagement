@@ -50,7 +50,7 @@ class VHostsTest extends TestCase
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame($vhosts, $vhosts->declare('foo'));
+        $this->assertNull($vhosts->declare('foo'));
     }
 
     public function testThrowWhenFailToDeclare()
@@ -106,7 +106,7 @@ class VHostsTest extends TestCase
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
 
-        $this->assertSame($vhosts, $vhosts->delete('foo'));
+        $this->assertNull($vhosts->delete('foo'));
     }
 
     public function testThrowWhenFailToDelete()
