@@ -12,7 +12,7 @@ final class Timeout
     public function __construct(int $value)
     {
         if ($value < 0) {
-            throw new TimeoutCantBeNegative;
+            throw new TimeoutCantBeNegative((string) $value);
         }
 
         $this->value = $value;

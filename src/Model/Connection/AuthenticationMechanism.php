@@ -50,7 +50,7 @@ final class AuthenticationMechanism
                 return self::amqplain();
 
             default:
-                throw new UnknownAuthenticationMechanism;
+                throw new UnknownAuthenticationMechanism($value);
         }
     }
 
