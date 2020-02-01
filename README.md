@@ -18,14 +18,14 @@ composer require innmind/rabbitmq-management
 ```php
 use Innmind\RabbitMQ\Management\{
     Status\Status,
-    Control\Control
+    Control\Control,
 };
 use Innmind\Server\Control\ServerFactory;
-use Innmind\TimeContinuum\TimeContinuum\Earth;
+use Innmind\TimeContinuum\Earth\Clock;
 
 $status = new Status(
-    $server = (new ServerFactory)->make(),
-    new Earth
+    $server = ServerFactory::build(),
+    new Clock,
 );
 $status->users();
 $status->vhosts();
@@ -51,21 +51,21 @@ If you need to list the information of a remote server, then you cal simply do t
 use Innmind\RabbitMQ\Management\Status\Environment\Remote;
 use Innmind\Url\Authority\{
     Host,
-    Port
+    Port,
 };
 
 new Status(
-    (new ServerFactory)->make(),
-    new Earth,
+    ServerFactory::build(),
+    new Clock,
     new Remote(
-        new Host('your-host'),
-        new Port(1337),
+        Host::of('your-host'),
+        Port::of(1337),
         'username',
-        'password'
-    )
+        'password',
+    ),
 );
 ```
 
 However for this to work you need to have `rabbitmqadmin` installed on the machine this code will run.
 
-In case you don't have the command on the machine, you can replace `(new ServerFatory)->make()` by [`new Remote(/*...*/)`](https://github.com/Innmind/ServerControl/blob/develop/src/Servers/Remote.php) so it will use `ssh` to run the command on the machine (and you will need to remove the third argument from `new Status`).
+In case you don't have the command on the machine, you can replace `ServerFatory::build()` by [`new Remote(/*...*/)`](https://github.com/Innmind/ServerControl/blob/develop/src/Servers/Remote.php) so it will use `ssh` to run the command on the machine (and you will need to remove the third argument from `new Status`).
