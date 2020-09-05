@@ -292,6 +292,9 @@ final class Status implements StatusInterface
             );
     }
 
+    /**
+     * @return Sequence<array>
+     */
     private function list(string $element): Sequence
     {
         $process = $this
@@ -308,9 +311,10 @@ final class Status implements StatusInterface
             throw new ManagementPluginFailedToRun;
         }
 
-        /** @var array */
+        /** @var list<array> */
         $elements = \json_decode($process->output()->toString(), true);
 
+        /** @var Sequence<array> */
         return Sequence::mixed(...$elements);
     }
 }
