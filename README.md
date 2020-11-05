@@ -49,9 +49,10 @@ If you need to list the information of a remote server, then you cal simply do t
 
 ```php
 use Innmind\RabbitMQ\Management\Status\Environment\Remote;
-use Innmind\Url\Authority\{
-    Host,
-    Port,
+use Innmind\Url\{
+    Authority\Host,
+    Authority\Port,
+    Path,
 };
 
 new Status(
@@ -62,6 +63,7 @@ new Status(
         Port::of(1337),
         'username',
         'password',
+        Path::of('/some-vhost'),
     ),
 );
 ```

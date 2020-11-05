@@ -8,9 +8,10 @@ use Innmind\RabbitMQ\Management\Status\{
     Environment
 };
 use Innmind\Server\Control\Server\Command;
-use Innmind\Url\Authority\{
-    Host,
-    Port
+use Innmind\Url\{
+    Authority\Host,
+    Authority\Port,
+    Path,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -59,6 +60,28 @@ class RemoteTest extends TestCase
         $this->assertInstanceOf(Command::class, $environment($command));
         $this->assertSame(
             "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--host=rabbit.innmind.com' '--port=42' '--username=foo' '--password=bar'",
+            $environment($command)->toString(),
+        );
+    }
+
+    public function testInvokationWithVhost()
+    {
+        $command = Command::foreground('rabbitmqadmin')
+            ->withShortOption('f', 'raw_json')
+            ->withArgument('list')
+            ->withArgument('users');
+        $environment = new Remote(
+            Host::of('rabbit.innmind.com'),
+            null,
+            null,
+            null,
+            Path::of('/foo'),
+        );
+
+        $this->assertNotSame($command, $environment($command));
+        $this->assertInstanceOf(Command::class, $environment($command));
+        $this->assertSame(
+            "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--vhost=/foo' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
             $environment($command)->toString(),
         );
     }
