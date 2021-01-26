@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Environment;
+namespace Tests\Innmind\RabbitMQ\Management\Status\Environment;
 
 use Innmind\RabbitMQ\Management\Status\{
     Environment\Local,
