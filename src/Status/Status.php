@@ -110,15 +110,14 @@ final class Status implements StatusInterface
                 Connection::class,
                 function(array $connection): \Generator {
                     /** @var array{name: string, connected_at: int, timeout: int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'} $connection */
-
                     $connectedAt = $connection['connected_at'];
 
                     /** @psalm-suppress MixedArgument */
                     yield new Connection(
                         new Connection\Name($connection['name']),
-                        $this->clock->at(date(
+                        $this->clock->at(\date(
                             \DateTime::ATOM,
-                            (int) round($connectedAt / 1000),
+                            (int) \round($connectedAt / 1000),
                         )),
                         new Timeout($connection['timeout']),
                         new VHost\Name($connection['vhost']),

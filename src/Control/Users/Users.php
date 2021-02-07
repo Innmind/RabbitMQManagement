@@ -35,7 +35,7 @@ final class Users implements UsersInterface
                     ->withArgument('user')
                     ->withArgument('name='.$name)
                     ->withArgument('password='.$password)
-                    ->withArgument('tags='.implode(',', $tags)),
+                    ->withArgument('tags='.\implode(',', $tags)),
             );
         $process->wait();
         $exitCode = $process->exitCode();
