@@ -47,7 +47,7 @@ final class Permissions implements PermissionsInterface
         $process->wait();
         $exitCode = $process->exitCode();
 
-        if (!$exitCode->isSuccessful()) {
+        if (!$exitCode->successful()) {
             throw new ManagementPluginFailedToRun;
         }
     }
@@ -68,7 +68,7 @@ final class Permissions implements PermissionsInterface
         $process->wait();
         $exitCode = $process->exitCode();
 
-        if (!$exitCode->isSuccessful()) {
+        if (!$exitCode->successful()) {
             throw new ManagementPluginFailedToRun;
         }
     }

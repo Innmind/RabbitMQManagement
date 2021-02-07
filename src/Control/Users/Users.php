@@ -35,12 +35,12 @@ final class Users implements UsersInterface
                     ->withArgument('user')
                     ->withArgument('name='.$name)
                     ->withArgument('password='.$password)
-                    ->withArgument('tags='.implode(',', $tags)),
+                    ->withArgument('tags='.\implode(',', $tags)),
             );
         $process->wait();
         $exitCode = $process->exitCode();
 
-        if (!$exitCode->isSuccessful()) {
+        if (!$exitCode->successful()) {
             throw new ManagementPluginFailedToRun;
         }
     }
@@ -60,7 +60,7 @@ final class Users implements UsersInterface
         $process->wait();
         $exitCode = $process->exitCode();
 
-        if (!$exitCode->isSuccessful()) {
+        if (!$exitCode->successful()) {
             throw new ManagementPluginFailedToRun;
         }
     }

@@ -825,14 +825,13 @@ class StatusTest extends TestCase
             ->method('toString')
             ->willReturn('[{"vhost":"/","user":"guest","number":1,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":3},"reductions":2401,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":2,"messages_unconfirmed":3,"messages_unacknowledged":4,"consumer_count":1,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":2401,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}},{"vhost":"/","user":"guest","number":2,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (2)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":6},"reductions":905,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":0,"messages_unconfirmed":0,"messages_unacknowledged":0,"consumer_count":0,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":905,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]');
         $clock
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('at')
             ->with('2017-06-30 8:13:31')
-            ->willReturn($date = $this->createMock(PointInTime::class));
-        $clock
-            ->expects($this->at(1))
-            ->method('at')
-            ->with('2017-06-30 8:13:31');
+            ->will($this->onConsecutiveCalls(
+                $date = $this->createMock(PointInTime::class),
+                $this->createMock(PointInTime::class),
+            ));
 
         $channels = $status->channels();
 
@@ -897,14 +896,13 @@ class StatusTest extends TestCase
             ->method('toString')
             ->willReturn('[{"vhost":"/","user":"guest","number":1,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":3},"reductions":2401,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":2,"messages_unconfirmed":3,"messages_unacknowledged":4,"consumer_count":1,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":2401,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}},{"vhost":"/","user":"guest","number":2,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (2)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":6},"reductions":905,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":0,"messages_unconfirmed":0,"messages_unacknowledged":0,"consumer_count":0,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":905,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]');
         $clock
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('at')
             ->with('2017-06-30 8:13:31')
-            ->willReturn($date = $this->createMock(PointInTime::class));
-        $clock
-            ->expects($this->at(1))
-            ->method('at')
-            ->with('2017-06-30 8:13:31');
+            ->will($this->onConsecutiveCalls(
+                $date = $this->createMock(PointInTime::class),
+                $this->createMock(PointInTime::class),
+            ));
 
         $channels = $status->channels();
 

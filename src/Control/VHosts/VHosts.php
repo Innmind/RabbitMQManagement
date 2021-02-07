@@ -38,7 +38,7 @@ final class VHosts implements VHostsInterface
         $process->wait();
         $exitCode = $process->exitCode();
 
-        if (!$exitCode->isSuccessful()) {
+        if (!$exitCode->successful()) {
             throw new ManagementPluginFailedToRun;
         }
     }
@@ -58,7 +58,7 @@ final class VHosts implements VHostsInterface
         $process->wait();
         $exitCode = $process->exitCode();
 
-        if (!$exitCode->isSuccessful()) {
+        if (!$exitCode->successful()) {
             throw new ManagementPluginFailedToRun;
         }
     }

@@ -16,9 +16,6 @@ final class Local implements Environment
         $this->vhost = $vhost;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __invoke(Command $command): Command
     {
         if ($this->vhost) {
