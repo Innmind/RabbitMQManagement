@@ -40,7 +40,7 @@ final class Users implements UsersInterface
         $process->wait();
         $exitCode = $process->exitCode();
 
-        if (!$exitCode->isSuccessful()) {
+        if (!$exitCode->successful()) {
             throw new ManagementPluginFailedToRun;
         }
     }
@@ -60,7 +60,7 @@ final class Users implements UsersInterface
         $process->wait();
         $exitCode = $process->exitCode();
 
-        if (!$exitCode->isSuccessful()) {
+        if (!$exitCode->successful()) {
             throw new ManagementPluginFailedToRun;
         }
     }

@@ -307,7 +307,7 @@ final class Status implements StatusInterface
             );
         $process->wait();
 
-        if (!$process->exitCode()->isSuccessful()) {
+        if (!$process->exitCode()->successful()) {
             throw new ManagementPluginFailedToRun;
         }
 
