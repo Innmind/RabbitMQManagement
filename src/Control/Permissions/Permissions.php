@@ -30,7 +30,7 @@ final class Permissions implements PermissionsInterface
         string $write,
         string $read,
     ): void {
-        $process = $this
+        $_ = $this
             ->server
             ->processes()
             ->execute(
@@ -43,18 +43,17 @@ final class Permissions implements PermissionsInterface
                     ->withArgument('configure='.$configure)
                     ->withArgument('write='.$write)
                     ->withArgument('read='.$read),
+            )
+            ->wait()
+            ->match(
+                static fn() => null, // successful
+                static fn() => throw new ManagementPluginFailedToRun,
             );
-        $process->wait();
-        $exitCode = $process->exitCode();
-
-        if (!$exitCode->successful()) {
-            throw new ManagementPluginFailedToRun;
-        }
     }
 
     public function delete(string $vhost, string $user): void
     {
-        $process = $this
+        $_ = $this
             ->server
             ->processes()
             ->execute(
@@ -64,12 +63,11 @@ final class Permissions implements PermissionsInterface
                     ->withArgument('permission')
                     ->withArgument('vhost='.$vhost)
                     ->withArgument('user='.$user),
+            )
+            ->wait()
+            ->match(
+                static fn() => null, // successful
+                static fn() => throw new ManagementPluginFailedToRun,
             );
-        $process->wait();
-        $exitCode = $process->exitCode();
-
-        if (!$exitCode->successful()) {
-            throw new ManagementPluginFailedToRun;
-        }
     }
 }

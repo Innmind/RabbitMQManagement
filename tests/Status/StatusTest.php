@@ -31,10 +31,11 @@ use Innmind\TimeContinuum\{
     PointInTime,
 };
 use Innmind\Url\Authority\Host;
-use Innmind\Immutable\Set;
-use function Innmind\Immutable\{
-    first,
-    unwrap,
+use Innmind\Immutable\{
+    Set,
+    Either,
+    Maybe,
+    SideEffect,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -74,11 +75,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -93,19 +91,22 @@ class StatusTest extends TestCase
         $users = $status->users();
 
         $this->assertInstanceOf(Set::class, $users);
-        $this->assertSame(User::class, (string) $users->type());
         $this->assertCount(1, $users);
-        $this->assertSame('guest', first($users)->name()->toString());
+        $user = $users->find(static fn() => true)->match(
+            static fn($user) => $user,
+            static fn() => null,
+        );
+        $this->assertSame('guest', $user->name()->toString());
         $this->assertSame(
             'ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+',
-            first($users)->password()->hash(),
+            $user->password()->hash(),
         );
         $this->assertSame(
             'rabbit_password_hashing_sha256',
-            first($users)->password()->algorithm(),
+            $user->password()->algorithm(),
         );
-        $this->assertCount(1, first($users)->tags());
-        $this->assertSame(['administrator'], unwrap(first($users)->tags()));
+        $this->assertCount(1, $user->tags());
+        $this->assertSame(['administrator'], $user->tags()->toList());
     }
 
     public function testRemoteUsers()
@@ -132,11 +133,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -151,19 +149,22 @@ class StatusTest extends TestCase
         $users = $status->users();
 
         $this->assertInstanceOf(Set::class, $users);
-        $this->assertSame(User::class, (string) $users->type());
         $this->assertCount(1, $users);
-        $this->assertSame('guest', first($users)->name()->toString());
+        $user = $users->find(static fn() => true)->match(
+            static fn($user) => $user,
+            static fn() => null,
+        );
+        $this->assertSame('guest', $user->name()->toString());
         $this->assertSame(
             'ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+',
-            first($users)->password()->hash(),
+            $user->password()->hash(),
         );
         $this->assertSame(
             'rabbit_password_hashing_sha256',
-            first($users)->password()->algorithm(),
+            $user->password()->algorithm(),
         );
-        $this->assertCount(1, first($users)->tags());
-        $this->assertSame(['administrator'], unwrap(first($users)->tags()));
+        $this->assertCount(1, $user->tags());
+        $this->assertSame(['administrator'], $user->tags()->toList());
     }
 
     public function testThrowWhenFailToListUsers()
@@ -189,11 +190,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -223,11 +221,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -242,13 +237,16 @@ class StatusTest extends TestCase
         $vhosts = $status->vhosts();
 
         $this->assertInstanceOf(Set::class, $vhosts);
-        $this->assertSame(VHost::class, (string) $vhosts->type());
         $this->assertCount(1, $vhosts);
-        $this->assertSame('/', first($vhosts)->name()->toString());
-        $this->assertFalse(first($vhosts)->tracing());
-        $this->assertSame(1, first($vhosts)->messages()->total()->toInt());
-        $this->assertSame(2, first($vhosts)->messages()->ready()->toInt());
-        $this->assertSame(3, first($vhosts)->messages()->unacknowledged()->toInt());
+        $vhost = $vhosts->find(static fn() => true)->match(
+            static fn($vhost) => $vhost,
+            static fn() => null,
+        );
+        $this->assertSame('/', $vhost->name()->toString());
+        $this->assertFalse($vhost->tracing());
+        $this->assertSame(1, $vhost->messages()->total()->toInt());
+        $this->assertSame(2, $vhost->messages()->ready()->toInt());
+        $this->assertSame(3, $vhost->messages()->unacknowledged()->toInt());
     }
 
     public function testRemoteVhosts()
@@ -275,11 +273,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -294,13 +289,16 @@ class StatusTest extends TestCase
         $vhosts = $status->vhosts();
 
         $this->assertInstanceOf(Set::class, $vhosts);
-        $this->assertSame(VHost::class, (string) $vhosts->type());
         $this->assertCount(1, $vhosts);
-        $this->assertSame('/', first($vhosts)->name()->toString());
-        $this->assertFalse(first($vhosts)->tracing());
-        $this->assertSame(1, first($vhosts)->messages()->total()->toInt());
-        $this->assertSame(2, first($vhosts)->messages()->ready()->toInt());
-        $this->assertSame(3, first($vhosts)->messages()->unacknowledged()->toInt());
+        $vhost = $vhosts->find(static fn() => true)->match(
+            static fn($vhost) => $vhost,
+            static fn() => null,
+        );
+        $this->assertSame('/', $vhost->name()->toString());
+        $this->assertFalse($vhost->tracing());
+        $this->assertSame(1, $vhost->messages()->total()->toInt());
+        $this->assertSame(2, $vhost->messages()->ready()->toInt());
+        $this->assertSame(3, $vhost->messages()->unacknowledged()->toInt());
     }
 
     public function testThrowWhenFailToListVhosts()
@@ -326,11 +324,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -360,11 +355,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -379,31 +371,34 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('at')
             ->with('2017-06-30T08:13:30+00:00')
-            ->willReturn($date = $this->createMock(PointInTime::class));
+            ->willReturn(Maybe::of($date = $this->createMock(PointInTime::class)));
 
         $connections = $status->connections();
 
         $this->assertInstanceOf(Set::class, $connections);
-        $this->assertSame(Connection::class, (string) $connections->type());
         $this->assertCount(1, $connections);
+        $connection = $connections->find(static fn() => true)->match(
+            static fn($connection) => $connection,
+            static fn() => null,
+        );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672',
-            first($connections)->name()->toString(),
+            $connection->name()->toString(),
         );
-        $this->assertSame($date, first($connections)->connectedAt());
-        $this->assertSame(60, first($connections)->timeout()->toInt());
-        $this->assertSame('/', first($connections)->vhost()->toString());
-        $this->assertSame('guest', first($connections)->user()->toString());
-        $this->assertSame('AMQP 0-9-1', first($connections)->protocol()->toString());
-        $this->assertSame('AMQPLAIN', first($connections)->authenticationMechanism()->toString());
-        $this->assertFalse(first($connections)->ssl());
-        $this->assertSame('172.19.0.1', first($connections)->peer()->host()->toString());
-        $this->assertSame(32788, first($connections)->peer()->port()->value());
-        $this->assertSame('172.19.0.2', first($connections)->host()->toString());
-        $this->assertSame(5672, first($connections)->port()->value());
-        $this->assertSame('rabbit@050becbb9cb3', first($connections)->node()->toString());
-        $this->assertSame('network', first($connections)->type()->toString());
-        $this->assertSame('running', first($connections)->state()->toString());
+        $this->assertSame($date, $connection->connectedAt());
+        $this->assertSame(60, $connection->timeout()->toInt());
+        $this->assertSame('/', $connection->vhost()->toString());
+        $this->assertSame('guest', $connection->user()->toString());
+        $this->assertSame('AMQP 0-9-1', $connection->protocol()->toString());
+        $this->assertSame('AMQPLAIN', $connection->authenticationMechanism()->toString());
+        $this->assertFalse($connection->ssl());
+        $this->assertSame('172.19.0.1', $connection->peer()->host()->toString());
+        $this->assertSame(32788, $connection->peer()->port()->value());
+        $this->assertSame('172.19.0.2', $connection->host()->toString());
+        $this->assertSame(5672, $connection->port()->value());
+        $this->assertSame('rabbit@050becbb9cb3', $connection->node()->toString());
+        $this->assertSame('network', $connection->type()->toString());
+        $this->assertSame('running', $connection->state()->toString());
     }
 
     public function testRemoteConnections()
@@ -430,11 +425,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -449,31 +441,34 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('at')
             ->with('2017-06-30T08:13:30+00:00')
-            ->willReturn($date = $this->createMock(PointInTime::class));
+            ->willReturn(Maybe::of($date = $this->createMock(PointInTime::class)));
 
         $connections = $status->connections();
 
         $this->assertInstanceOf(Set::class, $connections);
-        $this->assertSame(Connection::class, (string) $connections->type());
         $this->assertCount(1, $connections);
+        $connection = $connections->find(static fn() => true)->match(
+            static fn($connection) => $connection,
+            static fn() => null,
+        );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672',
-            first($connections)->name()->toString(),
+            $connection->name()->toString(),
         );
-        $this->assertSame($date, first($connections)->connectedAt());
-        $this->assertSame(60, first($connections)->timeout()->toInt());
-        $this->assertSame('/', first($connections)->vhost()->toString());
-        $this->assertSame('guest', first($connections)->user()->toString());
-        $this->assertSame('AMQP 0-9-1', first($connections)->protocol()->toString());
-        $this->assertSame('AMQPLAIN', first($connections)->authenticationMechanism()->toString());
-        $this->assertFalse(first($connections)->ssl());
-        $this->assertSame('172.19.0.1', first($connections)->peer()->host()->toString());
-        $this->assertSame(32788, first($connections)->peer()->port()->value());
-        $this->assertSame('172.19.0.2', first($connections)->host()->toString());
-        $this->assertSame(5672, first($connections)->port()->value());
-        $this->assertSame('rabbit@050becbb9cb3', first($connections)->node()->toString());
-        $this->assertSame('network', first($connections)->type()->toString());
-        $this->assertSame('running', first($connections)->state()->toString());
+        $this->assertSame($date, $connection->connectedAt());
+        $this->assertSame(60, $connection->timeout()->toInt());
+        $this->assertSame('/', $connection->vhost()->toString());
+        $this->assertSame('guest', $connection->user()->toString());
+        $this->assertSame('AMQP 0-9-1', $connection->protocol()->toString());
+        $this->assertSame('AMQPLAIN', $connection->authenticationMechanism()->toString());
+        $this->assertFalse($connection->ssl());
+        $this->assertSame('172.19.0.1', $connection->peer()->host()->toString());
+        $this->assertSame(32788, $connection->peer()->port()->value());
+        $this->assertSame('172.19.0.2', $connection->host()->toString());
+        $this->assertSame(5672, $connection->port()->value());
+        $this->assertSame('rabbit@050becbb9cb3', $connection->node()->toString());
+        $this->assertSame('network', $connection->type()->toString());
+        $this->assertSame('running', $connection->state()->toString());
     }
 
     public function testThrowWhenFailToListConnections()
@@ -499,11 +494,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -533,11 +525,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -552,14 +541,17 @@ class StatusTest extends TestCase
         $exchanges = $status->exchanges();
 
         $this->assertInstanceOf(Set::class, $exchanges);
-        $this->assertSame(Exchange::class, (string) $exchanges->type());
         $this->assertCount(9, $exchanges);
-        $this->assertSame('', first($exchanges)->name()->toString());
-        $this->assertSame('/', first($exchanges)->vhost()->toString());
-        $this->assertSame('direct', first($exchanges)->type()->toString());
-        $this->assertTrue(first($exchanges)->durable());
-        $this->assertFalse(first($exchanges)->autoDelete());
-        $this->assertFalse(first($exchanges)->internal());
+        $exchange = $exchanges->find(static fn() => true)->match(
+            static fn($exchange) => $exchange,
+            static fn() => null,
+        );
+        $this->assertSame('', $exchange->name()->toString());
+        $this->assertSame('/', $exchange->vhost()->toString());
+        $this->assertSame('direct', $exchange->type()->toString());
+        $this->assertTrue($exchange->durable());
+        $this->assertFalse($exchange->autoDelete());
+        $this->assertFalse($exchange->internal());
     }
 
     public function testRemoteExchanges()
@@ -586,11 +578,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -605,14 +594,17 @@ class StatusTest extends TestCase
         $exchanges = $status->exchanges();
 
         $this->assertInstanceOf(Set::class, $exchanges);
-        $this->assertSame(Exchange::class, (string) $exchanges->type());
         $this->assertCount(9, $exchanges);
-        $this->assertSame('', first($exchanges)->name()->toString());
-        $this->assertSame('/', first($exchanges)->vhost()->toString());
-        $this->assertSame('direct', first($exchanges)->type()->toString());
-        $this->assertTrue(first($exchanges)->durable());
-        $this->assertFalse(first($exchanges)->autoDelete());
-        $this->assertFalse(first($exchanges)->internal());
+        $exchange = $exchanges->find(static fn() => true)->match(
+            static fn($exchange) => $exchange,
+            static fn() => null,
+        );
+        $this->assertSame('', $exchange->name()->toString());
+        $this->assertSame('/', $exchange->vhost()->toString());
+        $this->assertSame('direct', $exchange->type()->toString());
+        $this->assertTrue($exchange->durable());
+        $this->assertFalse($exchange->autoDelete());
+        $this->assertFalse($exchange->internal());
     }
 
     public function testThrowWhenFailToListExchanges()
@@ -638,11 +630,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -672,11 +661,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -691,13 +677,16 @@ class StatusTest extends TestCase
         $permissions = $status->permissions();
 
         $this->assertInstanceOf(Set::class, $permissions);
-        $this->assertSame(Permission::class, $permissions->type());
         $this->assertCount(1, $permissions);
-        $this->assertSame('guest', first($permissions)->user()->toString());
-        $this->assertSame('/', first($permissions)->vhost()->toString());
-        $this->assertSame('.*', first($permissions)->configure());
-        $this->assertSame('.*', first($permissions)->write());
-        $this->assertSame('.*', first($permissions)->read());
+        $permission = $permissions->find(static fn() => true)->match(
+            static fn($permission) => $permission,
+            static fn() => null,
+        );
+        $this->assertSame('guest', $permission->user()->toString());
+        $this->assertSame('/', $permission->vhost()->toString());
+        $this->assertSame('.*', $permission->configure());
+        $this->assertSame('.*', $permission->write());
+        $this->assertSame('.*', $permission->read());
     }
 
     public function testRemotePermissions()
@@ -724,11 +713,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -743,13 +729,16 @@ class StatusTest extends TestCase
         $permissions = $status->permissions();
 
         $this->assertInstanceOf(Set::class, $permissions);
-        $this->assertSame(Permission::class, $permissions->type());
         $this->assertCount(1, $permissions);
-        $this->assertSame('guest', first($permissions)->user()->toString());
-        $this->assertSame('/', first($permissions)->vhost()->toString());
-        $this->assertSame('.*', first($permissions)->configure());
-        $this->assertSame('.*', first($permissions)->write());
-        $this->assertSame('.*', first($permissions)->read());
+        $permission = $permissions->find(static fn() => true)->match(
+            static fn($permission) => $permission,
+            static fn() => null,
+        );
+        $this->assertSame('guest', $permission->user()->toString());
+        $this->assertSame('/', $permission->vhost()->toString());
+        $this->assertSame('.*', $permission->configure());
+        $this->assertSame('.*', $permission->write());
+        $this->assertSame('.*', $permission->read());
     }
 
     public function testThrowWhenFailToListPermissions()
@@ -775,11 +764,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -809,11 +795,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -829,31 +812,34 @@ class StatusTest extends TestCase
             ->method('at')
             ->with('2017-06-30 8:13:31')
             ->will($this->onConsecutiveCalls(
-                $date = $this->createMock(PointInTime::class),
-                $this->createMock(PointInTime::class),
+                Maybe::of($date = $this->createMock(PointInTime::class)),
+                Maybe::of($this->createMock(PointInTime::class)),
             ));
 
         $channels = $status->channels();
 
         $this->assertInstanceOf(Set::class, $channels);
-        $this->assertSame(Channel::class, (string) $channels->type());
         $this->assertCount(2, $channels);
+        $channel = $channels->find(static fn() => true)->match(
+            static fn($channel) => $channel,
+            static fn() => null,
+        );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672 (1)',
-            first($channels)->name()->toString(),
+            $channel->name()->toString(),
         );
-        $this->assertSame('/', first($channels)->vhost()->toString());
-        $this->assertSame('guest', first($channels)->user()->toString());
-        $this->assertSame(1, first($channels)->number());
-        $this->assertSame('rabbit@050becbb9cb3', first($channels)->node()->toString());
-        $this->assertSame('running', first($channels)->state()->toString());
-        $this->assertSame(2, first($channels)->messages()->uncommitted()->toInt());
-        $this->assertSame(3, first($channels)->messages()->unconfirmed()->toInt());
-        $this->assertSame(4, first($channels)->messages()->unacknowledged()->toInt());
-        $this->assertSame(1, first($channels)->consumers()->toInt());
-        $this->assertFalse(first($channels)->confirm());
-        $this->assertFalse(first($channels)->transactional());
-        $this->assertSame($date, first($channels)->idleSince());
+        $this->assertSame('/', $channel->vhost()->toString());
+        $this->assertSame('guest', $channel->user()->toString());
+        $this->assertSame(1, $channel->number());
+        $this->assertSame('rabbit@050becbb9cb3', $channel->node()->toString());
+        $this->assertSame('running', $channel->state()->toString());
+        $this->assertSame(2, $channel->messages()->uncommitted()->toInt());
+        $this->assertSame(3, $channel->messages()->unconfirmed()->toInt());
+        $this->assertSame(4, $channel->messages()->unacknowledged()->toInt());
+        $this->assertSame(1, $channel->consumers()->toInt());
+        $this->assertFalse($channel->confirm());
+        $this->assertFalse($channel->transactional());
+        $this->assertSame($date, $channel->idleSince());
     }
 
     public function testRemoteChannels()
@@ -880,11 +866,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -900,31 +883,34 @@ class StatusTest extends TestCase
             ->method('at')
             ->with('2017-06-30 8:13:31')
             ->will($this->onConsecutiveCalls(
-                $date = $this->createMock(PointInTime::class),
-                $this->createMock(PointInTime::class),
+                Maybe::of($date = $this->createMock(PointInTime::class)),
+                Maybe::of($this->createMock(PointInTime::class)),
             ));
 
         $channels = $status->channels();
 
         $this->assertInstanceOf(Set::class, $channels);
-        $this->assertSame(Channel::class, (string) $channels->type());
         $this->assertCount(2, $channels);
+        $channel = $channels->find(static fn() => true)->match(
+            static fn($channel) => $channel,
+            static fn() => null,
+        );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672 (1)',
-            first($channels)->name()->toString(),
+            $channel->name()->toString(),
         );
-        $this->assertSame('/', first($channels)->vhost()->toString());
-        $this->assertSame('guest', first($channels)->user()->toString());
-        $this->assertSame(1, first($channels)->number());
-        $this->assertSame('rabbit@050becbb9cb3', first($channels)->node()->toString());
-        $this->assertSame('running', first($channels)->state()->toString());
-        $this->assertSame(2, first($channels)->messages()->uncommitted()->toInt());
-        $this->assertSame(3, first($channels)->messages()->unconfirmed()->toInt());
-        $this->assertSame(4, first($channels)->messages()->unacknowledged()->toInt());
-        $this->assertSame(1, first($channels)->consumers()->toInt());
-        $this->assertFalse(first($channels)->confirm());
-        $this->assertFalse(first($channels)->transactional());
-        $this->assertSame($date, first($channels)->idleSince());
+        $this->assertSame('/', $channel->vhost()->toString());
+        $this->assertSame('guest', $channel->user()->toString());
+        $this->assertSame(1, $channel->number());
+        $this->assertSame('rabbit@050becbb9cb3', $channel->node()->toString());
+        $this->assertSame('running', $channel->state()->toString());
+        $this->assertSame(2, $channel->messages()->uncommitted()->toInt());
+        $this->assertSame(3, $channel->messages()->unconfirmed()->toInt());
+        $this->assertSame(4, $channel->messages()->unacknowledged()->toInt());
+        $this->assertSame(1, $channel->consumers()->toInt());
+        $this->assertFalse($channel->confirm());
+        $this->assertFalse($channel->transactional());
+        $this->assertSame($date, $channel->idleSince());
     }
 
     public function testThrowWhenFailToListChannels()
@@ -950,11 +936,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -984,11 +967,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -1003,30 +983,33 @@ class StatusTest extends TestCase
         $consumers = $status->consumers();
 
         $this->assertInstanceOf(Set::class, $consumers);
-        $this->assertSame(Consumer::class, (string) $consumers->type());
         $this->assertCount(1, $consumers);
+        $consumer = $consumers->find(static fn() => true)->match(
+            static fn($consumer) => $consumer,
+            static fn() => null,
+        );
         $this->assertSame(
             'PHPPROCESS_Baptouuuu.local_7267',
-            first($consumers)->tag()->toString(),
+            $consumer->tag()->toString(),
         );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672 (1)',
-            first($consumers)->channel()->toString(),
+            $consumer->channel()->toString(),
         );
         $this->assertSame(
             'crawl',
-            first($consumers)->queue()->name(),
+            $consumer->queue()->name(),
         );
         $this->assertSame(
             '/',
-            first($consumers)->queue()->vhost()->toString(),
+            $consumer->queue()->vhost()->toString(),
         );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672',
-            first($consumers)->connection()->toString(),
+            $consumer->connection()->toString(),
         );
-        $this->assertTrue(first($consumers)->ackRequired());
-        $this->assertFalse(first($consumers)->exclusive());
+        $this->assertTrue($consumer->ackRequired());
+        $this->assertFalse($consumer->exclusive());
     }
 
     public function testRemoteConsumers()
@@ -1053,11 +1036,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -1072,30 +1052,33 @@ class StatusTest extends TestCase
         $consumers = $status->consumers();
 
         $this->assertInstanceOf(Set::class, $consumers);
-        $this->assertSame(Consumer::class, (string) $consumers->type());
         $this->assertCount(1, $consumers);
+        $consumer = $consumers->find(static fn() => true)->match(
+            static fn($consumer) => $consumer,
+            static fn() => null,
+        );
         $this->assertSame(
             'PHPPROCESS_Baptouuuu.local_7267',
-            first($consumers)->tag()->toString(),
+            $consumer->tag()->toString(),
         );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672 (1)',
-            first($consumers)->channel()->toString(),
+            $consumer->channel()->toString(),
         );
         $this->assertSame(
             'crawl',
-            first($consumers)->queue()->name(),
+            $consumer->queue()->name(),
         );
         $this->assertSame(
             '/',
-            first($consumers)->queue()->vhost()->toString(),
+            $consumer->queue()->vhost()->toString(),
         );
         $this->assertSame(
             '172.19.0.1:32788 -> 172.19.0.2:5672',
-            first($consumers)->connection()->toString(),
+            $consumer->connection()->toString(),
         );
-        $this->assertTrue(first($consumers)->ackRequired());
-        $this->assertFalse(first($consumers)->exclusive());
+        $this->assertTrue($consumer->ackRequired());
+        $this->assertFalse($consumer->exclusive());
     }
 
     public function testThrowWhenFailToListConsumers()
@@ -1121,11 +1104,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -1155,11 +1135,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -1174,43 +1151,46 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('at')
             ->with('2017-06-30 8:13:31')
-            ->willReturn($date = $this->createMock(PointInTime::class));
+            ->willReturn(Maybe::of($date = $this->createMock(PointInTime::class)));
 
         $queues = $status->queues();
 
         $this->assertInstanceOf(Set::class, $queues);
-        $this->assertSame(Queue::class, (string) $queues->type());
         $this->assertCount(1, $queues);
+        $queue = $queues->find(static fn() => true)->match(
+            static fn($queue) => $queue,
+            static fn() => null,
+        );
         $this->assertSame(
             'crawl',
-            first($queues)->identity()->name(),
+            $queue->identity()->name(),
         );
         $this->assertSame(
             '/',
-            first($queues)->identity()->vhost()->toString(),
+            $queue->identity()->vhost()->toString(),
         );
         $this->assertSame(
             1,
-            first($queues)->messages()->total()->toInt(),
+            $queue->messages()->total()->toInt(),
         );
         $this->assertSame(
             2,
-            first($queues)->messages()->ready()->toInt(),
+            $queue->messages()->ready()->toInt(),
         );
         $this->assertSame(
             3,
-            first($queues)->messages()->unacknowledged()->toInt(),
+            $queue->messages()->unacknowledged()->toInt(),
         );
         $this->assertSame(
             $date,
-            first($queues)->idleSince(),
+            $queue->idleSince(),
         );
-        $this->assertSame(1, first($queues)->consumers()->toInt());
-        $this->assertSame('running', first($queues)->state()->toString());
-        $this->assertSame('rabbit@050becbb9cb3', first($queues)->node()->toString());
-        $this->assertFalse(first($queues)->exclusive());
-        $this->assertFalse(first($queues)->autoDelete());
-        $this->assertTrue(first($queues)->durable());
+        $this->assertSame(1, $queue->consumers()->toInt());
+        $this->assertSame('running', $queue->state()->toString());
+        $this->assertSame('rabbit@050becbb9cb3', $queue->node()->toString());
+        $this->assertFalse($queue->exclusive());
+        $this->assertFalse($queue->autoDelete());
+        $this->assertTrue($queue->durable());
     }
 
     public function testRemoteQueues()
@@ -1237,11 +1217,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -1256,43 +1233,46 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('at')
             ->with('2017-06-30 8:13:31')
-            ->willReturn($date = $this->createMock(PointInTime::class));
+            ->willReturn(Maybe::of($date = $this->createMock(PointInTime::class)));
 
         $queues = $status->queues();
 
         $this->assertInstanceOf(Set::class, $queues);
-        $this->assertSame(Queue::class, (string) $queues->type());
         $this->assertCount(1, $queues);
+        $queue = $queues->find(static fn() => true)->match(
+            static fn($queue) => $queue,
+            static fn() => null,
+        );
         $this->assertSame(
             'crawl',
-            first($queues)->identity()->name(),
+            $queue->identity()->name(),
         );
         $this->assertSame(
             '/',
-            first($queues)->identity()->vhost()->toString(),
+            $queue->identity()->vhost()->toString(),
         );
         $this->assertSame(
             1,
-            first($queues)->messages()->total()->toInt(),
+            $queue->messages()->total()->toInt(),
         );
         $this->assertSame(
             2,
-            first($queues)->messages()->ready()->toInt(),
+            $queue->messages()->ready()->toInt(),
         );
         $this->assertSame(
             3,
-            first($queues)->messages()->unacknowledged()->toInt(),
+            $queue->messages()->unacknowledged()->toInt(),
         );
         $this->assertSame(
             $date,
-            first($queues)->idleSince(),
+            $queue->idleSince(),
         );
-        $this->assertSame(1, first($queues)->consumers()->toInt());
-        $this->assertSame('running', first($queues)->state()->toString());
-        $this->assertSame('rabbit@050becbb9cb3', first($queues)->node()->toString());
-        $this->assertFalse(first($queues)->exclusive());
-        $this->assertFalse(first($queues)->autoDelete());
-        $this->assertTrue(first($queues)->durable());
+        $this->assertSame(1, $queue->consumers()->toInt());
+        $this->assertSame('running', $queue->state()->toString());
+        $this->assertSame('rabbit@050becbb9cb3', $queue->node()->toString());
+        $this->assertFalse($queue->exclusive());
+        $this->assertFalse($queue->autoDelete());
+        $this->assertTrue($queue->durable());
     }
 
     public function testThrowWhenFailToListQueues()
@@ -1318,11 +1298,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -1352,11 +1329,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -1371,17 +1345,20 @@ class StatusTest extends TestCase
         $nodes = $status->nodes();
 
         $this->assertInstanceOf(Set::class, $nodes);
-        $this->assertSame(Node::class, (string) $nodes->type());
         $this->assertCount(1, $nodes);
+        $node = $nodes->find(static fn() => true)->match(
+            static fn($node) => $node,
+            static fn() => null,
+        );
         $this->assertSame(
             'rabbit@050becbb9cb3',
-            first($nodes)->name()->toString(),
+            $node->name()->toString(),
         );
         $this->assertSame(
             'disc',
-            first($nodes)->type()->toString(),
+            $node->type()->toString(),
         );
-        $this->assertTrue(first($nodes)->running());
+        $this->assertTrue($node->running());
     }
 
     public function testRemoteNodes()
@@ -1408,11 +1385,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -1427,17 +1401,20 @@ class StatusTest extends TestCase
         $nodes = $status->nodes();
 
         $this->assertInstanceOf(Set::class, $nodes);
-        $this->assertSame(Node::class, (string) $nodes->type());
         $this->assertCount(1, $nodes);
+        $node = $nodes->find(static fn() => true)->match(
+            static fn($node) => $node,
+            static fn() => null,
+        );
         $this->assertSame(
             'rabbit@050becbb9cb3',
-            first($nodes)->name()->toString(),
+            $node->name()->toString(),
         );
         $this->assertSame(
             'disc',
-            first($nodes)->type()->toString(),
+            $node->type()->toString(),
         );
-        $this->assertTrue(first($nodes)->running());
+        $this->assertTrue($node->running());
     }
 
     public function testThrowWhenFailToListNodes()
@@ -1463,11 +1440,8 @@ class StatusTest extends TestCase
             );
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 

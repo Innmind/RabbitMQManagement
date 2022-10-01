@@ -60,235 +60,235 @@ final class Status implements StatusInterface
 
     public function users(): Set
     {
-        /** @var Set<User> */
-        return $this
-            ->list('users')
-            ->toSetOf(
-                User::class,
-                static function(array $user): \Generator {
-                    /** @var array{name: string, password_hash: string, hashing_algorithm: string, tags: string} $user */
-                    yield new User(
-                        new User\Name($user['name']),
-                        new User\Password(
-                            $user['password_hash'],
-                            $user['hashing_algorithm'],
-                        ),
-                        ...\explode(',', $user['tags']),
-                    );
-                },
-            );
+        /** @var Sequence<array{name: string, password_hash: string, hashing_algorithm: string, tags: string}> */
+        $users = $this->list('users');
+
+        return Set::of(
+            ...$users
+                ->map(static fn($user) => new User(
+                    new User\Name($user['name']),
+                    new User\Password(
+                        $user['password_hash'],
+                        $user['hashing_algorithm'],
+                    ),
+                    ...\explode(',', $user['tags']),
+                ))
+                ->toList(),
+        );
     }
 
     public function vhosts(): Set
     {
-        /** @var Set<VHost> */
-        return $this
-            ->list('vhosts')
-            ->toSetOf(
-                VHost::class,
-                static function(array $vhost): \Generator {
-                    /** @var array{name: string, messages: int, messages_ready: int, messages_unacknowledged: int, tracing: bool} $vhost */
-                    yield new VHost(
-                        new VHost\Name($vhost['name']),
-                        new VHost\Messages(
-                            new Count($vhost['messages']),
-                            new Count($vhost['messages_ready']),
-                            new Count($vhost['messages_unacknowledged']),
-                        ),
-                        $vhost['tracing'],
-                    );
-                },
-            );
+        /** @var Sequence<array{name: string, messages: int, messages_ready: int, messages_unacknowledged: int, tracing: bool}> */
+        $vhosts = $this->list('vhosts');
+
+        return Set::of(
+            ...$vhosts
+                ->map(static fn($vhost) => new VHost(
+                    new VHost\Name($vhost['name']),
+                    new VHost\Messages(
+                        new Count($vhost['messages']),
+                        new Count($vhost['messages_ready']),
+                        new Count($vhost['messages_unacknowledged']),
+                    ),
+                    $vhost['tracing'],
+                ))
+                ->toList(),
+        );
     }
 
     public function connections(): Set
     {
-        /** @var Set<Connection> */
-        return $this
-            ->list('connections')
-            ->toSetOf(
-                Connection::class,
-                function(array $connection): \Generator {
-                    /** @var array{name: string, connected_at: int, timeout: int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'} $connection */
-                    $connectedAt = $connection['connected_at'];
+        /** @var Sequence<array{name: string, connected_at: int, timeout: int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'}> */
+        $connections = $this->list('connections');
 
-                    /** @psalm-suppress MixedArgument */
-                    yield new Connection(
-                        new Connection\Name($connection['name']),
-                        $this->clock->at(\date(
-                            \DateTime::ATOM,
-                            (int) \round($connectedAt / 1000),
-                        )),
-                        new Timeout($connection['timeout']),
-                        new VHost\Name($connection['vhost']),
-                        new User\Name($connection['user']),
-                        new Protocol($connection['protocol']),
-                        AuthenticationMechanism::of($connection['auth_mechanism']),
-                        $connection['ssl'],
-                        new Peer(
-                            Host::of($connection['peer_host']),
-                            Port::of($connection['peer_port']),
-                        ),
-                        Host::of($connection['host']),
-                        Port::of($connection['port']),
-                        new Node\Name($connection['node']),
-                        Connection\Type::{$connection['type']}(),
-                        State::{$connection['state']}(),
-                    );
-                },
-            );
+        return Set::of(
+            ...$connections
+                ->map(fn($connection) => new Connection(
+                    new Connection\Name($connection['name']),
+                    $this->clock->at(\date(
+                        \DateTime::ATOM,
+                        (int) \round($connection['connected_at'] / 1000),
+                    ))->match(
+                        static fn($point) => $point,
+                        static fn() => throw new \LogicException,
+                    ),
+                    new Timeout($connection['timeout']),
+                    new VHost\Name($connection['vhost']),
+                    new User\Name($connection['user']),
+                    new Protocol($connection['protocol']),
+                    AuthenticationMechanism::of($connection['auth_mechanism']),
+                    $connection['ssl'],
+                    new Peer(
+                        Host::of($connection['peer_host']),
+                        Port::of($connection['peer_port']),
+                    ),
+                    Host::of($connection['host']),
+                    Port::of($connection['port']),
+                    new Node\Name($connection['node']),
+                    match ($connection['type']) {
+                        'network' => Connection\Type::network(),
+                        'direct' => Connection\Type::direct(),
+                    },
+                    match ($connection['state']) {
+                        'running' => State::running(),
+                        'idle' => State::idle(),
+                    },
+                ))
+                ->toList(),
+        );
     }
 
     public function exchanges(): Set
     {
-        /** @var Set<Exchange> */
-        return $this
-            ->list('exchanges')
-            ->toSetOf(
-                Exchange::class,
-                static function(array $exchange): \Generator {
-                    /** @var array{name: string, vhost: string, type: 'topic'|'headers'|'direct'|'fanout', durable: bool, auto_delete: bool, internal: bool} $exchange */
+        /** @var Sequence<array{name: string, vhost: string, type: 'topic'|'headers'|'direct'|'fanout', durable: bool, auto_delete: bool, internal: bool}> */
+        $exchanges = $this->list('exchanges');
 
-                    /** @psalm-suppress MixedArgument */
-                    yield new Exchange(
-                        new Exchange\Name($exchange['name']),
-                        new VHost\Name($exchange['vhost']),
-                        Exchange\Type::{$exchange['type']}(),
-                        $exchange['durable'],
-                        $exchange['auto_delete'],
-                        $exchange['internal'],
-                    );
-                },
-            );
+        return Set::of(
+            ...$exchanges
+                ->map(static fn($exchange) => new Exchange(
+                    new Exchange\Name($exchange['name']),
+                    new VHost\Name($exchange['vhost']),
+                    match ($exchange['type']) {
+                        'topic' => Exchange\Type::topic(),
+                        'headers' => Exchange\Type::headers(),
+                        'direct' => Exchange\Type::direct(),
+                        'fanout' => Exchange\Type::fanout(),
+                    },
+                    $exchange['durable'],
+                    $exchange['auto_delete'],
+                    $exchange['internal'],
+                ))
+                ->toList(),
+        );
     }
 
     public function permissions(): Set
     {
-        /** @var Set<Permission> */
-        return $this
-            ->list('permissions')
-            ->toSetOf(
-                Permission::class,
-                static function(array $permission): \Generator {
-                    /** @var array{user: string, vhost: string, configure: string, write: string, read: string} $permission */
-                    yield new Permission(
-                        new User\Name($permission['user']),
-                        new VHost\Name($permission['vhost']),
-                        $permission['configure'],
-                        $permission['write'],
-                        $permission['read'],
-                    );
-                },
-            );
+        /** @var Sequence<array{user: string, vhost: string, configure: string, write: string, read: string}> */
+        $permissions = $this->list('permissions');
+
+        return Set::of(
+            ...$permissions
+                ->map(static fn($permission) => new Permission(
+                    new User\Name($permission['user']),
+                    new VHost\Name($permission['vhost']),
+                    $permission['configure'],
+                    $permission['write'],
+                    $permission['read'],
+                ))
+                ->toList(),
+        );
     }
 
     public function channels(): Set
     {
-        /** @var Set<Channel> */
-        return $this
-            ->list('channels')
-            ->toSetOf(
-                Channel::class,
-                function(array $channel): \Generator {
-                    /** @var array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: int, messages_unconfirmed: int, messages_unacknowledged: int, consumer_count: 1, confirm: bool, transactional: bool, idle_since: string} $channel */
+        /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: int, messages_unconfirmed: int, messages_unacknowledged: int, consumer_count: 1, confirm: bool, transactional: bool, idle_since: string}> */
+        $channels = $this->list('channels');
 
-                    /** @psalm-suppress MixedArgument */
-                    yield new Channel(
-                        new Channel\Name($channel['name']),
-                        new VHost\Name($channel['vhost']),
-                        new User\Name($channel['user']),
-                        $channel['number'],
-                        new Node\Name($channel['node']),
-                        State::{$channel['state']}(),
-                        new Channel\Messages(
-                            new Count($channel['messages_uncommitted']),
-                            new Count($channel['messages_unconfirmed']),
-                            new Count($channel['messages_unacknowledged']),
-                        ),
-                        new Count($channel['consumer_count']),
-                        $channel['confirm'],
-                        $channel['transactional'],
-                        $this->clock->at($channel['idle_since']),
-                    );
-                },
-            );
+        return Set::of(
+            ...$channels
+                ->map(fn($channel) => new Channel(
+                    new Channel\Name($channel['name']),
+                    new VHost\Name($channel['vhost']),
+                    new User\Name($channel['user']),
+                    $channel['number'],
+                    new Node\Name($channel['node']),
+                    match ($channel['state']) {
+                        'running' => State::running(),
+                        'idle' => State::idle(),
+                    },
+                    new Channel\Messages(
+                        new Count($channel['messages_uncommitted']),
+                        new Count($channel['messages_unconfirmed']),
+                        new Count($channel['messages_unacknowledged']),
+                    ),
+                    new Count($channel['consumer_count']),
+                    $channel['confirm'],
+                    $channel['transactional'],
+                    $this->clock->at($channel['idle_since'])->match(
+                        static fn($point) => $point,
+                        static fn() => throw new \LogicException,
+                    ),
+                ))
+                ->toList(),
+        );
     }
 
     public function consumers(): Set
     {
-        /** @var Set<Consumer> */
-        return $this
-            ->list('consumers')
-            ->toSetOf(
-                Consumer::class,
-                static function(array $consumer): \Generator {
-                    /** @var array{consumer_tag: string, channel_details: array{name: string, connection_name: string}, queue: array{name: string, vhost: string}, ack_required: bool, exclusive: bool} $consumer */
-                    yield new Consumer(
-                        new Tag($consumer['consumer_tag']),
-                        new Channel\Name($consumer['channel_details']['name']),
-                        new Identity(
-                            $consumer['queue']['name'],
-                            new VHost\Name($consumer['queue']['vhost']),
-                        ),
-                        new Connection\Name($consumer['channel_details']['connection_name']),
-                        $consumer['ack_required'],
-                        $consumer['exclusive'],
-                    );
-                },
-            );
+        /** @var Sequence<array{consumer_tag: string, channel_details: array{name: string, connection_name: string}, queue: array{name: string, vhost: string}, ack_required: bool, exclusive: bool}> */
+        $consumers = $this->list('consumers');
+
+        return Set::of(
+            ...$consumers
+                ->map(static fn($consumer) => new Consumer(
+                    new Tag($consumer['consumer_tag']),
+                    new Channel\Name($consumer['channel_details']['name']),
+                    new Identity(
+                        $consumer['queue']['name'],
+                        new VHost\Name($consumer['queue']['vhost']),
+                    ),
+                    new Connection\Name($consumer['channel_details']['connection_name']),
+                    $consumer['ack_required'],
+                    $consumer['exclusive'],
+                ))
+                ->toList(),
+        );
     }
 
     public function queues(): Set
     {
-        /** @var Set<Queue> */
-        return $this
-            ->list('queues')
-            ->toSetOf(
-                Queue::class,
-                function(array $queue): \Generator {
-                    /** @var array{name: string, vhost: string, messages: int, messages_ready: int, messages_unacknowledged: int, idle_since: string, consumers: int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool} $queue */
+        /** @var Sequence<array{name: string, vhost: string, messages: int, messages_ready: int, messages_unacknowledged: int, idle_since: string, consumers: int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool}> */
+        $queues = $this->list('queues');
 
-                    /** @psalm-suppress MixedArgument */
-                    yield new Queue(
-                        new Identity(
-                            $queue['name'],
-                            new VHost\Name($queue['vhost']),
-                        ),
-                        new Queue\Messages(
-                            new Count($queue['messages']),
-                            new Count($queue['messages_ready']),
-                            new Count($queue['messages_unacknowledged']),
-                        ),
-                        $this->clock->at($queue['idle_since']),
-                        new Count($queue['consumers']),
-                        State::{$queue['state']}(),
-                        new Node\Name($queue['node']),
-                        $queue['exclusive'],
-                        $queue['auto_delete'],
-                        $queue['durable'],
-                    );
-                },
-            );
+        return Set::of(
+            ...$queues
+                ->map(fn($queue) => new Queue(
+                    new Identity(
+                        $queue['name'],
+                        new VHost\Name($queue['vhost']),
+                    ),
+                    new Queue\Messages(
+                        new Count($queue['messages']),
+                        new Count($queue['messages_ready']),
+                        new Count($queue['messages_unacknowledged']),
+                    ),
+                    $this->clock->at($queue['idle_since'])->match(
+                        static fn($point) => $point,
+                        static fn() => throw new \LogicException,
+                    ),
+                    new Count($queue['consumers']),
+                    match ($queue['state']) {
+                        'running' => State::running(),
+                        'idle' => State::idle(),
+                    },
+                    new Node\Name($queue['node']),
+                    $queue['exclusive'],
+                    $queue['auto_delete'],
+                    $queue['durable'],
+                ))
+                ->toList(),
+        );
     }
 
     public function nodes(): Set
     {
-        /** @var Set<Node> */
-        return $this
-            ->list('nodes')
-            ->toSetOf(
-                Node::class,
-                static function(array $node): \Generator {
-                    /** @var array{name: string, type: 'disc'|'ram', running: bool} $node */
+        /** @var Sequence<array{name: string, type: 'disc'|'ram', running: bool}> */
+        $nodes = $this->list('nodes');
 
-                    /** @psalm-suppress MixedArgument */
-                    yield new Node(
-                        new Node\Name($node['name']),
-                        Node\Type::{$node['type']}(),
-                        $node['running'],
-                    );
-                },
-            );
+        return Set::of(
+            ...$nodes
+                ->map(static fn($node) => new Node(
+                    new Node\Name($node['name']),
+                    match ($node['type']) {
+                        'disc' => Node\Type::disc(),
+                        'ram' => Node\Type::ram(),
+                    },
+                    $node['running'],
+                ))
+                ->toList(),
+        );
     }
 
     /**
@@ -304,9 +304,12 @@ final class Status implements StatusInterface
                     $this->command->withArgument($element),
                 ),
             );
-        $process->wait();
+        $successful = $process->wait()->match(
+            static fn() => true,
+            static fn() => false,
+        );
 
-        if (!$process->exitCode()->successful()) {
+        if (!$successful) {
             throw new ManagementPluginFailedToRun;
         }
 

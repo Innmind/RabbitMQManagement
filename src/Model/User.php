@@ -16,6 +16,9 @@ final class User
     /** @var Set<string> */
     private Set $tags;
 
+    /**
+     * @no-named-arguments
+     */
     public function __construct(
         Name $name,
         Password $password,

@@ -14,6 +14,10 @@ use Innmind\Server\Control\{
     Server\Process,
     Server\Process\ExitCode
 };
+use Innmind\Immutable\{
+    Either,
+    SideEffect,
+};
 use PHPUnit\Framework\TestCase;
 
 class PermissionsTest extends TestCase
@@ -44,11 +48,8 @@ class PermissionsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
 
         $this->assertNull(
             $permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}'),
@@ -73,11 +74,8 @@ class PermissionsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 
@@ -102,11 +100,8 @@ class PermissionsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
 
         $this->assertNull($permissions->delete('/', 'foo'));
     }
@@ -129,11 +124,8 @@ class PermissionsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
         $this->expectException(ManagementPluginFailedToRun::class);
 

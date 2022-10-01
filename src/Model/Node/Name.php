@@ -16,16 +16,16 @@ final class Name
 
     public function __construct(string $value)
     {
-        $value = Str::of($value);
-
-        if (!$value->matches(self::PATTERN)) {
-            throw new InvalidName($value->toString());
-        }
-
-        $this->value = $value->toString();
-        $this->host = Host::of(
-            $value->capture(self::PATTERN)->get('host')->toString(),
-        );
+        $this->value = $value;
+        $this->host = Str::of($value)
+            ->capture(self::PATTERN)
+            ->get('host')
+            ->map(static fn($host) => $host->toString())
+            ->map(Host::of(...))
+            ->match(
+                static fn($host) => $host,
+                static fn() => throw new InvalidName($value),
+            );
     }
 
     public function host(): Host
