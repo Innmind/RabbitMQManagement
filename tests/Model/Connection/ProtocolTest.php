@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\RabbitMQ\Management\Model\Connection;
 
-use Innmind\RabbitMQ\Management\{
-    Model\Connection\Protocol,
-    Exception\UnknownProtocol
-};
+use Innmind\RabbitMQ\Management\Model\Connection\Protocol;
 use PHPUnit\Framework\TestCase;
 
 class ProtocolTest extends TestCase
@@ -14,27 +11,20 @@ class ProtocolTest extends TestCase
     public function testInterface()
     {
         $this->assertSame(
-            'AMQP 0-9-1 (incl. extensions)',
-            (new Protocol('AMQP 0-9-1 (incl. extensions)'))->toString(),
+            Protocol::v091IncludingExtensions,
+            Protocol::of('AMQP 0-9-1 (incl. extensions)'),
         );
         $this->assertSame(
-            'AMQP 0-9-1',
-            (new Protocol('AMQP 0-9-1'))->toString(),
+            Protocol::v091,
+            Protocol::of('AMQP 0-9-1'),
         );
         $this->assertSame(
-            'AMQP 0-9',
-            (new Protocol('AMQP 0-9'))->toString(),
+            Protocol::v09,
+            Protocol::of('AMQP 0-9'),
         );
         $this->assertSame(
-            'AMQP 0-8',
-            (new Protocol('AMQP 0-8'))->toString(),
+            Protocol::v08,
+            Protocol::of('AMQP 0-8'),
         );
-    }
-
-    public function testThrowForUnknownProtocol()
-    {
-        $this->expectException(UnknownProtocol::class);
-
-        new Protocol('foo');
     }
 }

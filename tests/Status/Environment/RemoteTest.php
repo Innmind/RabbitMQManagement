@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Environment;
+namespace Tests\Innmind\RabbitMQ\Management\Status\Environment;
 
 use Innmind\RabbitMQ\Management\Status\{
     Environment\Remote,
@@ -21,9 +21,9 @@ class RemoteTest extends TestCase
     {
         $this->assertInstanceOf(
             Environment::class,
-            new Remote(
+            Remote::of(
                 Host::none(),
-            )
+            ),
         );
     }
 
@@ -33,7 +33,7 @@ class RemoteTest extends TestCase
             ->withShortOption('f', 'raw_json')
             ->withArgument('list')
             ->withArgument('users');
-        $environment = new Remote(Host::of('rabbit.innmind.com'));
+        $environment = Remote::of(Host::of('rabbit.innmind.com'));
 
         $this->assertNotSame($command, $environment($command));
         $this->assertInstanceOf(Command::class, $environment($command));
@@ -49,11 +49,11 @@ class RemoteTest extends TestCase
             ->withShortOption('f', 'raw_json')
             ->withArgument('list')
             ->withArgument('users');
-        $environment = new Remote(
+        $environment = Remote::of(
             Host::of('rabbit.innmind.com'),
             Port::of(42),
             'foo',
-            'bar'
+            'bar',
         );
 
         $this->assertNotSame($command, $environment($command));
@@ -70,7 +70,7 @@ class RemoteTest extends TestCase
             ->withShortOption('f', 'raw_json')
             ->withArgument('list')
             ->withArgument('users');
-        $environment = new Remote(
+        $environment = Remote::of(
             Host::of('rabbit.innmind.com'),
             null,
             null,

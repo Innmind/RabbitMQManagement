@@ -14,7 +14,7 @@ class PeerTest extends TestCase
 {
     public function testInterface()
     {
-        $peer = new Peer(
+        $peer = Peer::of(
             $host = Host::none(),
             $port = Port::none(),
         );

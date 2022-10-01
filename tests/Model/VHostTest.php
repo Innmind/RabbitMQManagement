@@ -15,14 +15,14 @@ class VHostTest extends TestCase
 {
     public function testInterface()
     {
-        $vhost = new VHost(
-            $name = new Name('foo'),
-            $messages = new Messages(
-                new Count(0),
-                new Count(0),
-                new Count(0)
+        $vhost = VHost::of(
+            $name = Name::of('foo'),
+            $messages = Messages::of(
+                Count::of(0),
+                Count::of(0),
+                Count::of(0),
             ),
-            true
+            true,
         );
 
         $this->assertSame($name, $vhost->name());

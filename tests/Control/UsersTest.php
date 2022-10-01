@@ -1,35 +1,27 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Control\Users;
+namespace Tests\Innmind\RabbitMQ\Management\Control;
 
-use Innmind\RabbitMQ\Management\{
-    Control\Users\Users,
-    Control\Users as UsersInterface,
-    Exception\ManagementPluginFailedToRun
-};
+use Innmind\RabbitMQ\Management\Control\Users;
 use Innmind\Server\Control\{
     Server,
     Server\Processes,
     Server\Process,
     Server\Process\ExitCode
 };
+use Innmind\Immutable\{
+    Either,
+    SideEffect,
+};
 use PHPUnit\Framework\TestCase;
 
 class UsersTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            UsersInterface::class,
-            new Users($this->createMock(Server::class))
-        );
-    }
-
     public function testDeclare()
     {
-        $users = new Users(
-            $server = $this->createMock(Server::class)
+        $users = Users::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -44,19 +36,22 @@ class UsersTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
 
-        $this->assertNull($users->declare('foo', 'bar', 'baz', 'foobar'));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $users->declare('foo', 'bar', 'baz', 'foobar')->match(
+                static fn($sideEffect) => $sideEffect,
+                static fn() => null,
+            ),
+        );
     }
 
-    public function testThrowWhenFailToDeclare()
+    public function testReturnNothingWhenFailToDeclare()
     {
-        $users = new Users(
-            $server = $this->createMock(Server::class)
+        $users = Users::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -71,21 +66,19 @@ class UsersTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $users->declare('foo', 'bar', 'baz', 'foobar');
+        $this->assertNull($users->declare('foo', 'bar', 'baz', 'foobar')->match(
+            static fn($sideEffect) => $sideEffect,
+            static fn() => null,
+        ));
     }
 
     public function testDelete()
     {
-        $users = new Users(
-            $server = $this->createMock(Server::class)
+        $users = Users::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -100,19 +93,22 @@ class UsersTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
 
-        $this->assertNull($users->delete('foo'));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $users->delete('foo')->match(
+                static fn($sideEffect) => $sideEffect,
+                static fn() => null,
+            ),
+        );
     }
 
-    public function testThrowWhenFailToDelete()
+    public function testReturnNothingWhenFailToDelete()
     {
-        $users = new Users(
-            $server = $this->createMock(Server::class)
+        $users = Users::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -127,14 +123,12 @@ class UsersTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $users->delete('foo');
+        $this->assertNull($users->delete('foo')->match(
+            static fn($sideEffect) => $sideEffect,
+            static fn() => null,
+        ));
     }
 }

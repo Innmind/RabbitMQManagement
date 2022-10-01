@@ -5,20 +5,34 @@ namespace Innmind\RabbitMQ\Management\Model\Channel;
 
 use Innmind\RabbitMQ\Management\Model\Count;
 
+/**
+ * @psalm-immutable
+ */
 final class Messages
 {
     private Count $uncommitted;
     private Count $unconfirmed;
     private Count $unacknowledged;
 
-    public function __construct(
+    private function __construct(
         Count $uncommitted,
         Count $unconfirmed,
-        Count $unacknowledged
+        Count $unacknowledged,
     ) {
         $this->uncommitted = $uncommitted;
         $this->unconfirmed = $unconfirmed;
         $this->unacknowledged = $unacknowledged;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        Count $uncommitted,
+        Count $unconfirmed,
+        Count $unacknowledged,
+    ): self {
+        return new self($uncommitted, $unconfirmed, $unacknowledged);
     }
 
     public function uncommitted(): Count

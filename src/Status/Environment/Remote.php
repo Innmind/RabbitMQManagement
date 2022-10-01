@@ -19,17 +19,17 @@ final class Remote implements Environment
     private string $password;
     private ?Path $vhost;
 
-    public function __construct(
+    private function __construct(
         Host $host,
-        Port $port = null,
-        string $username = null,
-        string $password = null,
-        Path $vhost = null
+        Port $port,
+        string $username,
+        string $password,
+        ?Path $vhost,
     ) {
         $this->host = $host;
-        $this->port = $port ?? Port::of(15672);
-        $this->username = $username ?? 'guest';
-        $this->password = $password ?? 'guest';
+        $this->port = $port;
+        $this->username = $username;
+        $this->password = $password;
         $this->vhost = $vhost;
     }
 
@@ -44,5 +44,21 @@ final class Remote implements Environment
             ->withOption('port', $this->port->toString())
             ->withOption('username', $this->username)
             ->withOption('password', $this->password);
+    }
+
+    public static function of(
+        Host $host,
+        Port $port = null,
+        string $username = null,
+        string $password = null,
+        Path $vhost = null,
+    ): self {
+        return new self(
+            $host,
+            $port ?? Port::of(15672),
+            $username ?? 'guest',
+            $password ?? 'guest',
+            $vhost,
+        );
     }
 }

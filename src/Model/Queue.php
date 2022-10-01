@@ -8,12 +8,17 @@ use Innmind\RabbitMQ\Management\Model\{
     Queue\Messages,
 };
 use Innmind\TimeContinuum\PointInTime;
+use Innmind\Immutable\Maybe;
 
+/**
+ * @psalm-immutable
+ */
 final class Queue
 {
     private Identity $identity;
     private Messages $messages;
-    private PointInTime $idleSince;
+    /** @var Maybe<PointInTime> */
+    private Maybe $idleSince;
     private Count $consumers;
     private State $state;
     private Node\Name $node;
@@ -21,16 +26,19 @@ final class Queue
     private bool $autoDelete;
     private bool $durable;
 
-    public function __construct(
+    /**
+     * @param Maybe<PointInTime> $idleSince
+     */
+    private function __construct(
         Identity $identity,
         Messages $messages,
-        PointInTime $idleSince,
+        Maybe $idleSince,
         Count $consumers,
         State $state,
         Node\Name $node,
         bool $exclusive,
         bool $autoDelete,
-        bool $durable
+        bool $durable,
     ) {
         $this->identity = $identity;
         $this->messages = $messages;
@@ -43,6 +51,35 @@ final class Queue
         $this->durable = $durable;
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param Maybe<PointInTime> $idleSince
+     */
+    public static function of(
+        Identity $identity,
+        Messages $messages,
+        Maybe $idleSince,
+        Count $consumers,
+        State $state,
+        Node\Name $node,
+        bool $exclusive,
+        bool $autoDelete,
+        bool $durable,
+    ): self {
+        return new self(
+            $identity,
+            $messages,
+            $idleSince,
+            $consumers,
+            $state,
+            $node,
+            $exclusive,
+            $autoDelete,
+            $durable,
+        );
+    }
+
     public function identity(): Identity
     {
         return $this->identity;
@@ -53,7 +90,10 @@ final class Queue
         return $this->messages;
     }
 
-    public function idleSince(): PointInTime
+    /**
+     * @return Maybe<PointInTime>
+     */
+    public function idleSince(): Maybe
     {
         return $this->idleSince;
     }

@@ -5,7 +5,7 @@ namespace Tests\Innmind\RabbitMQ\Management\Model\Node;
 
 use Innmind\RabbitMQ\Management\{
     Model\Node\Name,
-    Exception\InvalidName,
+    Exception\DomainException,
 };
 use Innmind\Url\Authority\Host;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +14,7 @@ class NameTest extends TestCase
 {
     public function testInterface()
     {
-        $name = new Name('rabbit@whatever');
+        $name = Name::of('rabbit@whatever');
 
         $this->assertSame('rabbit@whatever', $name->toString());
         $this->assertInstanceOf(Host::class, $name->host());
@@ -23,9 +23,9 @@ class NameTest extends TestCase
 
     public function testThrowWhenInvalidName()
     {
-        $this->expectException(InvalidName::class);
+        $this->expectException(DomainException::class);
         $this->expectExceptionMessage('whatever');
 
-        new Name('whatever');
+        Name::of('whatever');
     }
 }

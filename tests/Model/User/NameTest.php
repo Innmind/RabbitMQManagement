@@ -10,6 +10,6 @@ class NameTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertSame('foo', (new Name('foo'))->toString());
+        $this->assertSame('foo', Name::of('foo')->toString());
     }
 }

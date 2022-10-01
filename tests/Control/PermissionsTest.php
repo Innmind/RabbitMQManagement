@@ -1,35 +1,27 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Control\Permissions;
+namespace Tests\Innmind\RabbitMQ\Management\Control;
 
-use Innmind\RabbitMQ\Management\{
-    Control\Permissions\Permissions,
-    Control\Permissions as PermissionsInterface,
-    Exception\ManagementPluginFailedToRun
-};
+use Innmind\RabbitMQ\Management\Control\Permissions;
 use Innmind\Server\Control\{
     Server,
     Server\Processes,
     Server\Process,
     Server\Process\ExitCode
 };
+use Innmind\Immutable\{
+    Either,
+    SideEffect,
+};
 use PHPUnit\Framework\TestCase;
 
 class PermissionsTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            PermissionsInterface::class,
-            new Permissions($this->createMock(Server::class))
-        );
-    }
-
     public function testDeclare()
     {
-        $permissions = new Permissions(
-            $server = $this->createMock(Server::class)
+        $permissions = Permissions::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -44,21 +36,22 @@ class PermissionsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
 
-        $this->assertNull(
-            $permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}')
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}')->match(
+                static fn($sideEffect) => $sideEffect,
+                static fn() => null,
+            ),
         );
     }
 
-    public function testThrowWhenFailToDeclare()
+    public function testReturnNothingWhenFailToDeclare()
     {
-        $permissions = new Permissions(
-            $server = $this->createMock(Server::class)
+        $permissions = Permissions::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -73,21 +66,19 @@ class PermissionsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}');
+        $this->assertNull($permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}')->match(
+            static fn($sideEffect) => $sideEffect,
+            static fn() => null,
+        ));
     }
 
     public function testDelete()
     {
-        $permissions = new Permissions(
-            $server = $this->createMock(Server::class)
+        $permissions = Permissions::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -102,19 +93,22 @@ class PermissionsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
 
-        $this->assertNull($permissions->delete('/', 'foo'));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $permissions->delete('/', 'foo')->match(
+                static fn($sideEffect) => $sideEffect,
+                static fn() => null,
+            ),
+        );
     }
 
-    public function testThrowWhenFailToDelete()
+    public function testReturnNothingWhenFailToDelete()
     {
-        $permissions = new Permissions(
-            $server = $this->createMock(Server::class)
+        $permissions = Permissions::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -129,14 +123,12 @@ class PermissionsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $permissions->delete('/', 'foo');
+        $this->assertNull($permissions->delete('/', 'foo')->match(
+            static fn($sideEffect) => $sideEffect,
+            static fn() => null,
+        ));
     }
 }

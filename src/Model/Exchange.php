@@ -8,6 +8,9 @@ use Innmind\RabbitMQ\Management\Model\{
     Exchange\Type,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Exchange
 {
     private Name $name;
@@ -17,13 +20,13 @@ final class Exchange
     private bool $autoDelete;
     private bool $internal;
 
-    public function __construct(
+    private function __construct(
         Name $name,
         VHost\Name $vhost,
         Type $type,
         bool $durable,
         bool $autoDelete,
-        bool $internal
+        bool $internal,
     ) {
         $this->name = $name;
         $this->vhost = $vhost;
@@ -31,6 +34,27 @@ final class Exchange
         $this->durable = $durable;
         $this->autoDelete = $autoDelete;
         $this->internal = $internal;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        Name $name,
+        VHost\Name $vhost,
+        Type $type,
+        bool $durable,
+        bool $autoDelete,
+        bool $internal,
+    ): self {
+        return new self(
+            $name,
+            $vhost,
+            $type,
+            $durable,
+            $autoDelete,
+            $internal,
+        );
     }
 
     public function name(): Name

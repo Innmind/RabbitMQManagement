@@ -8,10 +8,38 @@ use Innmind\RabbitMQ\Management\Control\{
     VHosts,
     Permissions,
 };
+use Innmind\Server\Control\Server;
 
-interface Control
+final class Control
 {
-    public function users(): Users;
-    public function vhosts(): VHosts;
-    public function permissions(): Permissions;
+    private Users $users;
+    private VHosts $vhosts;
+    private Permissions $permissions;
+
+    private function __construct(Server $server)
+    {
+        $this->users = Users::of($server);
+        $this->vhosts = VHosts::of($server);
+        $this->permissions = Permissions::of($server);
+    }
+
+    public static function of(Server $server): self
+    {
+        return new self($server);
+    }
+
+    public function users(): Users
+    {
+        return $this->users;
+    }
+
+    public function vhosts(): VHosts
+    {
+        return $this->vhosts;
+    }
+
+    public function permissions(): Permissions
+    {
+        return $this->permissions;
+    }
 }

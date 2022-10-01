@@ -17,13 +17,13 @@ class ConsumerTest extends TestCase
 {
     public function testInterface()
     {
-        $consumer = new Consumer(
-            $tag = new Tag('foo'),
-            $channel = new ChannelName('foo'),
-            $queue = new Identity('foo', new VHostName('foo')),
-            $connection = new ConnectionName('foo'),
+        $consumer = Consumer::of(
+            $tag = Tag::of('foo'),
+            $channel = ChannelName::of('foo'),
+            $queue = Identity::of('foo', VHostName::of('foo')),
+            $connection = ConnectionName::of('foo'),
             true,
-            false
+            false,
         );
 
         $this->assertSame($tag, $consumer->tag());
