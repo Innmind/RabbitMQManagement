@@ -3,8 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model\Connection;
 
-use Innmind\RabbitMQ\Management\Exception\UnknownAuthenticationMechanism;
-
 /**
  * @psalm-immutable
  */
@@ -23,7 +21,6 @@ enum AuthenticationMechanism
             'RABBIT-CR-DEMO' => self::demo,
             'PLAIN' => self::plain,
             'AMQPLAIN' => self::amqplain,
-            default => throw new UnknownAuthenticationMechanism($value),
         };
     }
 
