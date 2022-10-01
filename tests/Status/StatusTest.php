@@ -389,7 +389,7 @@ class StatusTest extends TestCase
         $this->assertSame(60, $connection->timeout()->toInt());
         $this->assertSame('/', $connection->vhost()->toString());
         $this->assertSame('guest', $connection->user()->toString());
-        $this->assertSame('AMQP 0-9-1', $connection->protocol()->toString());
+        $this->assertSame('v091', $connection->protocol()->name);
         $this->assertSame('AMQPLAIN', $connection->authenticationMechanism()->toString());
         $this->assertFalse($connection->ssl());
         $this->assertSame('172.19.0.1', $connection->peer()->host()->toString());
@@ -459,7 +459,7 @@ class StatusTest extends TestCase
         $this->assertSame(60, $connection->timeout()->toInt());
         $this->assertSame('/', $connection->vhost()->toString());
         $this->assertSame('guest', $connection->user()->toString());
-        $this->assertSame('AMQP 0-9-1', $connection->protocol()->toString());
+        $this->assertSame('v091', $connection->protocol()->name);
         $this->assertSame('AMQPLAIN', $connection->authenticationMechanism()->toString());
         $this->assertFalse($connection->ssl());
         $this->assertSame('172.19.0.1', $connection->peer()->host()->toString());

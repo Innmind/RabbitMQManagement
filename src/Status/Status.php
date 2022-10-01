@@ -116,7 +116,7 @@ final class Status implements StatusInterface
                     new Timeout($connection['timeout']),
                     new VHost\Name($connection['vhost']),
                     new User\Name($connection['user']),
-                    new Protocol($connection['protocol']),
+                    Protocol::of($connection['protocol']),
                     AuthenticationMechanism::of($connection['auth_mechanism']),
                     $connection['ssl'],
                     new Peer(

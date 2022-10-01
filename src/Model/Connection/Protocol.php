@@ -3,33 +3,26 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model\Connection;
 
-use Innmind\RabbitMQ\Management\Exception\UnknownProtocol;
-
 /**
  * @psalm-immutable
  */
-final class Protocol
+enum Protocol
 {
-    private static array $allowed = [
-        'AMQP 0-9-1 (incl. extensions)',
-        'AMQP 0-9-1',
-        'AMQP 0-9',
-        'AMQP 0-8',
-    ];
+    case v091IncludingExtensions;
+    case v091;
+    case v09;
+    case v08;
 
-    private string $value;
-
-    public function __construct(string $value)
+    /**
+     * @psalm-pure
+     */
+    public static function of(string $value): self
     {
-        if (!\in_array($value, self::$allowed, true)) {
-            throw new UnknownProtocol($value);
-        }
-
-        $this->value = $value;
-    }
-
-    public function toString(): string
-    {
-        return $this->value;
+        return match ($value) {
+            'AMQP 0-9-1 (incl. extensions)' => self::v091IncludingExtensions,
+            'AMQP 0-9-1' => self::v091,
+            'AMQP 0-9' => self::v09,
+            'AMQP 0-8' => self::v08,
+        };
     }
 }

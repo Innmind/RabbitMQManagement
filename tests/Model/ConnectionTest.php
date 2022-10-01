@@ -33,7 +33,7 @@ class ConnectionTest extends TestCase
             $timeout = new Timeout(42),
             $vhost = new VHostName('foo'),
             $user = new UserName('foo'),
-            $protocol = new Protocol('AMQP 0-9-1'),
+            $protocol = Protocol::of('AMQP 0-9-1'),
             $authenticationMechanism = AuthenticationMechanism::plain,
             true,
             $peer = new Peer(
