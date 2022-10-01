@@ -3,59 +3,33 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model\Connection;
 
-use Innmind\RabbitMQ\Management\Exception\UnknownAuthenticationMechanism;
-
-final class AuthenticationMechanism
+/**
+ * @psalm-immutable
+ */
+enum AuthenticationMechanism
 {
-    private const DEMO = 'RABBIT-CR-DEMO';
-    private const PLAIN = 'PLAIN';
-    private const AMQPLAIN = 'AMQPLAIN';
+    case demo;
+    case plain;
+    case amqplain;
 
-    private static ?self $demo = null;
-    private static ?self $plain = null;
-    private static ?self $amqplain = null;
-
-    private string $value;
-
-    private function __construct(string $value)
-    {
-        $this->value = $value;
-    }
-
-    public static function demo(): self
-    {
-        return self::$demo ??= new self(self::DEMO);
-    }
-
-    public static function plain(): self
-    {
-        return self::$plain ??= new self(self::PLAIN);
-    }
-
-    public static function amqplain(): self
-    {
-        return self::$amqplain ??= new self(self::AMQPLAIN);
-    }
-
+    /**
+     * @psalm-pure
+     */
     public static function of(string $value): self
     {
-        switch ($value) {
-            case self::DEMO:
-                return self::demo();
-
-            case self::PLAIN:
-                return self::plain();
-
-            case self::AMQPLAIN:
-                return self::amqplain();
-
-            default:
-                throw new UnknownAuthenticationMechanism($value);
-        }
+        return match ($value) {
+            'RABBIT-CR-DEMO' => self::demo,
+            'PLAIN' => self::plain,
+            'AMQPLAIN' => self::amqplain,
+        };
     }
 
     public function toString(): string
     {
-        return $this->value;
+        return match ($this) {
+            self::demo => 'RABBIT-CR-DEMO',
+            self::plain => 'PLAIN',
+            self::amqplain => 'AMQPLAIN',
+        };
     }
 }

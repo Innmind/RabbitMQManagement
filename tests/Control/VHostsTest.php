@@ -1,35 +1,27 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Control\VHosts;
+namespace Tests\Innmind\RabbitMQ\Management\Control;
 
-use Innmind\RabbitMQ\Management\{
-    Control\VHosts\VHosts,
-    Control\VHosts as VHostsInterface,
-    Exception\ManagementPluginFailedToRun
-};
+use Innmind\RabbitMQ\Management\Control\VHosts;
 use Innmind\Server\Control\{
     Server,
     Server\Processes,
     Server\Process,
     Server\Process\ExitCode
 };
+use Innmind\Immutable\{
+    Either,
+    SideEffect,
+};
 use PHPUnit\Framework\TestCase;
 
 class VHostsTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            VHostsInterface::class,
-            new VHosts($this->createMock(Server::class))
-        );
-    }
-
     public function testDeclare()
     {
-        $vhosts = new VHosts(
-            $server = $this->createMock(Server::class)
+        $vhosts = VHosts::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -44,19 +36,22 @@ class VHostsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
 
-        $this->assertNull($vhosts->declare('foo'));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $vhosts->declare('foo')->match(
+                static fn($sideEffect) => $sideEffect,
+                static fn() => null,
+            ),
+        );
     }
 
-    public function testThrowWhenFailToDeclare()
+    public function testReturnNothingWhenFailToDeclare()
     {
-        $vhosts = new VHosts(
-            $server = $this->createMock(Server::class)
+        $vhosts = VHosts::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -71,21 +66,19 @@ class VHostsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $vhosts->declare('foo');
+        $this->assertNull($vhosts->declare('foo')->match(
+            static fn($sideEffect) => $sideEffect,
+            static fn() => null,
+        ));
     }
 
     public function testDelete()
     {
-        $vhosts = new VHosts(
-            $server = $this->createMock(Server::class)
+        $vhosts = VHosts::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -100,19 +93,22 @@ class VHostsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
 
-        $this->assertNull($vhosts->delete('foo'));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $vhosts->delete('foo')->match(
+                static fn($sideEffect) => $sideEffect,
+                static fn() => null,
+            ),
+        );
     }
 
-    public function testThrowWhenFailToDelete()
+    public function testReturnNothingWhenFailToDelete()
     {
-        $vhosts = new VHosts(
-            $server = $this->createMock(Server::class)
+        $vhosts = VHosts::of(
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -127,14 +123,12 @@ class VHostsTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $vhosts->delete('foo');
+        $this->assertNull($vhosts->delete('foo')->match(
+            static fn($sideEffect) => $sideEffect,
+            static fn() => null,
+        ));
     }
 }

@@ -9,6 +9,9 @@ use Innmind\RabbitMQ\Management\{
 };
 use Innmind\Immutable\Set;
 
+/**
+ * @psalm-immutable
+ */
 final class User
 {
     private Name $name;
@@ -16,14 +19,33 @@ final class User
     /** @var Set<string> */
     private Set $tags;
 
-    public function __construct(
+    /**
+     * @param Set<string> $tags
+     */
+    private function __construct(
         Name $name,
         Password $password,
-        string ...$tags
+        Set $tags,
     ) {
         $this->name = $name;
         $this->password = $password;
-        $this->tags = Set::strings(...$tags);
+        $this->tags = $tags;
+    }
+
+    /**
+     * @no-named-arguments
+     * @psalm-pure
+     */
+    public static function of(
+        Name $name,
+        Password $password,
+        string ...$tags,
+    ): self {
+        return new self(
+            $name,
+            $password,
+            Set::strings(...$tags),
+        );
     }
 
     public function name(): Name

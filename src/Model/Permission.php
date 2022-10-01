@@ -3,6 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model;
 
+/**
+ * @psalm-immutable
+ */
 final class Permission
 {
     private User\Name $user;
@@ -11,18 +14,37 @@ final class Permission
     private string $write;
     private string $read;
 
-    public function __construct(
+    private function __construct(
         User\Name $user,
         VHost\Name $vhost,
         string $configure,
         string $write,
-        string $read
+        string $read,
     ) {
         $this->user = $user;
         $this->vhost = $vhost;
         $this->configure = $configure;
         $this->write = $write;
         $this->read = $read;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        User\Name $user,
+        VHost\Name $vhost,
+        string $configure,
+        string $write,
+        string $read,
+    ): self {
+        return new self(
+            $user,
+            $vhost,
+            $configure,
+            $write,
+            $read,
+        );
     }
 
     public function user(): User\Name

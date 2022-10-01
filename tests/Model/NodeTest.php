@@ -14,10 +14,10 @@ class NodeTest extends TestCase
 {
     public function testInterface()
     {
-        $node = new Node(
-            $name = new Name('rabbit@foo'),
-            $type = Type::disc(),
-            true
+        $node = Node::of(
+            $name = Name::of('rabbit@foo'),
+            $type = Type::disc,
+            true,
         );
 
         $this->assertSame($name, $node->name());

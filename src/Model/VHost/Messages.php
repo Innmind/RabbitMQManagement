@@ -5,20 +5,34 @@ namespace Innmind\RabbitMQ\Management\Model\VHost;
 
 use Innmind\RabbitMQ\Management\Model\Count;
 
+/**
+ * @psalm-immutable
+ */
 final class Messages
 {
     private Count $total;
     private Count $ready;
     private Count $unacknowledged;
 
-    public function __construct(
+    private function __construct(
         Count $total,
         Count $ready,
-        Count $unacknowledged
+        Count $unacknowledged,
     ) {
         $this->total = $total;
         $this->ready = $ready;
         $this->unacknowledged = $unacknowledged;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        Count $total,
+        Count $ready,
+        Count $unacknowledged,
+    ): self {
+        return new self($total, $ready, $unacknowledged);
     }
 
     public function total(): Count

@@ -15,13 +15,13 @@ class ExchangeTest extends TestCase
 {
     public function testInterface()
     {
-        $exchange = new Exchange(
-            $name = new Name('foo'),
-            $vhost = new VHostName('foo'),
-            $type = Type::fanout(),
+        $exchange = Exchange::of(
+            $name = Name::of('foo'),
+            $vhost = VHostName::of('foo'),
+            $type = Type::fanout,
             true,
             false,
-            true
+            true,
         );
 
         $this->assertSame($name, $exchange->name());

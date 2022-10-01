@@ -16,15 +16,15 @@ composer require innmind/rabbitmq-management
 
 ```php
 use Innmind\RabbitMQ\Management\{
-    Status\Status,
-    Control\Control,
+    Status,
+    Control,
 };
-use Innmind\Server\Control\ServerFactory;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\OperatingSystem\Factory;
 
-$status = new Status(
-    $server = ServerFactory::build(),
-    new Clock,
+$os = Factory::build();
+$status = Status::of(
+    $os->control(),
+    $os->clock(),
 );
 $status->users();
 $status->vhosts();
@@ -36,7 +36,7 @@ $status->consumers();
 $status->queues();
 $status->nodes();
 
-$control = new Control($server);
+$control = Control::of($server);
 $control->users();
 $control->vhosts();
 $control->permissions();
@@ -44,7 +44,7 @@ $control->permissions();
 
 Essentially this will run `rabbitmqadmin list {element}` on the server and extract informations.
 
-If you need to list the information of a remote server, then you cal simply do this:
+If you need to list the information of a remote server, then you can simply do this:
 
 ```php
 use Innmind\RabbitMQ\Management\Status\Environment\Remote;
@@ -54,10 +54,10 @@ use Innmind\Url\{
     Path,
 };
 
-new Status(
-    ServerFactory::build(),
-    new Clock,
-    new Remote(
+Status::of(
+    $os->control(),
+    $os->clock(),
+    Remote::of(
         Host::of('your-host'),
         Port::of(1337),
         'username',
@@ -69,4 +69,4 @@ new Status(
 
 However for this to work you need to have `rabbitmqadmin` installed on the machine this code will run.
 
-In case you don't have the command on the machine, you can replace `ServerFatory::build()` by [`new Remote(/*...*/)`](https://github.com/Innmind/ServerControl/blob/develop/src/Servers/Remote.php) so it will use `ssh` to run the command on the machine (and you will need to remove the third argument from `new Status`).
+In case you don't have the command on the machine, you can replace `$os->control()` by [`$os->remote()->ssh(/*...*/)`](https://github.com/Innmind/OperatingSystem#want-to-execute-commands-on-a-remote-server-) so it will use `ssh` to run the command on the machine (and you will need to remove the third argument from `Status::of()`).

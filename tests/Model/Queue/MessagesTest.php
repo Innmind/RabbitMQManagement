@@ -13,10 +13,10 @@ class MessagesTest extends TestCase
 {
     public function testInterface()
     {
-        $messages = new Messages(
-            $total = new Count(0),
-            $ready = new Count(0),
-            $unacknowledged = new Count(0)
+        $messages = Messages::of(
+            $total = Count::of(0),
+            $ready = Count::of(0),
+            $unacknowledged = Count::of(0),
         );
 
         $this->assertSame($total, $messages->total());

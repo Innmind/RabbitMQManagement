@@ -27,24 +27,24 @@ class ConnectionTest extends TestCase
 {
     public function testInterface()
     {
-        $connection = new Connection(
-            $name = new Name('foo'),
+        $connection = Connection::of(
+            $name = Name::of('foo'),
             $connectedAt = $this->createMock(PointInTime::class),
-            $timeout = new Timeout(42),
-            $vhost = new VHostName('foo'),
-            $user = new UserName('foo'),
-            $protocol = new Protocol('AMQP 0-9-1'),
-            $authenticationMechanism = AuthenticationMechanism::plain(),
+            $timeout = Timeout::of(42),
+            $vhost = VHostName::of('foo'),
+            $user = UserName::of('foo'),
+            $protocol = Protocol::of('AMQP 0-9-1'),
+            $authenticationMechanism = AuthenticationMechanism::plain,
             true,
-            $peer = new Peer(
+            $peer = Peer::of(
                 Host::none(),
-                Port::none()
+                Port::none(),
             ),
             $host = Host::none(),
             $port = Port::none(),
-            $node = new NodeName('rabbit@foo'),
-            $type = Type::network(),
-            $state = State::running()
+            $node = NodeName::of('rabbit@foo'),
+            $type = Type::network,
+            $state = State::running,
         );
 
         $this->assertSame($name, $connection->name());

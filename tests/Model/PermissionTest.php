@@ -14,12 +14,12 @@ class PermissionTest extends TestCase
 {
     public function testInterface()
     {
-        $permission = new Permission(
-            $user = new UserName('foo'),
-            $vhost = new VHostName('foo'),
+        $permission = Permission::of(
+            $user = UserName::of('foo'),
+            $vhost = VHostName::of('foo'),
             $configure = '.*',
             $write = '.*',
-            $read = '.*'
+            $read = '.*',
         );
 
         $this->assertSame($user, $permission->user());
