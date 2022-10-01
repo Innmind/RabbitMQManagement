@@ -28,7 +28,10 @@ use Innmind\Server\Control\{
     Server,
     Server\Command,
 };
-use Innmind\TimeContinuum\Clock;
+use Innmind\TimeContinuum\{
+    Clock,
+    PointInTime,
+};
 use Innmind\Url\Authority\{
     Host,
     Port,
@@ -111,37 +114,48 @@ final class Status
         /** @var Sequence<array{name: string, connected_at: int, timeout: 0|positive-int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'}> */
         $connections = $this->list('connections');
 
-        return $connections->map(fn($connection) => Connection::of(
-            Connection\Name::of($connection['name']),
-            $this->clock->at(\date(
-                \DateTime::ATOM,
-                (int) \round($connection['connected_at'] / 1000),
-            ))->match(
-                static fn($point) => $point,
-                static fn() => throw new \LogicException,
-            ),
-            Timeout::of($connection['timeout']),
-            VHost\Name::of($connection['vhost']),
-            User\Name::of($connection['user']),
-            Protocol::of($connection['protocol']),
-            AuthenticationMechanism::of($connection['auth_mechanism']),
-            $connection['ssl'],
-            Peer::of(
-                Host::of($connection['peer_host']),
-                Port::of($connection['peer_port']),
-            ),
-            Host::of($connection['host']),
-            Port::of($connection['port']),
-            Node\Name::of($connection['node']),
-            match ($connection['type']) {
-                'network' => Connection\Type::network,
-                'direct' => Connection\Type::direct,
-            },
-            match ($connection['state']) {
-                'running' => State::running,
-                'idle' => State::idle,
-            },
-        ));
+        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
+        return $connections
+            ->map(
+                fn($connection) => Maybe::all(
+                    $this
+                        ->clock
+                        ->at(\date(
+                            \DateTime::ATOM,
+                            (int) \round($connection['connected_at'] / 1000),
+                        )),
+                    Node\Name::maybe($connection['node']),
+                )
+                    ->map(static fn(PointInTime $connectedAt, Node\Name $node) => Connection::of(
+                        Connection\Name::of($connection['name']),
+                        $connectedAt,
+                        Timeout::of($connection['timeout']),
+                        VHost\Name::of($connection['vhost']),
+                        User\Name::of($connection['user']),
+                        Protocol::of($connection['protocol']),
+                        AuthenticationMechanism::of($connection['auth_mechanism']),
+                        $connection['ssl'],
+                        Peer::of(
+                            Host::of($connection['peer_host']),
+                            Port::of($connection['peer_port']),
+                        ),
+                        Host::of($connection['host']),
+                        Port::of($connection['port']),
+                        $node,
+                        match ($connection['type']) {
+                            'network' => Connection\Type::network,
+                            'direct' => Connection\Type::direct,
+                        },
+                        match ($connection['state']) {
+                            'running' => State::running,
+                            'idle' => State::idle,
+                        },
+                    )),
+            )
+            ->flatMap(static fn($maybe) => $maybe->match(
+                static fn($connection) => Sequence::of($connection),
+                static fn() => Sequence::of(),
+            ));
     }
 
     /**
@@ -192,28 +206,36 @@ final class Status
         /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: 0|positive-int, messages_unconfirmed: 0|positive-int, messages_unacknowledged: 0|positive-int, consumer_count: 0|positive-int, confirm: bool, transactional: bool, idle_since?: string}> */
         $channels = $this->list('channels');
 
-        return $channels->map(fn($channel) => Channel::of(
-            Channel\Name::of($channel['name']),
-            VHost\Name::of($channel['vhost']),
-            User\Name::of($channel['user']),
-            $channel['number'],
-            Node\Name::of($channel['node']),
-            match ($channel['state']) {
-                'running' => State::running,
-                'idle' => State::idle,
-            },
-            Channel\Messages::of(
-                Count::of($channel['messages_uncommitted']),
-                Count::of($channel['messages_unconfirmed']),
-                Count::of($channel['messages_unacknowledged']),
-            ),
-            Count::of($channel['consumer_count']),
-            $channel['confirm'],
-            $channel['transactional'],
-            Maybe::of($channel['idle_since'] ?? null)->flatMap(
-                $this->clock->at(...),
-            ),
-        ));
+        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
+        return $channels
+            ->map(fn($channel) => Node\Name::maybe($channel['node'])->map(
+                fn($node) => Channel::of(
+                    Channel\Name::of($channel['name']),
+                    VHost\Name::of($channel['vhost']),
+                    User\Name::of($channel['user']),
+                    $channel['number'],
+                    $node,
+                    match ($channel['state']) {
+                        'running' => State::running,
+                        'idle' => State::idle,
+                    },
+                    Channel\Messages::of(
+                        Count::of($channel['messages_uncommitted']),
+                        Count::of($channel['messages_unconfirmed']),
+                        Count::of($channel['messages_unacknowledged']),
+                    ),
+                    Count::of($channel['consumer_count']),
+                    $channel['confirm'],
+                    $channel['transactional'],
+                    Maybe::of($channel['idle_since'] ?? null)->flatMap(
+                        $this->clock->at(...),
+                    ),
+                ),
+            ))
+            ->flatMap(static fn($maybe) => $maybe->match(
+                static fn($channel) => Sequence::of($channel),
+                static fn() => Sequence::of(),
+            ));
     }
 
     /**
@@ -278,14 +300,22 @@ final class Status
         /** @var Sequence<array{name: string, type: 'disc'|'ram', running: bool}> */
         $nodes = $this->list('nodes');
 
-        return $nodes->map(static fn($node) => Node::of(
-            Node\Name::of($node['name']),
-            match ($node['type']) {
-                'disc' => Node\Type::disc,
-                'ram' => Node\Type::ram,
-            },
-            $node['running'],
-        ));
+        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
+        return $nodes
+            ->map(static fn($node) => Node\Name::maybe($node['name'])->map(
+                static fn($name) => Node::of(
+                    $name,
+                    match ($node['type']) {
+                        'disc' => Node\Type::disc,
+                        'ram' => Node\Type::ram,
+                    },
+                    $node['running'],
+                ),
+            ))
+            ->flatMap(static fn($maybe) => $maybe->match(
+                static fn($node) => Sequence::of($node),
+                static fn() => Sequence::of(),
+            ));
     }
 
     /**

@@ -3,9 +3,12 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model\Node;
 
-use Innmind\RabbitMQ\Management\Exception\InvalidName;
+use Innmind\RabbitMQ\Management\Exception\DomainException;
 use Innmind\Url\Authority\Host;
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
+};
 
 /**
  * @psalm-immutable
@@ -23,21 +26,30 @@ final class Name
 
     /**
      * @psalm-pure
+     *
+     * @throws DomainException
      */
     public static function of(string $value): self
     {
-        return new self(
-            $value,
-            Str::of($value)
-                ->capture('~^rabbit@(?<host>.*)$~')
-                ->get('host')
-                ->map(static fn($host) => $host->toString())
-                ->map(Host::of(...))
-                ->match(
-                    static fn($host) => $host,
-                    static fn() => throw new InvalidName($value),
-                ),
+        return self::maybe($value)->match(
+            static fn($self) => $self,
+            static fn() => throw new DomainException($value),
         );
+    }
+
+    /**
+     * @psalm-pure
+     *
+     * @return Maybe<self>
+     */
+    public static function maybe(string $value): Maybe
+    {
+        return Str::of($value)
+            ->capture('~^rabbit@(?<host>.*)$~')
+            ->get('host')
+            ->map(static fn($host) => $host->toString())
+            ->map(Host::of(...))
+            ->map(static fn($host) => new self($value, $host));
     }
 
     public function host(): Host

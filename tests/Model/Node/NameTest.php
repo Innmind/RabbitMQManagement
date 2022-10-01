@@ -5,7 +5,7 @@ namespace Tests\Innmind\RabbitMQ\Management\Model\Node;
 
 use Innmind\RabbitMQ\Management\{
     Model\Node\Name,
-    Exception\InvalidName,
+    Exception\DomainException,
 };
 use Innmind\Url\Authority\Host;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +23,7 @@ class NameTest extends TestCase
 
     public function testThrowWhenInvalidName()
     {
-        $this->expectException(InvalidName::class);
+        $this->expectException(DomainException::class);
         $this->expectExceptionMessage('whatever');
 
         Name::of('whatever');
