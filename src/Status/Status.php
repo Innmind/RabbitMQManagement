@@ -80,7 +80,7 @@ final class Status implements StatusInterface
 
     public function vhosts(): Set
     {
-        /** @var Sequence<array{name: string, messages: int, messages_ready: int, messages_unacknowledged: int, tracing: bool}> */
+        /** @var Sequence<array{name: string, messages: 0|positive-int, messages_ready: 0|positive-int, messages_unacknowledged: 0|positive-int, tracing: bool}> */
         $vhosts = $this->list('vhosts');
 
         return Set::of(
@@ -100,7 +100,7 @@ final class Status implements StatusInterface
 
     public function connections(): Set
     {
-        /** @var Sequence<array{name: string, connected_at: int, timeout: int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'}> */
+        /** @var Sequence<array{name: string, connected_at: int, timeout: 0|positive-int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'}> */
         $connections = $this->list('connections');
 
         return Set::of(
@@ -184,7 +184,7 @@ final class Status implements StatusInterface
 
     public function channels(): Set
     {
-        /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: int, messages_unconfirmed: int, messages_unacknowledged: int, consumer_count: 1, confirm: bool, transactional: bool, idle_since?: string}> */
+        /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: 0|positive-int, messages_unconfirmed: 0|positive-int, messages_unacknowledged: 0|positive-int, consumer_count: 0|positive-int, confirm: bool, transactional: bool, idle_since?: string}> */
         $channels = $this->list('channels');
 
         return Set::of(
@@ -239,7 +239,7 @@ final class Status implements StatusInterface
 
     public function queues(): Set
     {
-        /** @var Sequence<array{name: string, vhost: string, messages: int, messages_ready: int, messages_unacknowledged: int, idle_since?: string, consumers: int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool}> */
+        /** @var Sequence<array{name: string, vhost: string, messages: 0|positive-int, messages_ready: 0|positive-int, messages_unacknowledged: 0|positive-int, idle_since?: string, consumers: 0|positive-int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool}> */
         $queues = $this->list('queues');
 
         return Set::of(
