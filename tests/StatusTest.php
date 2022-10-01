@@ -15,7 +15,6 @@ use Innmind\RabbitMQ\Management\{
     Model\Queue,
     Model\Node,
     Status\Environment\Remote,
-    Exception\ManagementPluginFailedToRun
 };
 use Innmind\Server\Control\{
     Server,
@@ -181,9 +180,7 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->users();
+        $this->assertCount(0, $status->users());
     }
 
     public function testVhosts()
@@ -315,9 +312,7 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->vhosts();
+        $this->assertCount(0, $status->vhosts());
     }
 
     public function testConnections()
@@ -459,7 +454,7 @@ class StatusTest extends TestCase
         $this->assertSame('running', $connection->state()->name);
     }
 
-    public function testThrowWhenFailToListConnections()
+    public function testReturnNothingWhenFailToListConnections()
     {
         $status = Status::of(
             $server = $this->createMock(Server::class),
@@ -485,9 +480,7 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->connections();
+        $this->assertCount(0, $status->connections());
     }
 
     public function testExchanges()
@@ -595,7 +588,7 @@ class StatusTest extends TestCase
         $this->assertFalse($exchange->internal());
     }
 
-    public function testThrowWhenFailToListExchanges()
+    public function testReturnNothingWhenFailToListExchanges()
     {
         $status = Status::of(
             $server = $this->createMock(Server::class),
@@ -621,9 +614,7 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->exchanges();
+        $this->assertCount(0, $status->exchanges());
     }
 
     public function testPermissions()
@@ -729,7 +720,7 @@ class StatusTest extends TestCase
         $this->assertSame('.*', $permission->read());
     }
 
-    public function testThrowWhenFailToListPermissions()
+    public function testReturnNothingWhenFailToListPermissions()
     {
         $status = Status::of(
             $server = $this->createMock(Server::class),
@@ -755,9 +746,7 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->permissions();
+        $this->assertCount(0, $status->permissions());
     }
 
     public function testChannels()
@@ -907,7 +896,7 @@ class StatusTest extends TestCase
         ));
     }
 
-    public function testThrowWhenFailToListChannels()
+    public function testReturnNothingWhenFailToListChannels()
     {
         $status = Status::of(
             $server = $this->createMock(Server::class),
@@ -933,9 +922,7 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->channels();
+        $this->assertCount(0, $status->channels());
     }
 
     public function testConsumers()
@@ -1075,7 +1062,7 @@ class StatusTest extends TestCase
         $this->assertFalse($consumer->exclusive());
     }
 
-    public function testThrowWhenFailToListConsumers()
+    public function testReturnNothingWhenFailToListConsumers()
     {
         $status = Status::of(
             $server = $this->createMock(Server::class),
@@ -1101,9 +1088,7 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->consumers();
+        $this->assertCount(0, $status->consumers());
     }
 
     public function testQueues()
@@ -1275,7 +1260,7 @@ class StatusTest extends TestCase
         $this->assertTrue($queue->durable());
     }
 
-    public function testThrowWhenFailToListQueues()
+    public function testReturnNothingWhenFailToListQueues()
     {
         $status = Status::of(
             $server = $this->createMock(Server::class),
@@ -1301,9 +1286,7 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->queues();
+        $this->assertCount(0, $status->queues());
     }
 
     public function testNodes()
@@ -1417,7 +1400,7 @@ class StatusTest extends TestCase
         $this->assertTrue($node->running());
     }
 
-    public function testThrowWhenFailToListNodes()
+    public function testReturnNothingWhenFailToListNodes()
     {
         $status = Status::of(
             $server = $this->createMock(Server::class),
@@ -1443,8 +1426,6 @@ class StatusTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $status->nodes();
+        $this->assertCount(0, $status->nodes());
     }
 }

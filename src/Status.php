@@ -22,7 +22,6 @@ use Innmind\RabbitMQ\Management\{
     Model\Consumer\Tag,
     Model\Queue,
     Model\Queue\Identity,
-    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
@@ -331,19 +330,18 @@ final class Status
                     $this->command->withArgument($element),
                 ),
             );
-        $successful = $process->wait()->match(
-            static fn() => true,
-            static fn() => false,
-        );
 
-        if (!$successful) {
-            throw new ManagementPluginFailedToRun;
-        }
-
-        /** @var list<array> */
-        $elements = \json_decode($process->output()->toString(), true);
-
-        /** @var Sequence<array> */
-        return Sequence::mixed(...$elements);
+        /**
+         * @psalm-suppress MixedArgument
+         * @var Sequence<array>
+         */
+        return $process
+            ->wait()
+            ->map(static fn(): mixed => \json_decode($process->output()->toString(), true))
+            ->map(static fn($elements) => Sequence::of(...$elements))
+            ->match(
+                static fn($elements) => $elements,
+                static fn() => Sequence::of(),
+            );
     }
 }
