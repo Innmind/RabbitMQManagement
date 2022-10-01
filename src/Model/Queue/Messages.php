@@ -14,7 +14,7 @@ final class Messages
     public function __construct(
         Count $total,
         Count $ready,
-        Count $unacknowledged
+        Count $unacknowledged,
     ) {
         $this->total = $total;
         $this->ready = $ready;

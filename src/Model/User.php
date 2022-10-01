@@ -19,7 +19,7 @@ final class User
     public function __construct(
         Name $name,
         Password $password,
-        string ...$tags
+        string ...$tags,
     ) {
         $this->name = $name;
         $this->password = $password;

@@ -23,7 +23,7 @@ class RemoteTest extends TestCase
             Environment::class,
             new Remote(
                 Host::none(),
-            )
+            ),
         );
     }
 
@@ -53,7 +53,7 @@ class RemoteTest extends TestCase
             Host::of('rabbit.innmind.com'),
             Port::of(42),
             'foo',
-            'bar'
+            'bar',
         );
 
         $this->assertNotSame($command, $environment($command));

@@ -38,13 +38,13 @@ class ConnectionTest extends TestCase
             true,
             $peer = new Peer(
                 Host::none(),
-                Port::none()
+                Port::none(),
             ),
             $host = Host::none(),
             $port = Port::none(),
             $node = new NodeName('rabbit@foo'),
             $type = Type::network(),
-            $state = State::running()
+            $state = State::running(),
         );
 
         $this->assertSame($name, $connection->name());

@@ -17,7 +17,7 @@ class LocalTest extends TestCase
     {
         $this->assertInstanceOf(
             Environment::class,
-            new Local
+            new Local,
         );
     }
 

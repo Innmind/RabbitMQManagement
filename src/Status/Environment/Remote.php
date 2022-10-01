@@ -24,7 +24,7 @@ final class Remote implements Environment
         Port $port = null,
         string $username = null,
         string $password = null,
-        Path $vhost = null
+        Path $vhost = null,
     ) {
         $this->host = $host;
         $this->port = $port ?? Port::of(15672);

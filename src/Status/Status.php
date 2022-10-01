@@ -48,7 +48,7 @@ final class Status implements StatusInterface
     public function __construct(
         Server $server,
         Clock $clock,
-        Environment $environment = null
+        Environment $environment = null,
     ) {
         $this->server = $server;
         $this->clock = $clock;

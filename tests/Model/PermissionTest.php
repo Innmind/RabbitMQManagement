@@ -19,7 +19,7 @@ class PermissionTest extends TestCase
             $vhost = new VHostName('foo'),
             $configure = '.*',
             $write = '.*',
-            $read = '.*'
+            $read = '.*',
         );
 
         $this->assertSame($user, $permission->user());

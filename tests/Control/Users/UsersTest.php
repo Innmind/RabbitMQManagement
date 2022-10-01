@@ -22,14 +22,14 @@ class UsersTest extends TestCase
     {
         $this->assertInstanceOf(
             UsersInterface::class,
-            new Users($this->createMock(Server::class))
+            new Users($this->createMock(Server::class)),
         );
     }
 
     public function testDeclare()
     {
         $users = new Users(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -56,7 +56,7 @@ class UsersTest extends TestCase
     public function testThrowWhenFailToDeclare()
     {
         $users = new Users(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -85,7 +85,7 @@ class UsersTest extends TestCase
     public function testDelete()
     {
         $users = new Users(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -112,7 +112,7 @@ class UsersTest extends TestCase
     public function testThrowWhenFailToDelete()
     {
         $users = new Users(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())

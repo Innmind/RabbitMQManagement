@@ -17,7 +17,7 @@ class NodeTest extends TestCase
         $node = new Node(
             $name = new Name('rabbit@foo'),
             $type = Type::disc(),
-            true
+            true,
         );
 
         $this->assertSame($name, $node->name());

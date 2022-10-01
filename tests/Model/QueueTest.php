@@ -24,7 +24,7 @@ class QueueTest extends TestCase
             $messages = new Messages(
                 new Count(0),
                 new Count(0),
-                new Count(0)
+                new Count(0),
             ),
             $idleSince = $this->createMock(PointInTime::class),
             $consumers = new Count(0),
@@ -32,7 +32,7 @@ class QueueTest extends TestCase
             $node = new NodeName('rabbit@foo'),
             true,
             false,
-            true
+            true,
         );
 
         $this->assertSame($identity, $queue->identity());

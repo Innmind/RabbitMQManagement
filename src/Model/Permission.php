@@ -16,7 +16,7 @@ final class Permission
         VHost\Name $vhost,
         string $configure,
         string $write,
-        string $read
+        string $read,
     ) {
         $this->user = $user;
         $this->vhost = $vhost;

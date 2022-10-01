@@ -23,7 +23,7 @@ class ConsumerTest extends TestCase
             $queue = new Identity('foo', new VHostName('foo')),
             $connection = new ConnectionName('foo'),
             true,
-            false
+            false,
         );
 
         $this->assertSame($tag, $consumer->tag());

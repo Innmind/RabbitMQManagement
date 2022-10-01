@@ -30,7 +30,7 @@ final class Queue
         Node\Name $node,
         bool $exclusive,
         bool $autoDelete,
-        bool $durable
+        bool $durable,
     ) {
         $this->identity = $identity;
         $this->messages = $messages;

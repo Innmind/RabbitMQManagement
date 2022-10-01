@@ -34,7 +34,7 @@ final class Channel
         Count $consumers,
         bool $confirm,
         bool $transactional,
-        PointInTime $idleSince
+        PointInTime $idleSince,
     ) {
         $this->name = $name;
         $this->vhost = $vhost;

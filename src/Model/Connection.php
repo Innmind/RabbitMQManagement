@@ -48,7 +48,7 @@ final class Connection
         Port $port,
         Node\Name $node,
         Type $type,
-        State $state
+        State $state,
     ) {
         $this->connectedAt = $connectedAt;
         $this->timeout = $timeout;

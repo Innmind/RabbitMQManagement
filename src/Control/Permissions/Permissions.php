@@ -28,7 +28,7 @@ final class Permissions implements PermissionsInterface
         string $user,
         string $configure,
         string $write,
-        string $read
+        string $read,
     ): void {
         $process = $this
             ->server

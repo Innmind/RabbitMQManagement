@@ -10,7 +10,7 @@ interface Permissions
         string $user,
         string $configure,
         string $write,
-        string $read
+        string $read,
     ): void;
     public function delete(string $vhost, string $user): void;
 }

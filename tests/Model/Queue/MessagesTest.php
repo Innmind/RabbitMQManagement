@@ -16,7 +16,7 @@ class MessagesTest extends TestCase
         $messages = new Messages(
             $total = new Count(0),
             $ready = new Count(0),
-            $unacknowledged = new Count(0)
+            $unacknowledged = new Count(0),
         );
 
         $this->assertSame($total, $messages->total());

@@ -17,7 +17,7 @@ final class VHost
     public function __construct(
         Name $name,
         Messages $messages,
-        bool $tracing
+        bool $tracing,
     ) {
         $this->name = $name;
         $this->messages = $messages;

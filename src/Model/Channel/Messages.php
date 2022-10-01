@@ -14,7 +14,7 @@ final class Messages
     public function __construct(
         Count $uncommitted,
         Count $unconfirmed,
-        Count $unacknowledged
+        Count $unacknowledged,
     ) {
         $this->uncommitted = $uncommitted;
         $this->unconfirmed = $unconfirmed;

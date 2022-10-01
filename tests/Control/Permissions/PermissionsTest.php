@@ -22,14 +22,14 @@ class PermissionsTest extends TestCase
     {
         $this->assertInstanceOf(
             PermissionsInterface::class,
-            new Permissions($this->createMock(Server::class))
+            new Permissions($this->createMock(Server::class)),
         );
     }
 
     public function testDeclare()
     {
         $permissions = new Permissions(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -51,14 +51,14 @@ class PermissionsTest extends TestCase
             ->willReturn(new ExitCode(0));
 
         $this->assertNull(
-            $permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}')
+            $permissions->declare('/', 'foo', '.{1}', '.{2}', '.{3}'),
         );
     }
 
     public function testThrowWhenFailToDeclare()
     {
         $permissions = new Permissions(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -87,7 +87,7 @@ class PermissionsTest extends TestCase
     public function testDelete()
     {
         $permissions = new Permissions(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -114,7 +114,7 @@ class PermissionsTest extends TestCase
     public function testThrowWhenFailToDelete()
     {
         $permissions = new Permissions(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())

@@ -15,7 +15,7 @@ class IdentityTest extends TestCase
     {
         $identity = new Identity(
             'foo',
-            $vhost = new Name('bar')
+            $vhost = new Name('bar'),
         );
 
         $this->assertSame('foo', $identity->name());

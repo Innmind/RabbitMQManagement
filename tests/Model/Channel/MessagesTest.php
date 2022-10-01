@@ -16,7 +16,7 @@ class MessagesTest extends TestCase
         $messages = new Messages(
             $uncommitted = new Count(0),
             $unconfirmed = new Count(0),
-            $unacknowledged = new Count(0)
+            $unacknowledged = new Count(0),
         );
 
         $this->assertSame($uncommitted, $messages->uncommitted());

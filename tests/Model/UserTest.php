@@ -20,7 +20,7 @@ class UserTest extends TestCase
             $name = new Name('foo'),
             $password = new Password('foo', 'bar'),
             'foo',
-            'bar'
+            'bar',
         );
 
         $this->assertSame($name, $user->name());

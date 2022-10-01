@@ -24,7 +24,7 @@ final class Consumer
         Identity $queue,
         Connection\Name $connection,
         bool $ackRequired,
-        bool $exclusive
+        bool $exclusive,
     ) {
         $this->tag = $tag;
         $this->channel = $channel;

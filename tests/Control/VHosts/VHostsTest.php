@@ -22,14 +22,14 @@ class VHostsTest extends TestCase
     {
         $this->assertInstanceOf(
             VHostsInterface::class,
-            new VHosts($this->createMock(Server::class))
+            new VHosts($this->createMock(Server::class)),
         );
     }
 
     public function testDeclare()
     {
         $vhosts = new VHosts(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -56,7 +56,7 @@ class VHostsTest extends TestCase
     public function testThrowWhenFailToDeclare()
     {
         $vhosts = new VHosts(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -85,7 +85,7 @@ class VHostsTest extends TestCase
     public function testDelete()
     {
         $vhosts = new VHosts(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())
@@ -112,7 +112,7 @@ class VHostsTest extends TestCase
     public function testThrowWhenFailToDelete()
     {
         $vhosts = new VHosts(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
         );
         $server
             ->expects($this->once())

@@ -46,8 +46,8 @@ class StatusTest extends TestCase
             StatusInterface::class,
             new Status(
                 $this->createMock(Server::class),
-                $this->createMock(Clock::class)
-            )
+                $this->createMock(Clock::class),
+            ),
         );
     }
 
@@ -55,13 +55,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -70,7 +70,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'users'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -83,7 +83,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -98,11 +98,11 @@ class StatusTest extends TestCase
         $this->assertSame('guest', first($users)->name()->toString());
         $this->assertSame(
             'ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+',
-            first($users)->password()->hash()
+            first($users)->password()->hash(),
         );
         $this->assertSame(
             'rabbit_password_hashing_sha256',
-            first($users)->password()->algorithm()
+            first($users)->password()->algorithm(),
         );
         $this->assertCount(1, first($users)->tags());
         $this->assertSame(['administrator'], unwrap(first($users)->tags()));
@@ -113,13 +113,13 @@ class StatusTest extends TestCase
         $status = new Status(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
+            new Remote(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -128,7 +128,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -141,7 +141,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -156,11 +156,11 @@ class StatusTest extends TestCase
         $this->assertSame('guest', first($users)->name()->toString());
         $this->assertSame(
             'ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+',
-            first($users)->password()->hash()
+            first($users)->password()->hash(),
         );
         $this->assertSame(
             'rabbit_password_hashing_sha256',
-            first($users)->password()->algorithm()
+            first($users)->password()->algorithm(),
         );
         $this->assertCount(1, first($users)->tags());
         $this->assertSame(['administrator'], unwrap(first($users)->tags()));
@@ -170,13 +170,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -185,7 +185,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'users'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -204,13 +204,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -219,7 +219,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -232,7 +232,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -256,13 +256,13 @@ class StatusTest extends TestCase
         $status = new Status(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
+            new Remote(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -271,7 +271,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -284,7 +284,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -307,13 +307,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -322,7 +322,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -341,13 +341,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $clock = $this->createMock(Clock::class)
+            $clock = $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -356,7 +356,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'connections'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -369,7 +369,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -411,13 +411,13 @@ class StatusTest extends TestCase
         $status = new Status(
             $server = $this->createMock(Server::class),
             $clock = $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
+            new Remote(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -426,7 +426,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'connections' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -439,7 +439,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -480,13 +480,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -495,7 +495,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'connections'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -514,13 +514,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -529,7 +529,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -542,7 +542,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -567,13 +567,13 @@ class StatusTest extends TestCase
         $status = new Status(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
+            new Remote(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -582,7 +582,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -595,7 +595,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -619,13 +619,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -634,7 +634,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -653,13 +653,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -668,7 +668,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -681,7 +681,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -705,13 +705,13 @@ class StatusTest extends TestCase
         $status = new Status(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
+            new Remote(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -720,7 +720,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -733,7 +733,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -756,13 +756,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -771,7 +771,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -790,13 +790,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $clock = $this->createMock(Clock::class)
+            $clock = $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -805,7 +805,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'channels'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -818,7 +818,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -861,13 +861,13 @@ class StatusTest extends TestCase
         $status = new Status(
             $server = $this->createMock(Server::class),
             $clock = $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
+            new Remote(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -876,7 +876,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'channels' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -889,7 +889,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -931,13 +931,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -946,7 +946,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'channels'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -965,13 +965,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -980,7 +980,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -993,7 +993,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -1034,13 +1034,13 @@ class StatusTest extends TestCase
         $status = new Status(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
+            new Remote(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -1049,7 +1049,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -1062,7 +1062,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -1102,13 +1102,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -1117,7 +1117,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -1136,13 +1136,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $clock = $this->createMock(Clock::class)
+            $clock = $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -1151,7 +1151,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'queues'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -1164,89 +1164,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
-            );
-        $output
-            ->expects($this->once())
-            ->method('toString')
-            ->willReturn('[{"memory":14184,"reductions":8715,"reductions_details":{"rate":0.0},"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"idle_since":"2017-06-30 8:13:31","consumer_utilisation":null,"policy":null,"exclusive_consumer_tag":null,"consumers":1,"recoverable_slaves":null,"state":"running","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":1},"messages_ram":0,"messages_ready_ram":0,"messages_unacknowledged_ram":0,"messages_persistent":0,"message_bytes":0,"message_bytes_ready":0,"message_bytes_unacknowledged":0,"message_bytes_ram":0,"message_bytes_persistent":0,"head_message_timestamp":null,"disk_reads":0,"disk_writes":0,"backing_queue_status":{"mode":"default","q1":0,"q2":0,"delta":["delta","undefined",0,"undefined"],"q3":0,"q4":0,"len":0,"target_ram_count":"infinity","next_seq_id":0,"avg_ingress_rate":0.0,"avg_egress_rate":0.0,"avg_ack_ingress_rate":0.0,"avg_ack_egress_rate":0.0},"node":"rabbit@050becbb9cb3","arguments":{},"exclusive":false,"auto_delete":false,"durable":true,"vhost":"/","name":"crawl"}]');
-        $clock
-            ->expects($this->once())
-            ->method('at')
-            ->with('2017-06-30 8:13:31')
-            ->willReturn($date = $this->createMock(PointInTime::class));
-
-        $queues = $status->queues();
-
-        $this->assertInstanceOf(Set::class, $queues);
-        $this->assertSame(Queue::class, (string) $queues->type());
-        $this->assertCount(1, $queues);
-        $this->assertSame(
-            'crawl',
-            first($queues)->identity()->name()
-        );
-        $this->assertSame(
-            '/',
-            first($queues)->identity()->vhost()->toString(),
-        );
-        $this->assertSame(
-            1,
-            first($queues)->messages()->total()->toInt()
-        );
-        $this->assertSame(
-            2,
-            first($queues)->messages()->ready()->toInt()
-        );
-        $this->assertSame(
-            3,
-            first($queues)->messages()->unacknowledged()->toInt()
-        );
-        $this->assertSame(
-            $date,
-            first($queues)->idleSince()
-        );
-        $this->assertSame(1, first($queues)->consumers()->toInt());
-        $this->assertSame('running', first($queues)->state()->toString());
-        $this->assertSame('rabbit@050becbb9cb3', first($queues)->node()->toString());
-        $this->assertFalse(first($queues)->exclusive());
-        $this->assertFalse(first($queues)->autoDelete());
-        $this->assertTrue(first($queues)->durable());
-    }
-
-    public function testRemoteQueues()
-    {
-        $status = new Status(
-            $server = $this->createMock(Server::class),
-            $clock = $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
-        );
-        $server
-            ->expects($this->once())
-            ->method('processes')
-            ->willReturn(
-                $processes = $this->createMock(Processes::class)
-            );
-        $processes
-            ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(static function(Command $command): bool {
-                return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'queues' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
-            }))
-            ->willReturn(
-                $process = $this->createMock(Process::class)
-            );
-        $process
-            ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
-        $process
-            ->expects($this->once())
-            ->method('output')
-            ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -1273,19 +1191,101 @@ class StatusTest extends TestCase
         );
         $this->assertSame(
             1,
-            first($queues)->messages()->total()->toInt()
+            first($queues)->messages()->total()->toInt(),
         );
         $this->assertSame(
             2,
-            first($queues)->messages()->ready()->toInt()
+            first($queues)->messages()->ready()->toInt(),
         );
         $this->assertSame(
             3,
-            first($queues)->messages()->unacknowledged()->toInt()
+            first($queues)->messages()->unacknowledged()->toInt(),
         );
         $this->assertSame(
             $date,
-            first($queues)->idleSince()
+            first($queues)->idleSince(),
+        );
+        $this->assertSame(1, first($queues)->consumers()->toInt());
+        $this->assertSame('running', first($queues)->state()->toString());
+        $this->assertSame('rabbit@050becbb9cb3', first($queues)->node()->toString());
+        $this->assertFalse(first($queues)->exclusive());
+        $this->assertFalse(first($queues)->autoDelete());
+        $this->assertTrue(first($queues)->durable());
+    }
+
+    public function testRemoteQueues()
+    {
+        $status = new Status(
+            $server = $this->createMock(Server::class),
+            $clock = $this->createMock(Clock::class),
+            new Remote(Host::of('rabbit.innmind.com')),
+        );
+        $server
+            ->expects($this->once())
+            ->method('processes')
+            ->willReturn(
+                $processes = $this->createMock(Processes::class),
+            );
+        $processes
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->callback(static function(Command $command): bool {
+                return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'queues' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
+            }))
+            ->willReturn(
+                $process = $this->createMock(Process::class),
+            );
+        $process
+            ->expects($this->once())
+            ->method('wait');
+        $process
+            ->expects($this->once())
+            ->method('exitCode')
+            ->willReturn(new ExitCode(0));
+        $process
+            ->expects($this->once())
+            ->method('output')
+            ->willReturn(
+                $output = $this->createMock(Output::class),
+            );
+        $output
+            ->expects($this->once())
+            ->method('toString')
+            ->willReturn('[{"memory":14184,"reductions":8715,"reductions_details":{"rate":0.0},"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"idle_since":"2017-06-30 8:13:31","consumer_utilisation":null,"policy":null,"exclusive_consumer_tag":null,"consumers":1,"recoverable_slaves":null,"state":"running","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":1},"messages_ram":0,"messages_ready_ram":0,"messages_unacknowledged_ram":0,"messages_persistent":0,"message_bytes":0,"message_bytes_ready":0,"message_bytes_unacknowledged":0,"message_bytes_ram":0,"message_bytes_persistent":0,"head_message_timestamp":null,"disk_reads":0,"disk_writes":0,"backing_queue_status":{"mode":"default","q1":0,"q2":0,"delta":["delta","undefined",0,"undefined"],"q3":0,"q4":0,"len":0,"target_ram_count":"infinity","next_seq_id":0,"avg_ingress_rate":0.0,"avg_egress_rate":0.0,"avg_ack_ingress_rate":0.0,"avg_ack_egress_rate":0.0},"node":"rabbit@050becbb9cb3","arguments":{},"exclusive":false,"auto_delete":false,"durable":true,"vhost":"/","name":"crawl"}]');
+        $clock
+            ->expects($this->once())
+            ->method('at')
+            ->with('2017-06-30 8:13:31')
+            ->willReturn($date = $this->createMock(PointInTime::class));
+
+        $queues = $status->queues();
+
+        $this->assertInstanceOf(Set::class, $queues);
+        $this->assertSame(Queue::class, (string) $queues->type());
+        $this->assertCount(1, $queues);
+        $this->assertSame(
+            'crawl',
+            first($queues)->identity()->name(),
+        );
+        $this->assertSame(
+            '/',
+            first($queues)->identity()->vhost()->toString(),
+        );
+        $this->assertSame(
+            1,
+            first($queues)->messages()->total()->toInt(),
+        );
+        $this->assertSame(
+            2,
+            first($queues)->messages()->ready()->toInt(),
+        );
+        $this->assertSame(
+            3,
+            first($queues)->messages()->unacknowledged()->toInt(),
+        );
+        $this->assertSame(
+            $date,
+            first($queues)->idleSince(),
         );
         $this->assertSame(1, first($queues)->consumers()->toInt());
         $this->assertSame('running', first($queues)->state()->toString());
@@ -1299,13 +1299,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -1314,7 +1314,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'queues'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -1333,13 +1333,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -1348,7 +1348,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -1361,7 +1361,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -1389,13 +1389,13 @@ class StatusTest extends TestCase
         $status = new Status(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com'))
+            new Remote(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -1404,7 +1404,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())
@@ -1417,7 +1417,7 @@ class StatusTest extends TestCase
             ->expects($this->once())
             ->method('output')
             ->willReturn(
-                $output = $this->createMock(Output::class)
+                $output = $this->createMock(Output::class),
             );
         $output
             ->expects($this->once())
@@ -1444,13 +1444,13 @@ class StatusTest extends TestCase
     {
         $status = new Status(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class)
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
             ->method('processes')
             ->willReturn(
-                $processes = $this->createMock(Processes::class)
+                $processes = $this->createMock(Processes::class),
             );
         $processes
             ->expects($this->once())
@@ -1459,7 +1459,7 @@ class StatusTest extends TestCase
                 return $command->toString() === "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes'";
             }))
             ->willReturn(
-                $process = $this->createMock(Process::class)
+                $process = $this->createMock(Process::class),
             );
         $process
             ->expects($this->once())

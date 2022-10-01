@@ -17,7 +17,7 @@ final class Node
     public function __construct(
         Name $name,
         Type $type,
-        bool $running
+        bool $running,
     ) {
         $this->name = $name;
         $this->type = $type;

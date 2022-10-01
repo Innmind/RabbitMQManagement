@@ -23,7 +23,7 @@ final class Exchange
         Type $type,
         bool $durable,
         bool $autoDelete,
-        bool $internal
+        bool $internal,
     ) {
         $this->name = $name;
         $this->vhost = $vhost;

@@ -20,9 +20,9 @@ class VHostTest extends TestCase
             $messages = new Messages(
                 new Count(0),
                 new Count(0),
-                new Count(0)
+                new Count(0),
             ),
-            true
+            true,
         );
 
         $this->assertSame($name, $vhost->name());

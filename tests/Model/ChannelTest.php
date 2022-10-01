@@ -30,12 +30,12 @@ class ChannelTest extends TestCase
             $messages = new Messages(
                 new Count(0),
                 new Count(0),
-                new Count(0)
+                new Count(0),
             ),
             $consumers = new Count(0),
             true,
             false,
-            $idle = $this->createMock(PointInTime::class)
+            $idle = $this->createMock(PointInTime::class),
         );
 
         $this->assertSame($name, $channel->name());

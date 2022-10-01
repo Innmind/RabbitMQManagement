@@ -21,7 +21,7 @@ class ExchangeTest extends TestCase
             $type = Type::fanout(),
             true,
             false,
-            true
+            true,
         );
 
         $this->assertSame($name, $exchange->name());
