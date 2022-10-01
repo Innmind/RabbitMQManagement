@@ -31,7 +31,7 @@ use Innmind\TimeContinuum\{
 };
 use Innmind\Url\Authority\Host;
 use Innmind\Immutable\{
-    Set,
+    Sequence,
     Either,
     Maybe,
     SideEffect,
@@ -78,7 +78,7 @@ class StatusTest extends TestCase
 
         $users = $status->users();
 
-        $this->assertInstanceOf(Set::class, $users);
+        $this->assertInstanceOf(Sequence::class, $users);
         $this->assertCount(1, $users);
         $user = $users->find(static fn() => true)->match(
             static fn($user) => $user,
@@ -136,7 +136,7 @@ class StatusTest extends TestCase
 
         $users = $status->users();
 
-        $this->assertInstanceOf(Set::class, $users);
+        $this->assertInstanceOf(Sequence::class, $users);
         $this->assertCount(1, $users);
         $user = $users->find(static fn() => true)->match(
             static fn($user) => $user,
@@ -224,7 +224,7 @@ class StatusTest extends TestCase
 
         $vhosts = $status->vhosts();
 
-        $this->assertInstanceOf(Set::class, $vhosts);
+        $this->assertInstanceOf(Sequence::class, $vhosts);
         $this->assertCount(1, $vhosts);
         $vhost = $vhosts->find(static fn() => true)->match(
             static fn($vhost) => $vhost,
@@ -276,7 +276,7 @@ class StatusTest extends TestCase
 
         $vhosts = $status->vhosts();
 
-        $this->assertInstanceOf(Set::class, $vhosts);
+        $this->assertInstanceOf(Sequence::class, $vhosts);
         $this->assertCount(1, $vhosts);
         $vhost = $vhosts->find(static fn() => true)->match(
             static fn($vhost) => $vhost,
@@ -363,7 +363,7 @@ class StatusTest extends TestCase
 
         $connections = $status->connections();
 
-        $this->assertInstanceOf(Set::class, $connections);
+        $this->assertInstanceOf(Sequence::class, $connections);
         $this->assertCount(1, $connections);
         $connection = $connections->find(static fn() => true)->match(
             static fn($connection) => $connection,
@@ -433,7 +433,7 @@ class StatusTest extends TestCase
 
         $connections = $status->connections();
 
-        $this->assertInstanceOf(Set::class, $connections);
+        $this->assertInstanceOf(Sequence::class, $connections);
         $this->assertCount(1, $connections);
         $connection = $connections->find(static fn() => true)->match(
             static fn($connection) => $connection,
@@ -528,7 +528,7 @@ class StatusTest extends TestCase
 
         $exchanges = $status->exchanges();
 
-        $this->assertInstanceOf(Set::class, $exchanges);
+        $this->assertInstanceOf(Sequence::class, $exchanges);
         $this->assertCount(9, $exchanges);
         $exchange = $exchanges->find(static fn() => true)->match(
             static fn($exchange) => $exchange,
@@ -581,7 +581,7 @@ class StatusTest extends TestCase
 
         $exchanges = $status->exchanges();
 
-        $this->assertInstanceOf(Set::class, $exchanges);
+        $this->assertInstanceOf(Sequence::class, $exchanges);
         $this->assertCount(9, $exchanges);
         $exchange = $exchanges->find(static fn() => true)->match(
             static fn($exchange) => $exchange,
@@ -664,7 +664,7 @@ class StatusTest extends TestCase
 
         $permissions = $status->permissions();
 
-        $this->assertInstanceOf(Set::class, $permissions);
+        $this->assertInstanceOf(Sequence::class, $permissions);
         $this->assertCount(1, $permissions);
         $permission = $permissions->find(static fn() => true)->match(
             static fn($permission) => $permission,
@@ -716,7 +716,7 @@ class StatusTest extends TestCase
 
         $permissions = $status->permissions();
 
-        $this->assertInstanceOf(Set::class, $permissions);
+        $this->assertInstanceOf(Sequence::class, $permissions);
         $this->assertCount(1, $permissions);
         $permission = $permissions->find(static fn() => true)->match(
             static fn($permission) => $permission,
@@ -806,7 +806,7 @@ class StatusTest extends TestCase
 
         $channels = $status->channels();
 
-        $this->assertInstanceOf(Set::class, $channels);
+        $this->assertInstanceOf(Sequence::class, $channels);
         $this->assertCount(2, $channels);
         $channel = $channels->find(static fn() => true)->match(
             static fn($channel) => $channel,
@@ -880,7 +880,7 @@ class StatusTest extends TestCase
 
         $channels = $status->channels();
 
-        $this->assertInstanceOf(Set::class, $channels);
+        $this->assertInstanceOf(Sequence::class, $channels);
         $this->assertCount(2, $channels);
         $channel = $channels->find(static fn() => true)->match(
             static fn($channel) => $channel,
@@ -976,7 +976,7 @@ class StatusTest extends TestCase
 
         $consumers = $status->consumers();
 
-        $this->assertInstanceOf(Set::class, $consumers);
+        $this->assertInstanceOf(Sequence::class, $consumers);
         $this->assertCount(1, $consumers);
         $consumer = $consumers->find(static fn() => true)->match(
             static fn($consumer) => $consumer,
@@ -1045,7 +1045,7 @@ class StatusTest extends TestCase
 
         $consumers = $status->consumers();
 
-        $this->assertInstanceOf(Set::class, $consumers);
+        $this->assertInstanceOf(Sequence::class, $consumers);
         $this->assertCount(1, $consumers);
         $consumer = $consumers->find(static fn() => true)->match(
             static fn($consumer) => $consumer,
@@ -1149,7 +1149,7 @@ class StatusTest extends TestCase
 
         $queues = $status->queues();
 
-        $this->assertInstanceOf(Set::class, $queues);
+        $this->assertInstanceOf(Sequence::class, $queues);
         $this->assertCount(1, $queues);
         $queue = $queues->find(static fn() => true)->match(
             static fn($queue) => $queue,
@@ -1234,7 +1234,7 @@ class StatusTest extends TestCase
 
         $queues = $status->queues();
 
-        $this->assertInstanceOf(Set::class, $queues);
+        $this->assertInstanceOf(Sequence::class, $queues);
         $this->assertCount(1, $queues);
         $queue = $queues->find(static fn() => true)->match(
             static fn($queue) => $queue,
@@ -1344,7 +1344,7 @@ class StatusTest extends TestCase
 
         $nodes = $status->nodes();
 
-        $this->assertInstanceOf(Set::class, $nodes);
+        $this->assertInstanceOf(Sequence::class, $nodes);
         $this->assertCount(1, $nodes);
         $node = $nodes->find(static fn() => true)->match(
             static fn($node) => $node,
@@ -1400,7 +1400,7 @@ class StatusTest extends TestCase
 
         $nodes = $status->nodes();
 
-        $this->assertInstanceOf(Set::class, $nodes);
+        $this->assertInstanceOf(Sequence::class, $nodes);
         $this->assertCount(1, $nodes);
         $node = $nodes->find(static fn() => true)->match(
             static fn($node) => $node,
