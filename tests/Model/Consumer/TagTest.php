@@ -10,6 +10,6 @@ class TagTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertSame('foo', (new Tag('foo'))->toString());
+        $this->assertSame('foo', Tag::of('foo')->toString());
     }
 }

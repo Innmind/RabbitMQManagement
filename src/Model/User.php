@@ -20,16 +20,32 @@ final class User
     private Set $tags;
 
     /**
-     * @no-named-arguments
+     * @param Set<string> $tags
      */
-    public function __construct(
+    private function __construct(
         Name $name,
         Password $password,
-        string ...$tags,
+        Set $tags,
     ) {
         $this->name = $name;
         $this->password = $password;
-        $this->tags = Set::strings(...$tags);
+        $this->tags = $tags;
+    }
+
+    /**
+     * @no-named-arguments
+     * @psalm-pure
+     */
+    public static function of(
+        Name $name,
+        Password $password,
+        string ...$tags,
+    ): self {
+        return new self(
+            $name,
+            $password,
+            Set::strings(...$tags),
+        );
     }
 
     public function name(): Name

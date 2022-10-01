@@ -14,10 +14,15 @@ final class Permissions
     private Server $server;
     private Command $command;
 
-    public function __construct(Server $server)
+    private function __construct(Server $server)
     {
         $this->server = $server;
         $this->command = Command::foreground('rabbitmqadmin');
+    }
+
+    public static function of(Server $server): self
+    {
+        return new self($server);
     }
 
     public function declare(

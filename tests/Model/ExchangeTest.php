@@ -15,9 +15,9 @@ class ExchangeTest extends TestCase
 {
     public function testInterface()
     {
-        $exchange = new Exchange(
-            $name = new Name('foo'),
-            $vhost = new VHostName('foo'),
+        $exchange = Exchange::of(
+            $name = Name::of('foo'),
+            $vhost = VHostName::of('foo'),
             $type = Type::fanout,
             true,
             false,

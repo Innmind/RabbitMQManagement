@@ -13,9 +13,9 @@ class IdentityTest extends TestCase
 {
     public function testInterface()
     {
-        $identity = new Identity(
+        $identity = Identity::of(
             'foo',
-            $vhost = new Name('bar'),
+            $vhost = Name::of('bar'),
         );
 
         $this->assertSame('foo', $identity->name());

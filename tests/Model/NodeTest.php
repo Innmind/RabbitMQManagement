@@ -14,8 +14,8 @@ class NodeTest extends TestCase
 {
     public function testInterface()
     {
-        $node = new Node(
-            $name = new Name('rabbit@foo'),
+        $node = Node::of(
+            $name = Name::of('rabbit@foo'),
             $type = Type::disc,
             true,
         );

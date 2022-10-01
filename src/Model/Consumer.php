@@ -21,7 +21,7 @@ final class Consumer
     private bool $ackRequired;
     private bool $exclusive;
 
-    public function __construct(
+    private function __construct(
         Tag $tag,
         Name $channel,
         Identity $queue,
@@ -35,6 +35,27 @@ final class Consumer
         $this->connection = $connection;
         $this->ackRequired = $ackRequired;
         $this->exclusive = $exclusive;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        Tag $tag,
+        Name $channel,
+        Identity $queue,
+        Connection\Name $connection,
+        bool $ackRequired,
+        bool $exclusive,
+    ): self {
+        return new self(
+            $tag,
+            $channel,
+            $queue,
+            $connection,
+            $ackRequired,
+            $exclusive,
+        );
     }
 
     public function tag(): Tag

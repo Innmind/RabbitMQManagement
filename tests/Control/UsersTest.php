@@ -23,7 +23,7 @@ class UsersTest extends TestCase
 {
     public function testDeclare()
     {
-        $users = new Users(
+        $users = Users::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -47,7 +47,7 @@ class UsersTest extends TestCase
 
     public function testThrowWhenFailToDeclare()
     {
-        $users = new Users(
+        $users = Users::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -73,7 +73,7 @@ class UsersTest extends TestCase
 
     public function testDelete()
     {
-        $users = new Users(
+        $users = Users::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -97,7 +97,7 @@ class UsersTest extends TestCase
 
     public function testThrowWhenFailToDelete()
     {
-        $users = new Users(
+        $users = Users::of(
             $server = $this->createMock(Server::class),
         );
         $server

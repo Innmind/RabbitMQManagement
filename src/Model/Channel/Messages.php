@@ -14,7 +14,7 @@ final class Messages
     private Count $unconfirmed;
     private Count $unacknowledged;
 
-    public function __construct(
+    private function __construct(
         Count $uncommitted,
         Count $unconfirmed,
         Count $unacknowledged,
@@ -22,6 +22,17 @@ final class Messages
         $this->uncommitted = $uncommitted;
         $this->unconfirmed = $unconfirmed;
         $this->unacknowledged = $unacknowledged;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        Count $uncommitted,
+        Count $unconfirmed,
+        Count $unacknowledged,
+    ): self {
+        return new self($uncommitted, $unconfirmed, $unacknowledged);
     }
 
     public function uncommitted(): Count

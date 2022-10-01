@@ -21,19 +21,19 @@ class ChannelTest extends TestCase
 {
     public function testInterface()
     {
-        $channel = new Channel(
-            $name = new Name('foo'),
-            $vhost = new VHostName('foo'),
-            $user = new UserName('foo'),
+        $channel = Channel::of(
+            $name = Name::of('foo'),
+            $vhost = VHostName::of('foo'),
+            $user = UserName::of('foo'),
             42,
-            $node = new NodeName('rabbit@foo'),
+            $node = NodeName::of('rabbit@foo'),
             State::running,
-            $messages = new Messages(
-                new Count(0),
-                new Count(0),
-                new Count(0),
+            $messages = Messages::of(
+                Count::of(0),
+                Count::of(0),
+                Count::of(0),
             ),
-            $consumers = new Count(0),
+            $consumers = Count::of(0),
             true,
             false,
             $idle = Maybe::of($this->createMock(PointInTime::class)),

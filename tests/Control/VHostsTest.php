@@ -23,7 +23,7 @@ class VHostsTest extends TestCase
 {
     public function testDeclare()
     {
-        $vhosts = new VHosts(
+        $vhosts = VHosts::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -47,7 +47,7 @@ class VHostsTest extends TestCase
 
     public function testThrowWhenFailToDeclare()
     {
-        $vhosts = new VHosts(
+        $vhosts = VHosts::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -73,7 +73,7 @@ class VHostsTest extends TestCase
 
     public function testDelete()
     {
-        $vhosts = new VHosts(
+        $vhosts = VHosts::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -97,7 +97,7 @@ class VHostsTest extends TestCase
 
     public function testThrowWhenFailToDelete()
     {
-        $vhosts = new VHosts(
+        $vhosts = VHosts::of(
             $server = $this->createMock(Server::class),
         );
         $server

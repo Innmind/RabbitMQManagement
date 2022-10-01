@@ -42,7 +42,7 @@ class StatusTest extends TestCase
 {
     public function testUsers()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -99,10 +99,10 @@ class StatusTest extends TestCase
 
     public function testRemoteUsers()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -157,7 +157,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListUsers()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -188,7 +188,7 @@ class StatusTest extends TestCase
 
     public function testVhosts()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -239,10 +239,10 @@ class StatusTest extends TestCase
 
     public function testRemoteVhosts()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -291,7 +291,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListVhosts()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -322,7 +322,7 @@ class StatusTest extends TestCase
 
     public function testConnections()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $clock = $this->createMock(Clock::class),
         );
@@ -391,10 +391,10 @@ class StatusTest extends TestCase
 
     public function testRemoteConnections()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $clock = $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -461,7 +461,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListConnections()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -492,7 +492,7 @@ class StatusTest extends TestCase
 
     public function testExchanges()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -544,10 +544,10 @@ class StatusTest extends TestCase
 
     public function testRemoteExchanges()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -597,7 +597,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListExchanges()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -628,7 +628,7 @@ class StatusTest extends TestCase
 
     public function testPermissions()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -679,10 +679,10 @@ class StatusTest extends TestCase
 
     public function testRemotePermissions()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -731,7 +731,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListPermissions()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -762,7 +762,7 @@ class StatusTest extends TestCase
 
     public function testChannels()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $clock = $this->createMock(Clock::class),
         );
@@ -835,10 +835,10 @@ class StatusTest extends TestCase
 
     public function testRemoteChannels()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $clock = $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -909,7 +909,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListChannels()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -940,7 +940,7 @@ class StatusTest extends TestCase
 
     public function testConsumers()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -1008,10 +1008,10 @@ class StatusTest extends TestCase
 
     public function testRemoteConsumers()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -1077,7 +1077,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListConsumers()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -1108,7 +1108,7 @@ class StatusTest extends TestCase
 
     public function testQueues()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $clock = $this->createMock(Clock::class),
         );
@@ -1192,10 +1192,10 @@ class StatusTest extends TestCase
 
     public function testRemoteQueues()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $clock = $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -1277,7 +1277,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListQueues()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -1308,7 +1308,7 @@ class StatusTest extends TestCase
 
     public function testNodes()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -1363,10 +1363,10 @@ class StatusTest extends TestCase
 
     public function testRemoteNodes()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
-            new Remote(Host::of('rabbit.innmind.com')),
+            Remote::of(Host::of('rabbit.innmind.com')),
         );
         $server
             ->expects($this->once())
@@ -1419,7 +1419,7 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListNodes()
     {
-        $status = new Status(
+        $status = Status::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );

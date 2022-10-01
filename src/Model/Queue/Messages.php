@@ -14,7 +14,7 @@ final class Messages
     private Count $ready;
     private Count $unacknowledged;
 
-    public function __construct(
+    private function __construct(
         Count $total,
         Count $ready,
         Count $unacknowledged,
@@ -22,6 +22,17 @@ final class Messages
         $this->total = $total;
         $this->ready = $ready;
         $this->unacknowledged = $unacknowledged;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        Count $total,
+        Count $ready,
+        Count $unacknowledged,
+    ): self {
+        return new self($total, $ready, $unacknowledged);
     }
 
     public function total(): Count

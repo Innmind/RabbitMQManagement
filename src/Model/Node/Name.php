@@ -15,18 +15,29 @@ final class Name
     private string $value;
     private Host $host;
 
-    public function __construct(string $value)
+    private function __construct(string $value, Host $host)
     {
         $this->value = $value;
-        $this->host = Str::of($value)
-            ->capture('~^rabbit@(?<host>.*)$~')
-            ->get('host')
-            ->map(static fn($host) => $host->toString())
-            ->map(Host::of(...))
-            ->match(
-                static fn($host) => $host,
-                static fn() => throw new InvalidName($value),
-            );
+        $this->host = $host;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(string $value): self
+    {
+        return new self(
+            $value,
+            Str::of($value)
+                ->capture('~^rabbit@(?<host>.*)$~')
+                ->get('host')
+                ->map(static fn($host) => $host->toString())
+                ->map(Host::of(...))
+                ->match(
+                    static fn($host) => $host,
+                    static fn() => throw new InvalidName($value),
+                ),
+        );
     }
 
     public function host(): Host

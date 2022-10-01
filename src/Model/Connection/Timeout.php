@@ -14,9 +14,19 @@ final class Timeout
     /**
      * @param 0|positive-int $value
      */
-    public function __construct(int $value)
+    private function __construct(int $value)
     {
         $this->value = $value;
+    }
+
+    /**
+     * @psalm-pure
+     *
+     * @param 0|positive-int $value
+     */
+    public static function of(int $value): self
+    {
+        return new self($value);
     }
 
     /**

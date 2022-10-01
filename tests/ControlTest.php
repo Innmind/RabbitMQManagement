@@ -16,7 +16,7 @@ class ControlTest extends TestCase
 {
     public function testInterface()
     {
-        $control = new Control($this->createMock(Server::class));
+        $control = Control::of($this->createMock(Server::class));
 
         $this->assertInstanceOf(Users::class, $control->users());
         $this->assertInstanceOf(VHosts::class, $control->vhosts());

@@ -15,9 +15,9 @@ class UserTest extends TestCase
 {
     public function testInterface()
     {
-        $user = new User(
-            $name = new Name('foo'),
-            $password = new Password('foo', 'bar'),
+        $user = User::of(
+            $name = Name::of('foo'),
+            $password = Password::of('foo', 'bar'),
             'foo',
             'bar',
         );

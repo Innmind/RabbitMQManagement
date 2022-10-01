@@ -14,7 +14,7 @@ final class Permission
     private string $write;
     private string $read;
 
-    public function __construct(
+    private function __construct(
         User\Name $user,
         VHost\Name $vhost,
         string $configure,
@@ -26,6 +26,25 @@ final class Permission
         $this->configure = $configure;
         $this->write = $write;
         $this->read = $read;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        User\Name $user,
+        VHost\Name $vhost,
+        string $configure,
+        string $write,
+        string $read,
+    ): self {
+        return new self(
+            $user,
+            $vhost,
+            $configure,
+            $write,
+            $read,
+        );
     }
 
     public function user(): User\Name

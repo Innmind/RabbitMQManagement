@@ -13,10 +13,10 @@ class MessagesTest extends TestCase
 {
     public function testInterface()
     {
-        $messages = new Messages(
-            $uncommitted = new Count(0),
-            $unconfirmed = new Count(0),
-            $unacknowledged = new Count(0),
+        $messages = Messages::of(
+            $uncommitted = Count::of(0),
+            $unconfirmed = Count::of(0),
+            $unacknowledged = Count::of(0),
         );
 
         $this->assertSame($uncommitted, $messages->uncommitted());

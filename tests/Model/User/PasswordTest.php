@@ -10,7 +10,7 @@ class PasswordTest extends TestCase
 {
     public function testInterface()
     {
-        $password = new Password('foo', 'bar');
+        $password = Password::of('foo', 'bar');
 
         $this->assertSame('foo', $password->hash());
         $this->assertSame('bar', $password->algorithm());

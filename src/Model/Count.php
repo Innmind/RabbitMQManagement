@@ -14,9 +14,17 @@ final class Count
     /**
      * @param 0|positive-int $value
      */
-    public function __construct(int $value)
+    private function __construct(int $value)
     {
         $this->value = $value;
+    }
+
+    /**
+     * @param 0|positive-int $value
+     */
+    public static function of(int $value): self
+    {
+        return new self($value);
     }
 
     /**

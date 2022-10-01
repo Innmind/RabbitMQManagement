@@ -37,7 +37,7 @@ final class Connection
     private Type $type;
     private State $state;
 
-    public function __construct(
+    private function __construct(
         Name $name,
         PointInTime $connectedAt,
         Timeout $timeout,
@@ -67,6 +67,43 @@ final class Connection
         $this->node = $node;
         $this->type = $type;
         $this->state = $state;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(
+        Name $name,
+        PointInTime $connectedAt,
+        Timeout $timeout,
+        VHost\Name $vhost,
+        User\Name $user,
+        Protocol $protocol,
+        AuthenticationMechanism $authenticationMechanism,
+        bool $ssl,
+        Peer $peer,
+        Host $host,
+        Port $port,
+        Node\Name $node,
+        Type $type,
+        State $state,
+    ): self {
+        return new self(
+            $name,
+            $connectedAt,
+            $timeout,
+            $vhost,
+            $user,
+            $protocol,
+            $authenticationMechanism,
+            $ssl,
+            $peer,
+            $host,
+            $port,
+            $node,
+            $type,
+            $state,
+        );
     }
 
     public function name(): Name

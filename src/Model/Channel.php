@@ -31,7 +31,7 @@ final class Channel
     /**
      * @param Maybe<PointInTime> $idleSince
      */
-    public function __construct(
+    private function __construct(
         Name $name,
         VHost\Name $vhost,
         User\Name $user,
@@ -55,6 +55,39 @@ final class Channel
         $this->confirm = $confirm;
         $this->transactional = $transactional;
         $this->idleSince = $idleSince;
+    }
+
+    /**
+     * @psalm-pure
+     *
+     * @param Maybe<PointInTime> $idleSince
+     */
+    public static function of(
+        Name $name,
+        VHost\Name $vhost,
+        User\Name $user,
+        int $number,
+        Node\Name $node,
+        State $state,
+        Messages $messages,
+        Count $consumers,
+        bool $confirm,
+        bool $transactional,
+        Maybe $idleSince,
+    ): self {
+        return new self(
+            $name,
+            $vhost,
+            $user,
+            $number,
+            $node,
+            $state,
+            $messages,
+            $consumers,
+            $confirm,
+            $transactional,
+            $idleSince,
+        );
     }
 
     public function name(): Name

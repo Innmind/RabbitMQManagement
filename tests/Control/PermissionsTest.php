@@ -23,7 +23,7 @@ class PermissionsTest extends TestCase
 {
     public function testDeclare()
     {
-        $permissions = new Permissions(
+        $permissions = Permissions::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -49,7 +49,7 @@ class PermissionsTest extends TestCase
 
     public function testThrowWhenFailToDeclare()
     {
-        $permissions = new Permissions(
+        $permissions = Permissions::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -75,7 +75,7 @@ class PermissionsTest extends TestCase
 
     public function testDelete()
     {
-        $permissions = new Permissions(
+        $permissions = Permissions::of(
             $server = $this->createMock(Server::class),
         );
         $server
@@ -99,7 +99,7 @@ class PermissionsTest extends TestCase
 
     public function testThrowWhenFailToDelete()
     {
-        $permissions = new Permissions(
+        $permissions = Permissions::of(
             $server = $this->createMock(Server::class),
         );
         $server

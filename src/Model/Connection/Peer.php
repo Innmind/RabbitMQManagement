@@ -16,10 +16,18 @@ final class Peer
     private Host $host;
     private Port $port;
 
-    public function __construct(Host $host, Port $port)
+    private function __construct(Host $host, Port $port)
     {
         $this->host = $host;
         $this->port = $port;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(Host $host, Port $port): self
+    {
+        return new self($host, $port);
     }
 
     public function host(): Host

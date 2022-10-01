@@ -14,7 +14,7 @@ class NameTest extends TestCase
 {
     public function testInterface()
     {
-        $name = new Name('rabbit@whatever');
+        $name = Name::of('rabbit@whatever');
 
         $this->assertSame('rabbit@whatever', $name->toString());
         $this->assertInstanceOf(Host::class, $name->host());
@@ -26,6 +26,6 @@ class NameTest extends TestCase
         $this->expectException(InvalidName::class);
         $this->expectExceptionMessage('whatever');
 
-        new Name('whatever');
+        Name::of('whatever');
     }
 }

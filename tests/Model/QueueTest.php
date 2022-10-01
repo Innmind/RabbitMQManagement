@@ -20,17 +20,17 @@ class QueueTest extends TestCase
 {
     public function testInterface()
     {
-        $queue = new Queue(
-            $identity = new Identity('foo', new VHostName('foo')),
-            $messages = new Messages(
-                new Count(0),
-                new Count(0),
-                new Count(0),
+        $queue = Queue::of(
+            $identity = Identity::of('foo', VHostName::of('foo')),
+            $messages = Messages::of(
+                Count::of(0),
+                Count::of(0),
+                Count::of(0),
             ),
             $idleSince = Maybe::of($this->createMock(PointInTime::class)),
-            $consumers = new Count(0),
+            $consumers = Count::of(0),
             $state = State::running,
-            $node = new NodeName('rabbit@foo'),
+            $node = NodeName::of('rabbit@foo'),
             true,
             false,
             true,

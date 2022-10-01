@@ -16,11 +16,16 @@ final class Control
     private VHosts $vhosts;
     private Permissions $permissions;
 
-    public function __construct(Server $server)
+    private function __construct(Server $server)
     {
-        $this->users = new Users($server);
-        $this->vhosts = new VHosts($server);
-        $this->permissions = new Permissions($server);
+        $this->users = Users::of($server);
+        $this->vhosts = VHosts::of($server);
+        $this->permissions = Permissions::of($server);
+    }
+
+    public static function of(Server $server): self
+    {
+        return new self($server);
     }
 
     public function users(): Users

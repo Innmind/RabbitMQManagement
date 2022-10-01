@@ -17,7 +17,7 @@ class LocalTest extends TestCase
     {
         $this->assertInstanceOf(
             Environment::class,
-            new Local,
+            Local::of(),
         );
     }
 
@@ -25,7 +25,7 @@ class LocalTest extends TestCase
     {
         $command = Command::foreground('rabbitmqadmin');
 
-        $this->assertSame($command, (new Local)($command));
+        $this->assertSame($command, Local::of()($command));
     }
 
     public function testInvokationWithVhost()
@@ -34,7 +34,7 @@ class LocalTest extends TestCase
 
         $this->assertSame(
             "rabbitmqadmin '--vhost=/foo'",
-            (new Local(Path::of('/foo')))($command)->toString(),
+            Local::of(Path::of('/foo'))($command)->toString(),
         );
     }
 }

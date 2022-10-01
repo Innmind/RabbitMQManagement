@@ -17,14 +17,19 @@ final class VHost
     private Messages $messages;
     private bool $tracing;
 
-    public function __construct(
-        Name $name,
-        Messages $messages,
-        bool $tracing,
-    ) {
+    private function __construct(Name $name, Messages $messages, bool $tracing)
+    {
         $this->name = $name;
         $this->messages = $messages;
         $this->tracing = $tracing;
+    }
+
+    /**
+     * @psalm-pure
+     */
+    public static function of(Name $name, Messages $messages, bool $tracing): self
+    {
+        return new self($name, $messages, $tracing);
     }
 
     public function tracing(): bool

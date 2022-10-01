@@ -29,7 +29,7 @@ final class Queue
     /**
      * @param Maybe<PointInTime> $idleSince
      */
-    public function __construct(
+    private function __construct(
         Identity $identity,
         Messages $messages,
         Maybe $idleSince,
@@ -49,6 +49,35 @@ final class Queue
         $this->exclusive = $exclusive;
         $this->autoDelete = $autoDelete;
         $this->durable = $durable;
+    }
+
+    /**
+     * @psalm-pure
+     *
+     * @param Maybe<PointInTime> $idleSince
+     */
+    public static function of(
+        Identity $identity,
+        Messages $messages,
+        Maybe $idleSince,
+        Count $consumers,
+        State $state,
+        Node\Name $node,
+        bool $exclusive,
+        bool $autoDelete,
+        bool $durable,
+    ): self {
+        return new self(
+            $identity,
+            $messages,
+            $idleSince,
+            $consumers,
+            $state,
+            $node,
+            $exclusive,
+            $autoDelete,
+            $durable,
+        );
     }
 
     public function identity(): Identity
