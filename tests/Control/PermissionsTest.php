@@ -1,12 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Control\Permissions;
+namespace Tests\Innmind\RabbitMQ\Management\Control;
 
 use Innmind\RabbitMQ\Management\{
-    Control\Permissions\Permissions,
-    Control\Permissions as PermissionsInterface,
-    Exception\ManagementPluginFailedToRun
+    Control\Permissions,
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
@@ -22,14 +21,6 @@ use PHPUnit\Framework\TestCase;
 
 class PermissionsTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            PermissionsInterface::class,
-            new Permissions($this->createMock(Server::class)),
-        );
-    }
-
     public function testDeclare()
     {
         $permissions = new Permissions(

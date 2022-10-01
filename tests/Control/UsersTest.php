@@ -1,12 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Control\Users;
+namespace Tests\Innmind\RabbitMQ\Management\Control;
 
 use Innmind\RabbitMQ\Management\{
-    Control\Users\Users,
-    Control\Users as UsersInterface,
-    Exception\ManagementPluginFailedToRun
+    Control\Users,
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
@@ -22,14 +21,6 @@ use PHPUnit\Framework\TestCase;
 
 class UsersTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            UsersInterface::class,
-            new Users($this->createMock(Server::class)),
-        );
-    }
-
     public function testDeclare()
     {
         $users = new Users(

@@ -1,11 +1,10 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Status;
+namespace Tests\Innmind\RabbitMQ\Management;
 
 use Innmind\RabbitMQ\Management\{
-    Status\Status,
-    Status as StatusInterface,
+    Status,
     Model\User,
     Model\VHost,
     Model\Connection,
@@ -41,17 +40,6 @@ use PHPUnit\Framework\TestCase;
 
 class StatusTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            StatusInterface::class,
-            new Status(
-                $this->createMock(Server::class),
-                $this->createMock(Clock::class),
-            ),
-        );
-    }
-
     public function testUsers()
     {
         $status = new Status(

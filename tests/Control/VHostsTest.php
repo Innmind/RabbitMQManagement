@@ -1,12 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\RabbitMQ\Management\Control\VHosts;
+namespace Tests\Innmind\RabbitMQ\Management\Control;
 
 use Innmind\RabbitMQ\Management\{
-    Control\VHosts\VHosts,
-    Control\VHosts as VHostsInterface,
-    Exception\ManagementPluginFailedToRun
+    Control\VHosts,
+    Exception\ManagementPluginFailedToRun,
 };
 use Innmind\Server\Control\{
     Server,
@@ -22,14 +21,6 @@ use PHPUnit\Framework\TestCase;
 
 class VHostsTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            VHostsInterface::class,
-            new VHosts($this->createMock(Server::class)),
-        );
-    }
-
     public function testDeclare()
     {
         $vhosts = new VHosts(
