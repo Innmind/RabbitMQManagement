@@ -127,12 +127,12 @@ final class Status implements StatusInterface
                     Port::of($connection['port']),
                     new Node\Name($connection['node']),
                     match ($connection['type']) {
-                        'network' => Connection\Type::network(),
-                        'direct' => Connection\Type::direct(),
+                        'network' => Connection\Type::network,
+                        'direct' => Connection\Type::direct,
                     },
                     match ($connection['state']) {
-                        'running' => State::running(),
-                        'idle' => State::idle(),
+                        'running' => State::running,
+                        'idle' => State::idle,
                     },
                 ))
                 ->toList(),
@@ -150,10 +150,10 @@ final class Status implements StatusInterface
                     new Exchange\Name($exchange['name']),
                     new VHost\Name($exchange['vhost']),
                     match ($exchange['type']) {
-                        'topic' => Exchange\Type::topic(),
-                        'headers' => Exchange\Type::headers(),
-                        'direct' => Exchange\Type::direct(),
-                        'fanout' => Exchange\Type::fanout(),
+                        'topic' => Exchange\Type::topic,
+                        'headers' => Exchange\Type::headers,
+                        'direct' => Exchange\Type::direct,
+                        'fanout' => Exchange\Type::fanout,
                     },
                     $exchange['durable'],
                     $exchange['auto_delete'],
@@ -195,8 +195,8 @@ final class Status implements StatusInterface
                     $channel['number'],
                     new Node\Name($channel['node']),
                     match ($channel['state']) {
-                        'running' => State::running(),
-                        'idle' => State::idle(),
+                        'running' => State::running,
+                        'idle' => State::idle,
                     },
                     new Channel\Messages(
                         new Count($channel['messages_uncommitted']),
@@ -260,8 +260,8 @@ final class Status implements StatusInterface
                     ),
                     new Count($queue['consumers']),
                     match ($queue['state']) {
-                        'running' => State::running(),
-                        'idle' => State::idle(),
+                        'running' => State::running,
+                        'idle' => State::idle,
                     },
                     new Node\Name($queue['node']),
                     $queue['exclusive'],
@@ -282,8 +282,8 @@ final class Status implements StatusInterface
                 ->map(static fn($node) => new Node(
                     new Node\Name($node['name']),
                     match ($node['type']) {
-                        'disc' => Node\Type::disc(),
-                        'ram' => Node\Type::ram(),
+                        'disc' => Node\Type::disc,
+                        'ram' => Node\Type::ram,
                     },
                     $node['running'],
                 ))

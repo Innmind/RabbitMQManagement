@@ -3,6 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model\Consumer;
 
+/**
+ * @psalm-immutable
+ */
 final class Tag
 {
     private string $value;

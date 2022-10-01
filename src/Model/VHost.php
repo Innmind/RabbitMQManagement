@@ -8,6 +8,9 @@ use Innmind\RabbitMQ\Management\Model\VHost\{
     Messages,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class VHost
 {
     private Name $name;

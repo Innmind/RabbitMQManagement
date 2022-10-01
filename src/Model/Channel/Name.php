@@ -3,6 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model\Channel;
 
+/**
+ * @psalm-immutable
+ */
 final class Name
 {
     private string $value;

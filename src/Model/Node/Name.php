@@ -7,6 +7,9 @@ use Innmind\RabbitMQ\Management\Exception\InvalidName;
 use Innmind\Url\Authority\Host;
 use Innmind\Immutable\Str;
 
+/**
+ * @psalm-immutable
+ */
 final class Name
 {
     private const PATTERN = '~^rabbit@(?<host>.*)$~';

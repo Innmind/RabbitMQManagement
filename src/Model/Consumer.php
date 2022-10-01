@@ -9,6 +9,9 @@ use Innmind\RabbitMQ\Management\Model\{
     Queue\Identity,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Consumer
 {
     private Tag $tag;

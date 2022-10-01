@@ -28,7 +28,7 @@ class QueueTest extends TestCase
             ),
             $idleSince = $this->createMock(PointInTime::class),
             $consumers = new Count(0),
-            $state = State::running(),
+            $state = State::running,
             $node = new NodeName('rabbit@foo'),
             true,
             false,

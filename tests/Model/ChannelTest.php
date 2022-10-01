@@ -26,7 +26,7 @@ class ChannelTest extends TestCase
             $user = new UserName('foo'),
             42,
             $node = new NodeName('rabbit@foo'),
-            State::running(),
+            State::running,
             $messages = new Messages(
                 new Count(0),
                 new Count(0),
@@ -43,7 +43,7 @@ class ChannelTest extends TestCase
         $this->assertSame($user, $channel->user());
         $this->assertSame(42, $channel->number());
         $this->assertSame($node, $channel->node());
-        $this->assertSame(State::running(), $channel->state());
+        $this->assertSame(State::running, $channel->state());
         $this->assertSame($messages, $channel->messages());
         $this->assertSame($consumers, $channel->consumers());
         $this->assertTrue($channel->confirm());

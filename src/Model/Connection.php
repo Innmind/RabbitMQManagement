@@ -17,6 +17,9 @@ use Innmind\Url\Authority\{
     Port,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Connection
 {
     private Name $name;

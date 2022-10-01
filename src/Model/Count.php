@@ -5,6 +5,9 @@ namespace Innmind\RabbitMQ\Management\Model;
 
 use Innmind\RabbitMQ\Management\Exception\CountCantBeNegative;
 
+/**
+ * @psalm-immutable
+ */
 final class Count
 {
     private int $value;

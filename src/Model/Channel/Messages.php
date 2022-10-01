@@ -5,6 +5,9 @@ namespace Innmind\RabbitMQ\Management\Model\Channel;
 
 use Innmind\RabbitMQ\Management\Model\Count;
 
+/**
+ * @psalm-immutable
+ */
 final class Messages
 {
     private Count $uncommitted;

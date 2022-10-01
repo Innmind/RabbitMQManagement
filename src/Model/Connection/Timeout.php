@@ -5,6 +5,9 @@ namespace Innmind\RabbitMQ\Management\Model\Connection;
 
 use Innmind\RabbitMQ\Management\Exception\TimeoutCantBeNegative;
 
+/**
+ * @psalm-immutable
+ */
 final class Timeout
 {
     private int $value;

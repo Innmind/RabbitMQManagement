@@ -8,6 +8,9 @@ use Innmind\RabbitMQ\Management\Model\{
     Exchange\Type,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Exchange
 {
     private Name $name;

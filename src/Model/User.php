@@ -9,6 +9,9 @@ use Innmind\RabbitMQ\Management\{
 };
 use Innmind\Immutable\Set;
 
+/**
+ * @psalm-immutable
+ */
 final class User
 {
     private Name $name;

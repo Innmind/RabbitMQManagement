@@ -5,6 +5,9 @@ namespace Innmind\RabbitMQ\Management\Model\Queue;
 
 use Innmind\RabbitMQ\Management\Model\VHost\Name;
 
+/**
+ * @psalm-immutable
+ */
 final class Identity
 {
     private string $name;

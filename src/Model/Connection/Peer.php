@@ -8,6 +8,9 @@ use Innmind\Url\Authority\{
     Port,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Peer
 {
     private Host $host;

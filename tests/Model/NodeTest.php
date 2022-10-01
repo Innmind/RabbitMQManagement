@@ -16,7 +16,7 @@ class NodeTest extends TestCase
     {
         $node = new Node(
             $name = new Name('rabbit@foo'),
-            $type = Type::disc(),
+            $type = Type::disc,
             true,
         );
 

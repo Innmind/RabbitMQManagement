@@ -9,6 +9,9 @@ use Innmind\RabbitMQ\Management\Model\{
 };
 use Innmind\TimeContinuum\PointInTime;
 
+/**
+ * @psalm-immutable
+ */
 final class Queue
 {
     private Identity $identity;

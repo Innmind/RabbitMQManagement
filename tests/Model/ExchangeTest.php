@@ -18,7 +18,7 @@ class ExchangeTest extends TestCase
         $exchange = new Exchange(
             $name = new Name('foo'),
             $vhost = new VHostName('foo'),
-            $type = Type::fanout(),
+            $type = Type::fanout,
             true,
             false,
             true,

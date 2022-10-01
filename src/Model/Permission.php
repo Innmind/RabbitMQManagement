@@ -3,6 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Model;
 
+/**
+ * @psalm-immutable
+ */
 final class Permission
 {
     private User\Name $user;

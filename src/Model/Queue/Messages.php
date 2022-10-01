@@ -5,6 +5,9 @@ namespace Innmind\RabbitMQ\Management\Model\Queue;
 
 use Innmind\RabbitMQ\Management\Model\Count;
 
+/**
+ * @psalm-immutable
+ */
 final class Messages
 {
     private Count $total;

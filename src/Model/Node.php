@@ -8,6 +8,9 @@ use Innmind\RabbitMQ\Management\Model\Node\{
     Type,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Node
 {
     private Name $name;

@@ -5,6 +5,9 @@ namespace Innmind\RabbitMQ\Management\Model\Connection;
 
 use Innmind\RabbitMQ\Management\Exception\UnknownProtocol;
 
+/**
+ * @psalm-immutable
+ */
 final class Protocol
 {
     private static array $allowed = [

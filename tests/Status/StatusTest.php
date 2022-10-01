@@ -397,8 +397,8 @@ class StatusTest extends TestCase
         $this->assertSame('172.19.0.2', $connection->host()->toString());
         $this->assertSame(5672, $connection->port()->value());
         $this->assertSame('rabbit@050becbb9cb3', $connection->node()->toString());
-        $this->assertSame('network', $connection->type()->toString());
-        $this->assertSame('running', $connection->state()->toString());
+        $this->assertSame('network', $connection->type()->name);
+        $this->assertSame('running', $connection->state()->name);
     }
 
     public function testRemoteConnections()
@@ -467,8 +467,8 @@ class StatusTest extends TestCase
         $this->assertSame('172.19.0.2', $connection->host()->toString());
         $this->assertSame(5672, $connection->port()->value());
         $this->assertSame('rabbit@050becbb9cb3', $connection->node()->toString());
-        $this->assertSame('network', $connection->type()->toString());
-        $this->assertSame('running', $connection->state()->toString());
+        $this->assertSame('network', $connection->type()->name);
+        $this->assertSame('running', $connection->state()->name);
     }
 
     public function testThrowWhenFailToListConnections()
@@ -548,7 +548,7 @@ class StatusTest extends TestCase
         );
         $this->assertSame('', $exchange->name()->toString());
         $this->assertSame('/', $exchange->vhost()->toString());
-        $this->assertSame('direct', $exchange->type()->toString());
+        $this->assertSame('direct', $exchange->type()->name);
         $this->assertTrue($exchange->durable());
         $this->assertFalse($exchange->autoDelete());
         $this->assertFalse($exchange->internal());
@@ -601,7 +601,7 @@ class StatusTest extends TestCase
         );
         $this->assertSame('', $exchange->name()->toString());
         $this->assertSame('/', $exchange->vhost()->toString());
-        $this->assertSame('direct', $exchange->type()->toString());
+        $this->assertSame('direct', $exchange->type()->name);
         $this->assertTrue($exchange->durable());
         $this->assertFalse($exchange->autoDelete());
         $this->assertFalse($exchange->internal());
@@ -832,7 +832,7 @@ class StatusTest extends TestCase
         $this->assertSame('guest', $channel->user()->toString());
         $this->assertSame(1, $channel->number());
         $this->assertSame('rabbit@050becbb9cb3', $channel->node()->toString());
-        $this->assertSame('running', $channel->state()->toString());
+        $this->assertSame('running', $channel->state()->name);
         $this->assertSame(2, $channel->messages()->uncommitted()->toInt());
         $this->assertSame(3, $channel->messages()->unconfirmed()->toInt());
         $this->assertSame(4, $channel->messages()->unacknowledged()->toInt());
@@ -903,7 +903,7 @@ class StatusTest extends TestCase
         $this->assertSame('guest', $channel->user()->toString());
         $this->assertSame(1, $channel->number());
         $this->assertSame('rabbit@050becbb9cb3', $channel->node()->toString());
-        $this->assertSame('running', $channel->state()->toString());
+        $this->assertSame('running', $channel->state()->name);
         $this->assertSame(2, $channel->messages()->uncommitted()->toInt());
         $this->assertSame(3, $channel->messages()->unconfirmed()->toInt());
         $this->assertSame(4, $channel->messages()->unacknowledged()->toInt());
@@ -1186,7 +1186,7 @@ class StatusTest extends TestCase
             $queue->idleSince(),
         );
         $this->assertSame(1, $queue->consumers()->toInt());
-        $this->assertSame('running', $queue->state()->toString());
+        $this->assertSame('running', $queue->state()->name);
         $this->assertSame('rabbit@050becbb9cb3', $queue->node()->toString());
         $this->assertFalse($queue->exclusive());
         $this->assertFalse($queue->autoDelete());
@@ -1268,7 +1268,7 @@ class StatusTest extends TestCase
             $queue->idleSince(),
         );
         $this->assertSame(1, $queue->consumers()->toInt());
-        $this->assertSame('running', $queue->state()->toString());
+        $this->assertSame('running', $queue->state()->name);
         $this->assertSame('rabbit@050becbb9cb3', $queue->node()->toString());
         $this->assertFalse($queue->exclusive());
         $this->assertFalse($queue->autoDelete());
@@ -1356,7 +1356,7 @@ class StatusTest extends TestCase
         );
         $this->assertSame(
             'disc',
-            $node->type()->toString(),
+            $node->type()->name,
         );
         $this->assertTrue($node->running());
     }
@@ -1412,7 +1412,7 @@ class StatusTest extends TestCase
         );
         $this->assertSame(
             'disc',
-            $node->type()->toString(),
+            $node->type()->name,
         );
         $this->assertTrue($node->running());
     }

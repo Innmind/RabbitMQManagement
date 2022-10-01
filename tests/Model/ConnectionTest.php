@@ -34,7 +34,7 @@ class ConnectionTest extends TestCase
             $vhost = new VHostName('foo'),
             $user = new UserName('foo'),
             $protocol = new Protocol('AMQP 0-9-1'),
-            $authenticationMechanism = AuthenticationMechanism::plain(),
+            $authenticationMechanism = AuthenticationMechanism::plain,
             true,
             $peer = new Peer(
                 Host::none(),
@@ -43,8 +43,8 @@ class ConnectionTest extends TestCase
             $host = Host::none(),
             $port = Port::none(),
             $node = new NodeName('rabbit@foo'),
-            $type = Type::network(),
-            $state = State::running(),
+            $type = Type::network,
+            $state = State::running,
         );
 
         $this->assertSame($name, $connection->name());
