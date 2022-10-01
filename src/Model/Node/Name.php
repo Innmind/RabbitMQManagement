@@ -12,8 +12,6 @@ use Innmind\Immutable\Str;
  */
 final class Name
 {
-    private const PATTERN = '~^rabbit@(?<host>.*)$~';
-
     private string $value;
     private Host $host;
 
@@ -21,7 +19,7 @@ final class Name
     {
         $this->value = $value;
         $this->host = Str::of($value)
-            ->capture(self::PATTERN)
+            ->capture('~^rabbit@(?<host>.*)$~')
             ->get('host')
             ->map(static fn($host) => $host->toString())
             ->map(Host::of(...))
