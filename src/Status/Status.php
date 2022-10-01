@@ -36,6 +36,7 @@ use Innmind\Url\Authority\{
 use Innmind\Immutable\{
     Set,
     Sequence,
+    Maybe,
 };
 
 final class Status implements StatusInterface
@@ -183,7 +184,7 @@ final class Status implements StatusInterface
 
     public function channels(): Set
     {
-        /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: int, messages_unconfirmed: int, messages_unacknowledged: int, consumer_count: 1, confirm: bool, transactional: bool, idle_since: string}> */
+        /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: int, messages_unconfirmed: int, messages_unacknowledged: int, consumer_count: 1, confirm: bool, transactional: bool, idle_since?: string}> */
         $channels = $this->list('channels');
 
         return Set::of(
@@ -206,9 +207,8 @@ final class Status implements StatusInterface
                     new Count($channel['consumer_count']),
                     $channel['confirm'],
                     $channel['transactional'],
-                    $this->clock->at($channel['idle_since'])->match(
-                        static fn($point) => $point,
-                        static fn() => throw new \LogicException,
+                    Maybe::of($channel['idle_since'] ?? null)->flatMap(
+                        $this->clock->at(...),
                     ),
                 ))
                 ->toList(),
@@ -239,7 +239,7 @@ final class Status implements StatusInterface
 
     public function queues(): Set
     {
-        /** @var Sequence<array{name: string, vhost: string, messages: int, messages_ready: int, messages_unacknowledged: int, idle_since: string, consumers: int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool}> */
+        /** @var Sequence<array{name: string, vhost: string, messages: int, messages_ready: int, messages_unacknowledged: int, idle_since?: string, consumers: int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool}> */
         $queues = $this->list('queues');
 
         return Set::of(
@@ -254,9 +254,8 @@ final class Status implements StatusInterface
                         new Count($queue['messages_ready']),
                         new Count($queue['messages_unacknowledged']),
                     ),
-                    $this->clock->at($queue['idle_since'])->match(
-                        static fn($point) => $point,
-                        static fn() => throw new \LogicException,
+                    Maybe::of($queue['idle_since'] ?? null)->flatMap(
+                        $this->clock->at(...),
                     ),
                     new Count($queue['consumers']),
                     match ($queue['state']) {

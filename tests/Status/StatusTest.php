@@ -839,7 +839,10 @@ class StatusTest extends TestCase
         $this->assertSame(1, $channel->consumers()->toInt());
         $this->assertFalse($channel->confirm());
         $this->assertFalse($channel->transactional());
-        $this->assertSame($date, $channel->idleSince());
+        $this->assertSame($date, $channel->idleSince()->match(
+            static fn($point) => $point,
+            static fn() => null,
+        ));
     }
 
     public function testRemoteChannels()
@@ -910,7 +913,10 @@ class StatusTest extends TestCase
         $this->assertSame(1, $channel->consumers()->toInt());
         $this->assertFalse($channel->confirm());
         $this->assertFalse($channel->transactional());
-        $this->assertSame($date, $channel->idleSince());
+        $this->assertSame($date, $channel->idleSince()->match(
+            static fn($point) => $point,
+            static fn() => null,
+        ));
     }
 
     public function testThrowWhenFailToListChannels()
@@ -1183,7 +1189,10 @@ class StatusTest extends TestCase
         );
         $this->assertSame(
             $date,
-            $queue->idleSince(),
+            $queue->idleSince()->match(
+                static fn($point) => $point,
+                static fn() => null,
+            ),
         );
         $this->assertSame(1, $queue->consumers()->toInt());
         $this->assertSame('running', $queue->state()->name);
@@ -1265,7 +1274,10 @@ class StatusTest extends TestCase
         );
         $this->assertSame(
             $date,
-            $queue->idleSince(),
+            $queue->idleSince()->match(
+                static fn($point) => $point,
+                static fn() => null,
+            ),
         );
         $this->assertSame(1, $queue->consumers()->toInt());
         $this->assertSame('running', $queue->state()->name);

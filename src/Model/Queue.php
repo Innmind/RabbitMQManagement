@@ -8,6 +8,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Queue\Messages,
 };
 use Innmind\TimeContinuum\PointInTime;
+use Innmind\Immutable\Maybe;
 
 /**
  * @psalm-immutable
@@ -16,7 +17,8 @@ final class Queue
 {
     private Identity $identity;
     private Messages $messages;
-    private PointInTime $idleSince;
+    /** @var Maybe<PointInTime> */
+    private Maybe $idleSince;
     private Count $consumers;
     private State $state;
     private Node\Name $node;
@@ -24,10 +26,13 @@ final class Queue
     private bool $autoDelete;
     private bool $durable;
 
+    /**
+     * @param Maybe<PointInTime> $idleSince
+     */
     public function __construct(
         Identity $identity,
         Messages $messages,
-        PointInTime $idleSince,
+        Maybe $idleSince,
         Count $consumers,
         State $state,
         Node\Name $node,
@@ -56,7 +61,10 @@ final class Queue
         return $this->messages;
     }
 
-    public function idleSince(): PointInTime
+    /**
+     * @return Maybe<PointInTime>
+     */
+    public function idleSince(): Maybe
     {
         return $this->idleSince;
     }

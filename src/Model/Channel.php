@@ -8,6 +8,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Channel\Messages,
 };
 use Innmind\TimeContinuum\PointInTime;
+use Innmind\Immutable\Maybe;
 
 /**
  * @psalm-immutable
@@ -24,8 +25,12 @@ final class Channel
     private Count $consumers;
     private bool $confirm;
     private bool $transactional;
-    private PointInTime $idleSince;
+    /** @var Maybe<PointInTime> */
+    private Maybe $idleSince;
 
+    /**
+     * @param Maybe<PointInTime> $idleSince
+     */
     public function __construct(
         Name $name,
         VHost\Name $vhost,
@@ -37,7 +42,7 @@ final class Channel
         Count $consumers,
         bool $confirm,
         bool $transactional,
-        PointInTime $idleSince,
+        Maybe $idleSince,
     ) {
         $this->name = $name;
         $this->vhost = $vhost;
@@ -102,7 +107,10 @@ final class Channel
         return $this->transactional;
     }
 
-    public function idleSince(): PointInTime
+    /**
+     * @return Maybe<PointInTime>
+     */
+    public function idleSince(): Maybe
     {
         return $this->idleSince;
     }
