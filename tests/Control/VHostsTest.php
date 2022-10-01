@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\RabbitMQ\Management\Control;
 
-use Innmind\RabbitMQ\Management\{
-    Control\VHosts,
-    Exception\ManagementPluginFailedToRun,
-};
+use Innmind\RabbitMQ\Management\Control\VHosts;
 use Innmind\Server\Control\{
     Server,
     Server\Processes,
@@ -42,10 +39,16 @@ class VHostsTest extends TestCase
             ->method('wait')
             ->willReturn(Either::right(new SideEffect));
 
-        $this->assertNull($vhosts->declare('foo'));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $vhosts->declare('foo')->match(
+                static fn($sideEffect) => $sideEffect,
+                static fn() => null,
+            ),
+        );
     }
 
-    public function testThrowWhenFailToDeclare()
+    public function testReturnNothingWhenFailToDeclare()
     {
         $vhosts = VHosts::of(
             $server = $this->createMock(Server::class),
@@ -66,9 +69,10 @@ class VHostsTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $vhosts->declare('foo');
+        $this->assertNull($vhosts->declare('foo')->match(
+            static fn($sideEffect) => $sideEffect,
+            static fn() => null,
+        ));
     }
 
     public function testDelete()
@@ -92,10 +96,16 @@ class VHostsTest extends TestCase
             ->method('wait')
             ->willReturn(Either::right(new SideEffect));
 
-        $this->assertNull($vhosts->delete('foo'));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $vhosts->delete('foo')->match(
+                static fn($sideEffect) => $sideEffect,
+                static fn() => null,
+            ),
+        );
     }
 
-    public function testThrowWhenFailToDelete()
+    public function testReturnNothingWhenFailToDelete()
     {
         $vhosts = VHosts::of(
             $server = $this->createMock(Server::class),
@@ -116,8 +126,9 @@ class VHostsTest extends TestCase
             ->method('wait')
             ->willReturn(Either::left(new ExitCode(1)));
 
-        $this->expectException(ManagementPluginFailedToRun::class);
-
-        $vhosts->delete('foo');
+        $this->assertNull($vhosts->delete('foo')->match(
+            static fn($sideEffect) => $sideEffect,
+            static fn() => null,
+        ));
     }
 }

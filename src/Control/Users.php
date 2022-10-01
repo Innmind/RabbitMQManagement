@@ -3,10 +3,13 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Control;
 
-use Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun;
 use Innmind\Server\Control\{
     Server,
     Server\Command,
+};
+use Innmind\Immutable\{
+    Maybe,
+    SideEffect,
 };
 
 final class Users
@@ -25,9 +28,12 @@ final class Users
         return new self($server);
     }
 
-    public function declare(string $name, string $password, string ...$tags): void
+    /**
+     * @return Maybe<SideEffect>
+     */
+    public function declare(string $name, string $password, string ...$tags): Maybe
     {
-        $_ = $this
+        return $this
             ->server
             ->processes()
             ->execute(
@@ -40,15 +46,15 @@ final class Users
                     ->withArgument('tags='.\implode(',', $tags)),
             )
             ->wait()
-            ->match(
-                static fn() => null, // successful
-                static fn() => throw new ManagementPluginFailedToRun,
-            );
+            ->maybe();
     }
 
-    public function delete(string $name): void
+    /**
+     * @return Maybe<SideEffect>
+     */
+    public function delete(string $name): Maybe
     {
-        $_ = $this
+        return $this
             ->server
             ->processes()
             ->execute(
@@ -59,9 +65,6 @@ final class Users
                     ->withArgument('name='.$name),
             )
             ->wait()
-            ->match(
-                static fn() => null, // successful
-                static fn() => throw new ManagementPluginFailedToRun,
-            );
+            ->maybe();
     }
 }

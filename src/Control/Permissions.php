@@ -3,10 +3,13 @@ declare(strict_types = 1);
 
 namespace Innmind\RabbitMQ\Management\Control;
 
-use Innmind\RabbitMQ\Management\Exception\ManagementPluginFailedToRun;
 use Innmind\Server\Control\{
     Server,
     Server\Command,
+};
+use Innmind\Immutable\{
+    Maybe,
+    SideEffect,
 };
 
 final class Permissions
@@ -25,14 +28,17 @@ final class Permissions
         return new self($server);
     }
 
+    /**
+     * @return Maybe<SideEffect>
+     */
     public function declare(
         string $vhost,
         string $user,
         string $configure,
         string $write,
         string $read,
-    ): void {
-        $_ = $this
+    ): Maybe {
+        return $this
             ->server
             ->processes()
             ->execute(
@@ -47,15 +53,15 @@ final class Permissions
                     ->withArgument('read='.$read),
             )
             ->wait()
-            ->match(
-                static fn() => null, // successful
-                static fn() => throw new ManagementPluginFailedToRun,
-            );
+            ->maybe();
     }
 
-    public function delete(string $vhost, string $user): void
+    /**
+     * @return Maybe<SideEffect>
+     */
+    public function delete(string $vhost, string $user): Maybe
     {
-        $_ = $this
+        return $this
             ->server
             ->processes()
             ->execute(
@@ -67,9 +73,6 @@ final class Permissions
                     ->withArgument('user='.$user),
             )
             ->wait()
-            ->match(
-                static fn() => null, // successful
-                static fn() => throw new ManagementPluginFailedToRun,
-            );
+            ->maybe();
     }
 }
