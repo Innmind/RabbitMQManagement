@@ -44,7 +44,8 @@ final class VHosts
                     ->withArgument('name='.$name),
             )
             ->wait()
-            ->maybe();
+            ->maybe()
+            ->map(static fn() => new SideEffect);
     }
 
     /**
@@ -63,6 +64,7 @@ final class VHosts
                     ->withArgument('name='.$name),
             )
             ->wait()
-            ->maybe();
+            ->maybe()
+            ->map(static fn() => new SideEffect);
     }
 }
