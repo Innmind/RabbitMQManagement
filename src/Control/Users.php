@@ -46,7 +46,8 @@ final class Users
                     ->withArgument('tags='.\implode(',', $tags)),
             )
             ->wait()
-            ->maybe();
+            ->maybe()
+            ->map(static fn() => new SideEffect);
     }
 
     /**
@@ -65,6 +66,7 @@ final class Users
                     ->withArgument('name='.$name),
             )
             ->wait()
-            ->maybe();
+            ->maybe()
+            ->map(static fn() => new SideEffect);
     }
 }

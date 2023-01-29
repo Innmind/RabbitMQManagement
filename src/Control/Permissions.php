@@ -53,7 +53,8 @@ final class Permissions
                     ->withArgument('read='.$read),
             )
             ->wait()
-            ->maybe();
+            ->maybe()
+            ->map(static fn() => new SideEffect);
     }
 
     /**
@@ -73,6 +74,7 @@ final class Permissions
                     ->withArgument('user='.$user),
             )
             ->wait()
-            ->maybe();
+            ->maybe()
+            ->map(static fn() => new SideEffect);
     }
 }
