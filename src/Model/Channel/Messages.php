@@ -10,18 +10,11 @@ use Innmind\RabbitMQ\Management\Model\Count;
  */
 final class Messages
 {
-    private Count $uncommitted;
-    private Count $unconfirmed;
-    private Count $unacknowledged;
-
     private function __construct(
-        Count $uncommitted,
-        Count $unconfirmed,
-        Count $unacknowledged,
+        private Count $uncommitted,
+        private Count $unconfirmed,
+        private Count $unacknowledged,
     ) {
-        $this->uncommitted = $uncommitted;
-        $this->unconfirmed = $unconfirmed;
-        $this->unacknowledged = $unacknowledged;
     }
 
     /**

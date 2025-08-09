@@ -8,24 +8,13 @@ namespace Innmind\RabbitMQ\Management\Model;
  */
 final class Permission
 {
-    private User\Name $user;
-    private VHost\Name $vhost;
-    private string $configure;
-    private string $write;
-    private string $read;
-
     private function __construct(
-        User\Name $user,
-        VHost\Name $vhost,
-        string $configure,
-        string $write,
-        string $read,
+        private User\Name $user,
+        private VHost\Name $vhost,
+        private string $configure,
+        private string $write,
+        private string $read,
     ) {
-        $this->user = $user;
-        $this->vhost = $vhost;
-        $this->configure = $configure;
-        $this->write = $write;
-        $this->read = $read;
     }
 
     /**

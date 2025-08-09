@@ -10,18 +10,11 @@ use Innmind\RabbitMQ\Management\Model\Count;
  */
 final class Messages
 {
-    private Count $total;
-    private Count $ready;
-    private Count $unacknowledged;
-
     private function __construct(
-        Count $total,
-        Count $ready,
-        Count $unacknowledged,
+        private Count $total,
+        private Count $ready,
+        private Count $unacknowledged,
     ) {
-        $this->total = $total;
-        $this->ready = $ready;
-        $this->unacknowledged = $unacknowledged;
     }
 
     /**

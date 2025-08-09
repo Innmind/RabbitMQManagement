@@ -8,11 +8,8 @@ namespace Innmind\RabbitMQ\Management\Model\Connection;
  */
 final class Name
 {
-    private string $value;
-
-    private function __construct(string $value)
+    private function __construct(private string $value)
     {
-        $this->value = $value;
     }
 
     /**

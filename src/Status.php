@@ -44,22 +44,12 @@ use Innmind\Immutable\{
 
 final class Status
 {
-    private Server $server;
-    private Clock $clock;
-    private Environment $environment;
-    private Command $command;
-
     private function __construct(
-        Server $server,
-        Clock $clock,
-        ?Environment $environment = null,
+        private Server $server,
+        private Clock $clock,
+        private Environment $environment,
+        private Command $command,
     ) {
-        $this->server = $server;
-        $this->clock = $clock;
-        $this->environment = $environment ?? Environment\Local::of();
-        $this->command = Command::foreground('rabbitmqadmin')
-            ->withShortOption('f', 'raw_json')
-            ->withArgument('list');
     }
 
     public static function of(
@@ -67,7 +57,14 @@ final class Status
         Clock $clock,
         ?Environment $environment = null,
     ): self {
-        return new self($server, $clock, $environment);
+        return new self(
+            $server,
+            $clock,
+            $environment ?? Environment\Local::of(),
+            Command::foreground('rabbitmqadmin')
+                ->withShortOption('f', 'raw_json')
+                ->withArgument('list'),
+        );
     }
 
     /**

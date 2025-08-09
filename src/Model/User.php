@@ -14,22 +14,14 @@ use Innmind\Immutable\Set;
  */
 final class User
 {
-    private Name $name;
-    private Password $password;
-    /** @var Set<string> */
-    private Set $tags;
-
     /**
      * @param Set<string> $tags
      */
     private function __construct(
-        Name $name,
-        Password $password,
-        Set $tags,
+        private Name $name,
+        private Password $password,
+        private Set $tags,
     ) {
-        $this->name = $name;
-        $this->password = $password;
-        $this->tags = $tags;
     }
 
     /**

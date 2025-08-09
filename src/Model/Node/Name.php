@@ -15,13 +15,10 @@ use Innmind\Immutable\{
  */
 final class Name
 {
-    private string $value;
-    private Host $host;
-
-    private function __construct(string $value, Host $host)
-    {
-        $this->value = $value;
-        $this->host = $host;
+    private function __construct(
+        private string $value,
+        private Host $host,
+    ) {
     }
 
     /**

@@ -10,13 +10,10 @@ use Innmind\RabbitMQ\Management\Model\VHost\Name;
  */
 final class Identity
 {
-    private string $name;
-    private Name $vhost;
-
-    private function __construct(string $name, Name $vhost)
-    {
-        $this->name = $name;
-        $this->vhost = $vhost;
+    private function __construct(
+        private string $name,
+        private Name $vhost,
+    ) {
     }
 
     /**

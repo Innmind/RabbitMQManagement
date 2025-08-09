@@ -15,40 +15,20 @@ use Innmind\Immutable\Maybe;
  */
 final class Queue
 {
-    private Identity $identity;
-    private Messages $messages;
-    /** @var Maybe<PointInTime> */
-    private Maybe $idleSince;
-    private Count $consumers;
-    private State $state;
-    private Node\Name $node;
-    private bool $exclusive;
-    private bool $autoDelete;
-    private bool $durable;
-
     /**
      * @param Maybe<PointInTime> $idleSince
      */
     private function __construct(
-        Identity $identity,
-        Messages $messages,
-        Maybe $idleSince,
-        Count $consumers,
-        State $state,
-        Node\Name $node,
-        bool $exclusive,
-        bool $autoDelete,
-        bool $durable,
+        private Identity $identity,
+        private Messages $messages,
+        private Maybe $idleSince,
+        private Count $consumers,
+        private State $state,
+        private Node\Name $node,
+        private bool $exclusive,
+        private bool $autoDelete,
+        private bool $durable,
     ) {
-        $this->identity = $identity;
-        $this->messages = $messages;
-        $this->idleSince = $idleSince;
-        $this->consumers = $consumers;
-        $this->state = $state;
-        $this->node = $node;
-        $this->exclusive = $exclusive;
-        $this->autoDelete = $autoDelete;
-        $this->durable = $durable;
     }
 
     /**

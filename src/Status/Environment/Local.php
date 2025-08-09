@@ -9,11 +9,8 @@ use Innmind\Url\Path;
 
 final class Local implements Environment
 {
-    private ?Path $vhost;
-
-    private function __construct(?Path $vhost)
+    private function __construct(private ?Path $vhost)
     {
-        $this->vhost = $vhost;
     }
 
     #[\Override]

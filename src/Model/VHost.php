@@ -13,15 +13,11 @@ use Innmind\RabbitMQ\Management\Model\VHost\{
  */
 final class VHost
 {
-    private Name $name;
-    private Messages $messages;
-    private bool $tracing;
-
-    private function __construct(Name $name, Messages $messages, bool $tracing)
-    {
-        $this->name = $name;
-        $this->messages = $messages;
-        $this->tracing = $tracing;
+    private function __construct(
+        private Name $name,
+        private Messages $messages,
+        private bool $tracing,
+    ) {
     }
 
     /**

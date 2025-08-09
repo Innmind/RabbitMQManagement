@@ -14,18 +14,15 @@ use Innmind\Immutable\{
 
 final class VHosts
 {
-    private Server $server;
-    private Command $command;
-
-    private function __construct(Server $server)
-    {
-        $this->server = $server;
-        $this->command = Command::foreground('rabbitmqadmin');
+    private function __construct(
+        private Server $server,
+        private Command $command,
+    ) {
     }
 
     public static function of(Server $server): self
     {
-        return new self($server);
+        return new self($server, Command::foreground('rabbitmqadmin'));
     }
 
     /**
