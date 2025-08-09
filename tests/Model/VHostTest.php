@@ -9,7 +9,7 @@ use Innmind\RabbitMQ\Management\Model\{
     VHost\Messages,
     Count
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class VHostTest extends TestCase
 {

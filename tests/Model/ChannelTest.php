@@ -15,7 +15,7 @@ use Innmind\RabbitMQ\Management\Model\{
 };
 use Innmind\TimeContinuum\PointInTime;
 use Innmind\Immutable\Maybe;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ChannelTest extends TestCase
 {
@@ -36,7 +36,7 @@ class ChannelTest extends TestCase
             $consumers = Count::of(0),
             true,
             false,
-            $idle = Maybe::of($this->createMock(PointInTime::class)),
+            $idle = Maybe::of(PointInTime::now()),
         );
 
         $this->assertSame($name, $channel->name());

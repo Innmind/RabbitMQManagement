@@ -8,7 +8,7 @@ use Innmind\RabbitMQ\Management\Model\{
     User\Name as UserName,
     VHost\Name as VHostName
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class PermissionTest extends TestCase
 {

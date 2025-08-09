@@ -21,7 +21,7 @@ use Innmind\Url\Authority\{
     Host,
     Port
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase
 {
@@ -29,7 +29,7 @@ class ConnectionTest extends TestCase
     {
         $connection = Connection::of(
             $name = Name::of('foo'),
-            $connectedAt = $this->createMock(PointInTime::class),
+            $connectedAt = PointInTime::now(),
             $timeout = Timeout::of(42),
             $vhost = VHostName::of('foo'),
             $user = UserName::of('foo'),

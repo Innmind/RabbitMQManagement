@@ -30,14 +30,17 @@ use Innmind\Server\Control\{
 use Innmind\TimeContinuum\{
     Clock,
     PointInTime,
+    Format,
 };
 use Innmind\Url\Authority\{
     Host,
     Port,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Sequence,
     Maybe,
+    Monoid\Concat,
 };
 
 final class Status
@@ -113,16 +116,19 @@ final class Status
         /** @var Sequence<array{name: string, connected_at: int, timeout: 0|positive-int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'}> */
         $connections = $this->list('connections');
 
-        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
+        /** @psalm-suppress ArgumentTypeCoercion */
         return $connections
             ->map(
                 fn($connection) => Maybe::all(
                     $this
                         ->clock
-                        ->at(\date(
-                            \DateTime::ATOM,
-                            (int) \round($connection['connected_at'] / 1000),
-                        )),
+                        ->at(
+                            \date(
+                                \DateTime::ATOM,
+                                (int) \round($connection['connected_at'] / 1000),
+                            ),
+                            Format::iso8601(),
+                        ),
                     Node\Name::maybe($connection['node']),
                 )
                     ->map(static fn(PointInTime $connectedAt, Node\Name $node) => Connection::of(
@@ -151,10 +157,7 @@ final class Status
                         },
                     )),
             )
-            ->flatMap(static fn($maybe) => $maybe->match(
-                static fn($connection) => Sequence::of($connection),
-                static fn() => Sequence::of(),
-            ));
+            ->flatMap(static fn($maybe) => $maybe->toSequence());
     }
 
     /**
@@ -202,10 +205,9 @@ final class Status
      */
     public function channels(): Sequence
     {
-        /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: 0|positive-int, messages_unconfirmed: 0|positive-int, messages_unacknowledged: 0|positive-int, consumer_count: 0|positive-int, confirm: bool, transactional: bool, idle_since?: string}> */
+        /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: 0|positive-int, messages_unconfirmed: 0|positive-int, messages_unacknowledged: 0|positive-int, consumer_count: 0|positive-int, confirm: bool, transactional: bool, idle_since?: non-empty-string}> */
         $channels = $this->list('channels');
 
-        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
         return $channels
             ->map(fn($channel) => Node\Name::maybe($channel['node'])->map(
                 fn($node) => Channel::of(
@@ -227,14 +229,14 @@ final class Status
                     $channel['confirm'],
                     $channel['transactional'],
                     Maybe::of($channel['idle_since'] ?? null)->flatMap(
-                        $this->clock->at(...),
+                        $this
+                            ->clock
+                            ->ofFormat(Format::of('Y-m-d G:i:s'))
+                            ->at(...),
                     ),
                 ),
             ))
-            ->flatMap(static fn($maybe) => $maybe->match(
-                static fn($channel) => Sequence::of($channel),
-                static fn() => Sequence::of(),
-            ));
+            ->flatMap(static fn($maybe) => $maybe->toSequence());
     }
 
     /**
@@ -263,7 +265,7 @@ final class Status
      */
     public function queues(): Sequence
     {
-        /** @var Sequence<array{name: string, vhost: string, messages: 0|positive-int, messages_ready: 0|positive-int, messages_unacknowledged: 0|positive-int, idle_since?: string, consumers: 0|positive-int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool}> */
+        /** @var Sequence<array{name: string, vhost: string, messages: 0|positive-int, messages_ready: 0|positive-int, messages_unacknowledged: 0|positive-int, idle_since?: non-empty-string, consumers: 0|positive-int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool}> */
         $queues = $this->list('queues');
 
         return $queues->map(fn($queue) => Queue::of(
@@ -277,7 +279,10 @@ final class Status
                 Count::of($queue['messages_unacknowledged']),
             ),
             Maybe::of($queue['idle_since'] ?? null)->flatMap(
-                $this->clock->at(...),
+                $this
+                    ->clock
+                    ->ofFormat(Format::of('Y-m-d G:i:s'))
+                    ->at(...),
             ),
             Count::of($queue['consumers']),
             match ($queue['state']) {
@@ -299,7 +304,6 @@ final class Status
         /** @var Sequence<array{name: string, type: 'disc'|'ram', running: bool}> */
         $nodes = $this->list('nodes');
 
-        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
         return $nodes
             ->map(static fn($node) => Node\Name::maybe($node['name'])->map(
                 static fn($name) => Node::of(
@@ -311,10 +315,7 @@ final class Status
                     $node['running'],
                 ),
             ))
-            ->flatMap(static fn($maybe) => $maybe->match(
-                static fn($node) => Sequence::of($node),
-                static fn() => Sequence::of(),
-            ));
+            ->flatMap(static fn($maybe) => $maybe->toSequence());
     }
 
     /**
@@ -322,26 +323,27 @@ final class Status
      */
     private function list(string $element): Sequence
     {
-        $process = $this
+        return $this
             ->server
             ->processes()
             ->execute(
                 ($this->environment)(
                     $this->command->withArgument($element),
                 ),
-            );
-
-        /**
-         * @psalm-suppress MixedArgument
-         * @var Sequence<array>
-         */
-        return $process
-            ->wait()
-            ->map(static fn(): mixed => \json_decode($process->output()->toString(), true))
-            ->map(static fn($elements) => Sequence::of(...$elements))
-            ->match(
-                static fn($elements) => $elements,
-                static fn() => Sequence::of(),
-            );
+            )
+            ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat)
+                    ->toString(),
+            )
+            ->map(static fn($output): mixed => \json_decode($output, true))
+            ->keep(Is::list()->asPredicate())
+            ->toSequence()
+            ->flatMap(static fn($elements) => Sequence::of(...$elements))
+            ->keep(Is::array()->asPredicate());
     }
 }

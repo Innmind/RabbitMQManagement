@@ -9,7 +9,7 @@ use Innmind\RabbitMQ\Management\Status\{
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Url\Path;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LocalTest extends TestCase
 {

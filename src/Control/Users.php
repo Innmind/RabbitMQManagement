@@ -45,8 +45,8 @@ final class Users
                     ->withArgument('password='.$password)
                     ->withArgument('tags='.\implode(',', $tags)),
             )
-            ->wait()
             ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
             ->map(static fn() => new SideEffect);
     }
 
@@ -65,8 +65,8 @@ final class Users
                     ->withArgument('user')
                     ->withArgument('name='.$name),
             )
-            ->wait()
             ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
             ->map(static fn() => new SideEffect);
     }
 }

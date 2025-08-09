@@ -9,7 +9,7 @@ use Innmind\RabbitMQ\Management\{
     Model\User\Password,
 };
 use Innmind\Immutable\Set;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
 {

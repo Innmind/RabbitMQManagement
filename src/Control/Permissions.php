@@ -52,8 +52,8 @@ final class Permissions
                     ->withArgument('write='.$write)
                     ->withArgument('read='.$read),
             )
-            ->wait()
             ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
             ->map(static fn() => new SideEffect);
     }
 
@@ -73,8 +73,8 @@ final class Permissions
                     ->withArgument('vhost='.$vhost)
                     ->withArgument('user='.$user),
             )
-            ->wait()
             ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
             ->map(static fn() => new SideEffect);
     }
 }

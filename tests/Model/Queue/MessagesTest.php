@@ -7,7 +7,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Queue\Messages,
     Count
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class MessagesTest extends TestCase
 {
