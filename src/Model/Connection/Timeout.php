@@ -9,7 +9,7 @@ namespace Innmind\RabbitMQ\Management\Model\Connection;
 final class Timeout
 {
     /**
-     * @param 0|positive-int $value
+     * @param int<0, max> $value
      */
     private function __construct(private int $value)
     {
@@ -18,7 +18,7 @@ final class Timeout
     /**
      * @psalm-pure
      *
-     * @param 0|positive-int $value
+     * @param int<0, max> $value
      */
     public static function of(int $value): self
     {
@@ -26,7 +26,7 @@ final class Timeout
     }
 
     /**
-     * @return 0|positive-int
+     * @return int<0, max>
      */
     public function toInt(): int
     {
