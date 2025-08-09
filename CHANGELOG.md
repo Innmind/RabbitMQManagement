@@ -6,6 +6,13 @@
 
 - Drop support for PHP `8.1`
 - Requires `innmind/foundation:^1.7.1`
+- The following methods now return an `Innmind\Immutable\Attempt<Innmind\Immutable\SideEffect>`:
+    - `Innmind\RabbitMQ\Management\Control\Permissions::declare()`
+    - `Innmind\RabbitMQ\Management\Control\Permissions::delete()`
+    - `Innmind\RabbitMQ\Management\Control\Users::declare()`
+    - `Innmind\RabbitMQ\Management\Control\Users::delete()`
+    - `Innmind\RabbitMQ\Management\Control\VHosts::declare()`
+    - `Innmind\RabbitMQ\Management\Control\VHosts::delete()`
 
 ### Fixed
 
