@@ -5,15 +5,6 @@ namespace Tests\Innmind\RabbitMQ\Management;
 
 use Innmind\RabbitMQ\Management\{
     Status,
-    Model\User,
-    Model\VHost,
-    Model\Connection,
-    Model\Exchange,
-    Model\Permission,
-    Model\Channel,
-    Model\Consumer,
-    Model\Queue,
-    Model\Node,
     Status\Environment\Remote,
 };
 use Innmind\Server\Control\{
