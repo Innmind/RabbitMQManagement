@@ -16,6 +16,7 @@ final class Local implements Environment
         $this->vhost = $vhost;
     }
 
+    #[\Override]
     public function __invoke(Command $command): Command
     {
         if ($this->vhost) {
