@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Drop support for PHP `8.1`
+
 ### Fixed
 
 - PHP `8.4` deprecations
