@@ -13,24 +13,13 @@ use Innmind\Url\{
 
 final class Remote implements Environment
 {
-    private Host $host;
-    private Port $port;
-    private string $username;
-    private string $password;
-    private ?Path $vhost;
-
     private function __construct(
-        Host $host,
-        Port $port,
-        string $username,
-        string $password,
-        ?Path $vhost,
+        private Host $host,
+        private Port $port,
+        private string $username,
+        private string $password,
+        private ?Path $vhost,
     ) {
-        $this->host = $host;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
-        $this->vhost = $vhost;
     }
 
     #[\Override]

@@ -22,51 +22,22 @@ use Innmind\Url\Authority\{
  */
 final class Connection
 {
-    private Name $name;
-    private PointInTime $connectedAt;
-    private Timeout $timeout;
-    private VHost\Name $vhost;
-    private User\Name $user;
-    private Protocol $protocol;
-    private AuthenticationMechanism $authenticationMechanism;
-    private bool $ssl;
-    private Peer $peer;
-    private Host $host;
-    private Port $port;
-    private Node\Name $node;
-    private Type $type;
-    private State $state;
-
     private function __construct(
-        Name $name,
-        PointInTime $connectedAt,
-        Timeout $timeout,
-        VHost\Name $vhost,
-        User\Name $user,
-        Protocol $protocol,
-        AuthenticationMechanism $authenticationMechanism,
-        bool $ssl,
-        Peer $peer,
-        Host $host,
-        Port $port,
-        Node\Name $node,
-        Type $type,
-        State $state,
+        private Name $name,
+        private PointInTime $connectedAt,
+        private Timeout $timeout,
+        private VHost\Name $vhost,
+        private User\Name $user,
+        private Protocol $protocol,
+        private AuthenticationMechanism $authenticationMechanism,
+        private bool $ssl,
+        private Peer $peer,
+        private Host $host,
+        private Port $port,
+        private Node\Name $node,
+        private Type $type,
+        private State $state,
     ) {
-        $this->connectedAt = $connectedAt;
-        $this->timeout = $timeout;
-        $this->vhost = $vhost;
-        $this->user = $user;
-        $this->protocol = $protocol;
-        $this->authenticationMechanism = $authenticationMechanism;
-        $this->ssl = $ssl;
-        $this->peer = $peer;
-        $this->host = $host;
-        $this->port = $port;
-        $this->name = $name;
-        $this->node = $node;
-        $this->type = $type;
-        $this->state = $state;
     }
 
     /**

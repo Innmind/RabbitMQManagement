@@ -13,13 +13,10 @@ use Innmind\Url\Authority\{
  */
 final class Peer
 {
-    private Host $host;
-    private Port $port;
-
-    private function __construct(Host $host, Port $port)
-    {
-        $this->host = $host;
-        $this->port = $port;
+    private function __construct(
+        private Host $host,
+        private Port $port,
+    ) {
     }
 
     /**

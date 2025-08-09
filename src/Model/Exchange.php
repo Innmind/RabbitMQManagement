@@ -13,27 +13,14 @@ use Innmind\RabbitMQ\Management\Model\{
  */
 final class Exchange
 {
-    private Name $name;
-    private VHost\Name $vhost;
-    private Type $type;
-    private bool $durable;
-    private bool $autoDelete;
-    private bool $internal;
-
     private function __construct(
-        Name $name,
-        VHost\Name $vhost,
-        Type $type,
-        bool $durable,
-        bool $autoDelete,
-        bool $internal,
+        private Name $name,
+        private VHost\Name $vhost,
+        private Type $type,
+        private bool $durable,
+        private bool $autoDelete,
+        private bool $internal,
     ) {
-        $this->name = $name;
-        $this->vhost = $vhost;
-        $this->type = $type;
-        $this->durable = $durable;
-        $this->autoDelete = $autoDelete;
-        $this->internal = $internal;
     }
 
     /**

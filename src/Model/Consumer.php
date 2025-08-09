@@ -14,27 +14,14 @@ use Innmind\RabbitMQ\Management\Model\{
  */
 final class Consumer
 {
-    private Tag $tag;
-    private Name $channel;
-    private Identity $queue;
-    private Connection\Name $connection;
-    private bool $ackRequired;
-    private bool $exclusive;
-
     private function __construct(
-        Tag $tag,
-        Name $channel,
-        Identity $queue,
-        Connection\Name $connection,
-        bool $ackRequired,
-        bool $exclusive,
+        private Tag $tag,
+        private Name $channel,
+        private Identity $queue,
+        private Connection\Name $connection,
+        private bool $ackRequired,
+        private bool $exclusive,
     ) {
-        $this->tag = $tag;
-        $this->channel = $channel;
-        $this->queue = $queue;
-        $this->connection = $connection;
-        $this->ackRequired = $ackRequired;
-        $this->exclusive = $exclusive;
     }
 
     /**

@@ -8,11 +8,8 @@ namespace Innmind\RabbitMQ\Management\Model\Consumer;
  */
 final class Tag
 {
-    private string $value;
-
-    private function __construct(string $value)
+    private function __construct(private string $value)
     {
-        $this->value = $value;
     }
 
     /**

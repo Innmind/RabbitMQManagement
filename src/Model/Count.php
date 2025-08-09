@@ -8,15 +8,11 @@ namespace Innmind\RabbitMQ\Management\Model;
  */
 final class Count
 {
-    /** @var 0|positive-int */
-    private int $value;
-
     /**
      * @param 0|positive-int $value
      */
-    private function __construct(int $value)
+    private function __construct(private int $value)
     {
-        $this->value = $value;
     }
 
     /**
