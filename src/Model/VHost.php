@@ -23,26 +23,31 @@ final class VHost
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(Name $name, Messages $messages, bool $tracing): self
     {
         return new self($name, $messages, $tracing);
     }
 
+    #[\NoDiscard]
     public function tracing(): bool
     {
         return $this->tracing;
     }
 
+    #[\NoDiscard]
     public function name(): Name
     {
         return $this->name;
     }
 
+    #[\NoDiscard]
     public function messages(): Messages
     {
         return $this->messages;
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return $this->name->toString();

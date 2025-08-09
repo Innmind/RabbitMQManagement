@@ -23,21 +23,25 @@ final class Node
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(Name $name, Type $type, bool $running): self
     {
         return new self($name, $type, $running);
     }
 
+    #[\NoDiscard]
     public function name(): Name
     {
         return $this->name;
     }
 
+    #[\NoDiscard]
     public function type(): Type
     {
         return $this->type;
     }
 
+    #[\NoDiscard]
     public function running(): bool
     {
         return $this->running;

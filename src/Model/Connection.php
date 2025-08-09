@@ -43,6 +43,7 @@ final class Connection
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Name $name,
         PointInTime $connectedAt,
@@ -77,71 +78,85 @@ final class Connection
         );
     }
 
+    #[\NoDiscard]
     public function name(): Name
     {
         return $this->name;
     }
 
+    #[\NoDiscard]
     public function connectedAt(): PointInTime
     {
         return $this->connectedAt;
     }
 
+    #[\NoDiscard]
     public function timeout(): Timeout
     {
         return $this->timeout;
     }
 
+    #[\NoDiscard]
     public function vhost(): VHost\Name
     {
         return $this->vhost;
     }
 
+    #[\NoDiscard]
     public function user(): User\Name
     {
         return $this->user;
     }
 
+    #[\NoDiscard]
     public function protocol(): Protocol
     {
         return $this->protocol;
     }
 
+    #[\NoDiscard]
     public function authenticationMechanism(): AuthenticationMechanism
     {
         return $this->authenticationMechanism;
     }
 
+    #[\NoDiscard]
     public function ssl(): bool
     {
         return $this->ssl;
     }
 
+    #[\NoDiscard]
     public function peer(): Peer
     {
         return $this->peer;
     }
 
+    #[\NoDiscard]
     public function host(): Host
     {
         return $this->host;
     }
 
+    #[\NoDiscard]
     public function port(): Port
     {
         return $this->port;
     }
 
+    #[\NoDiscard]
     public function node(): Node\Name
     {
         return $this->node;
     }
 
+    #[\NoDiscard]
     public function type(): Type
     {
         return $this->type;
     }
 
+    #[\NoDiscard]
     public function state(): State
     {
         return $this->state;

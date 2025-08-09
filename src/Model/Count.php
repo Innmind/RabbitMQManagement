@@ -18,6 +18,7 @@ final class Count
     /**
      * @param int<0, max> $value
      */
+    #[\NoDiscard]
     public static function of(int $value): self
     {
         return new self($value);
@@ -26,6 +27,7 @@ final class Count
     /**
      * @return int<0, max>
      */
+    #[\NoDiscard]
     public function toInt(): int
     {
         return $this->value;

@@ -20,6 +20,7 @@ final class Users
     ) {
     }
 
+    #[\NoDiscard]
     public static function of(Server $server): self
     {
         return new self($server, Command::foreground('rabbitmqadmin'));
@@ -28,6 +29,7 @@ final class Users
     /**
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function declare(string $name, string $password, string ...$tags): Attempt
     {
         return $this
@@ -51,6 +53,7 @@ final class Users
     /**
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function delete(string $name): Attempt
     {
         return $this

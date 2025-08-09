@@ -26,6 +26,7 @@ final class Exchange
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Name $name,
         VHost\Name $vhost,
@@ -44,31 +45,37 @@ final class Exchange
         );
     }
 
+    #[\NoDiscard]
     public function name(): Name
     {
         return $this->name;
     }
 
+    #[\NoDiscard]
     public function vhost(): VHost\Name
     {
         return $this->vhost;
     }
 
+    #[\NoDiscard]
     public function type(): Type
     {
         return $this->type;
     }
 
+    #[\NoDiscard]
     public function durable(): bool
     {
         return $this->durable;
     }
 
+    #[\NoDiscard]
     public function autoDelete(): bool
     {
         return $this->autoDelete;
     }
 
+    #[\NoDiscard]
     public function internal(): bool
     {
         return $this->internal;

@@ -20,6 +20,7 @@ final class Timeout
      *
      * @param int<0, max> $value
      */
+    #[\NoDiscard]
     public static function of(int $value): self
     {
         return new self($value);
@@ -28,6 +29,7 @@ final class Timeout
     /**
      * @return int<0, max>
      */
+    #[\NoDiscard]
     public function toInt(): int
     {
         return $this->value;

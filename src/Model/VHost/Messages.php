@@ -20,6 +20,7 @@ final class Messages
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Count $total,
         Count $ready,
@@ -28,16 +29,19 @@ final class Messages
         return new self($total, $ready, $unacknowledged);
     }
 
+    #[\NoDiscard]
     public function total(): Count
     {
         return $this->total;
     }
 
+    #[\NoDiscard]
     public function ready(): Count
     {
         return $this->ready;
     }
 
+    #[\NoDiscard]
     public function unacknowledged(): Count
     {
         return $this->unacknowledged;

@@ -20,6 +20,7 @@ final class VHosts
     ) {
     }
 
+    #[\NoDiscard]
     public static function of(Server $server): self
     {
         return new self($server, Command::foreground('rabbitmqadmin'));
@@ -28,6 +29,7 @@ final class VHosts
     /**
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function declare(string $name): Attempt
     {
         return $this
@@ -49,6 +51,7 @@ final class VHosts
     /**
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function delete(string $name): Attempt
     {
         return $this

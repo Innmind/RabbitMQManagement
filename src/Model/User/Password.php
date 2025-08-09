@@ -17,16 +17,19 @@ final class Password
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(string $hash, string $algorithm): self
     {
         return new self($hash, $algorithm);
     }
 
+    #[\NoDiscard]
     public function algorithm(): string
     {
         return $this->algorithm;
     }
 
+    #[\NoDiscard]
     public function hash(): string
     {
         return $this->hash;

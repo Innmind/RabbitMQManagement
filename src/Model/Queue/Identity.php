@@ -19,16 +19,19 @@ final class Identity
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(string $name, Name $vhost): self
     {
         return new self($name, $vhost);
     }
 
+    #[\NoDiscard]
     public function name(): string
     {
         return $this->name;
     }
 
+    #[\NoDiscard]
     public function vhost(): Name
     {
         return $this->vhost;

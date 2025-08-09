@@ -19,6 +19,7 @@ final class Control
     ) {
     }
 
+    #[\NoDiscard]
     public static function of(Server $server): self
     {
         return new self(
@@ -28,16 +29,19 @@ final class Control
         );
     }
 
+    #[\NoDiscard]
     public function users(): Users
     {
         return $this->users;
     }
 
+    #[\NoDiscard]
     public function vhosts(): VHosts
     {
         return $this->vhosts;
     }
 
+    #[\NoDiscard]
     public function permissions(): Permissions
     {
         return $this->permissions;

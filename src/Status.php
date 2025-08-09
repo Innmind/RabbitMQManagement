@@ -52,6 +52,7 @@ final class Status
     ) {
     }
 
+    #[\NoDiscard]
     public static function of(
         Server $server,
         Clock $clock,
@@ -70,6 +71,7 @@ final class Status
     /**
      * @return Sequence<User>
      */
+    #[\NoDiscard]
     public function users(): Sequence
     {
         /** @psalm-suppress MixedArgument */
@@ -107,6 +109,7 @@ final class Status
     /**
      * @return Sequence<VHost>
      */
+    #[\NoDiscard]
     public function vhosts(): Sequence
     {
         /** @psalm-suppress MixedArgument */
@@ -158,6 +161,7 @@ final class Status
     /**
      * @return Sequence<Connection>
      */
+    #[\NoDiscard]
     public function connections(): Sequence
     {
         /** @psalm-suppress MixedArgument */
@@ -271,6 +275,7 @@ final class Status
     /**
      * @return Sequence<Exchange>
      */
+    #[\NoDiscard]
     public function exchanges(): Sequence
     {
         /** @psalm-suppress MixedArgument */
@@ -326,6 +331,7 @@ final class Status
     /**
      * @return Sequence<Permission>
      */
+    #[\NoDiscard]
     public function permissions(): Sequence
     {
         /** @psalm-suppress MixedArgument */
@@ -366,6 +372,7 @@ final class Status
     /**
      * @return Sequence<Channel>
      */
+    #[\NoDiscard]
     public function channels(): Sequence
     {
         /** @psalm-suppress MixedArgument */
@@ -474,6 +481,7 @@ final class Status
     /**
      * @return Sequence<Consumer>
      */
+    #[\NoDiscard]
     public function consumers(): Sequence
     {
         /** @psalm-suppress MixedArgument,MixedArrayAccess */
@@ -532,6 +540,7 @@ final class Status
     /**
      * @return Sequence<Queue>
      */
+    #[\NoDiscard]
     public function queues(): Sequence
     {
         /** @psalm-suppress MixedArgument */
@@ -635,6 +644,7 @@ final class Status
     /**
      * @return Sequence<Node>
      */
+    #[\NoDiscard]
     public function nodes(): Sequence
     {
         /** @psalm-suppress MixedArgument */

@@ -20,6 +20,7 @@ final class Permissions
     ) {
     }
 
+    #[\NoDiscard]
     public static function of(Server $server): self
     {
         return new self($server, Command::foreground('rabbitmqadmin'));
@@ -28,6 +29,7 @@ final class Permissions
     /**
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function declare(
         string $vhost,
         string $user,
@@ -58,6 +60,7 @@ final class Permissions
     /**
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function delete(string $vhost, string $user): Attempt
     {
         return $this
