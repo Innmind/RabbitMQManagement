@@ -48,10 +48,10 @@ final class Remote implements Environment
 
     public static function of(
         Host $host,
-        Port $port = null,
-        string $username = null,
-        string $password = null,
-        Path $vhost = null,
+        ?Port $port = null,
+        ?string $username = null,
+        ?string $password = null,
+        ?Path $vhost = null,
     ): self {
         return new self(
             $host,

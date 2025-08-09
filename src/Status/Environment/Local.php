@@ -25,7 +25,7 @@ final class Local implements Environment
         return $command;
     }
 
-    public static function of(Path $vhost = null): self
+    public static function of(?Path $vhost = null): self
     {
         return new self($vhost);
     }

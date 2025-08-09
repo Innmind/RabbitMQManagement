@@ -50,7 +50,7 @@ final class Status
     private function __construct(
         Server $server,
         Clock $clock,
-        Environment $environment = null,
+        ?Environment $environment = null,
     ) {
         $this->server = $server;
         $this->clock = $clock;
@@ -63,7 +63,7 @@ final class Status
     public static function of(
         Server $server,
         Clock $clock,
-        Environment $environment = null,
+        ?Environment $environment = null,
     ): self {
         return new self($server, $clock, $environment);
     }
