@@ -15,6 +15,7 @@ enum AuthenticationMechanism
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return match ($value) {
@@ -24,6 +25,7 @@ enum AuthenticationMechanism
         };
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return match ($this) {

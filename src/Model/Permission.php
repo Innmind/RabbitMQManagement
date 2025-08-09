@@ -8,29 +8,19 @@ namespace Innmind\RabbitMQ\Management\Model;
  */
 final class Permission
 {
-    private User\Name $user;
-    private VHost\Name $vhost;
-    private string $configure;
-    private string $write;
-    private string $read;
-
     private function __construct(
-        User\Name $user,
-        VHost\Name $vhost,
-        string $configure,
-        string $write,
-        string $read,
+        private User\Name $user,
+        private VHost\Name $vhost,
+        private string $configure,
+        private string $write,
+        private string $read,
     ) {
-        $this->user = $user;
-        $this->vhost = $vhost;
-        $this->configure = $configure;
-        $this->write = $write;
-        $this->read = $read;
     }
 
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         User\Name $user,
         VHost\Name $vhost,
@@ -47,26 +37,31 @@ final class Permission
         );
     }
 
+    #[\NoDiscard]
     public function user(): User\Name
     {
         return $this->user;
     }
 
+    #[\NoDiscard]
     public function vhost(): VHost\Name
     {
         return $this->vhost;
     }
 
+    #[\NoDiscard]
     public function configure(): string
     {
         return $this->configure;
     }
 
+    #[\NoDiscard]
     public function write(): string
     {
         return $this->write;
     }
 
+    #[\NoDiscard]
     public function read(): string
     {
         return $this->read;

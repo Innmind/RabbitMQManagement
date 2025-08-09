@@ -14,32 +14,20 @@ use Innmind\RabbitMQ\Management\Model\{
  */
 final class Consumer
 {
-    private Tag $tag;
-    private Name $channel;
-    private Identity $queue;
-    private Connection\Name $connection;
-    private bool $ackRequired;
-    private bool $exclusive;
-
     private function __construct(
-        Tag $tag,
-        Name $channel,
-        Identity $queue,
-        Connection\Name $connection,
-        bool $ackRequired,
-        bool $exclusive,
+        private Tag $tag,
+        private Name $channel,
+        private Identity $queue,
+        private Connection\Name $connection,
+        private bool $ackRequired,
+        private bool $exclusive,
     ) {
-        $this->tag = $tag;
-        $this->channel = $channel;
-        $this->queue = $queue;
-        $this->connection = $connection;
-        $this->ackRequired = $ackRequired;
-        $this->exclusive = $exclusive;
     }
 
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Tag $tag,
         Name $channel,
@@ -58,31 +46,37 @@ final class Consumer
         );
     }
 
+    #[\NoDiscard]
     public function tag(): Tag
     {
         return $this->tag;
     }
 
+    #[\NoDiscard]
     public function channel(): Name
     {
         return $this->channel;
     }
 
+    #[\NoDiscard]
     public function queue(): Identity
     {
         return $this->queue;
     }
 
+    #[\NoDiscard]
     public function connection(): Connection\Name
     {
         return $this->connection;
     }
 
+    #[\NoDiscard]
     public function ackRequired(): bool
     {
         return $this->ackRequired;
     }
 
+    #[\NoDiscard]
     public function exclusive(): bool
     {
         return $this->exclusive;

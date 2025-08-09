@@ -10,23 +10,17 @@ use Innmind\RabbitMQ\Management\Model\Count;
  */
 final class Messages
 {
-    private Count $uncommitted;
-    private Count $unconfirmed;
-    private Count $unacknowledged;
-
     private function __construct(
-        Count $uncommitted,
-        Count $unconfirmed,
-        Count $unacknowledged,
+        private Count $uncommitted,
+        private Count $unconfirmed,
+        private Count $unacknowledged,
     ) {
-        $this->uncommitted = $uncommitted;
-        $this->unconfirmed = $unconfirmed;
-        $this->unacknowledged = $unacknowledged;
     }
 
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Count $uncommitted,
         Count $unconfirmed,
@@ -35,16 +29,19 @@ final class Messages
         return new self($uncommitted, $unconfirmed, $unacknowledged);
     }
 
+    #[\NoDiscard]
     public function uncommitted(): Count
     {
         return $this->uncommitted;
     }
 
+    #[\NoDiscard]
     public function unconfirmed(): Count
     {
         return $this->unconfirmed;
     }
 
+    #[\NoDiscard]
     public function unacknowledged(): Count
     {
         return $this->unacknowledged;

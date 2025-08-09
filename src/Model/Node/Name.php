@@ -15,13 +15,10 @@ use Innmind\Immutable\{
  */
 final class Name
 {
-    private string $value;
-    private Host $host;
-
-    private function __construct(string $value, Host $host)
-    {
-        $this->value = $value;
-        $this->host = $host;
+    private function __construct(
+        private string $value,
+        private Host $host,
+    ) {
     }
 
     /**
@@ -29,6 +26,7 @@ final class Name
      *
      * @throws DomainException
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return self::maybe($value)->match(
@@ -42,6 +40,7 @@ final class Name
      *
      * @return Maybe<self>
      */
+    #[\NoDiscard]
     public static function maybe(string $value): Maybe
     {
         return Str::of($value)
@@ -52,11 +51,13 @@ final class Name
             ->map(static fn($host) => new self($value, $host));
     }
 
+    #[\NoDiscard]
     public function host(): Host
     {
         return $this->host;
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return $this->value;

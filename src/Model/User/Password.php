@@ -8,28 +8,28 @@ namespace Innmind\RabbitMQ\Management\Model\User;
  */
 final class Password
 {
-    private string $hash;
-    private string $algorithm;
-
-    private function __construct(string $hash, string $algorithm)
-    {
-        $this->hash = $hash;
-        $this->algorithm = $algorithm;
+    private function __construct(
+        private string $hash,
+        private string $algorithm,
+    ) {
     }
 
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(string $hash, string $algorithm): self
     {
         return new self($hash, $algorithm);
     }
 
+    #[\NoDiscard]
     public function algorithm(): string
     {
         return $this->algorithm;
     }
 
+    #[\NoDiscard]
     public function hash(): string
     {
         return $this->hash;

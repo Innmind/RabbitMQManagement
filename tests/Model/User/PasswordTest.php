@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Tests\Innmind\RabbitMQ\Management\Model\User;
 
 use Innmind\RabbitMQ\Management\Model\User\Password;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class PasswordTest extends TestCase
 {

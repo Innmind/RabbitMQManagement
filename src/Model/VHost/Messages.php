@@ -10,23 +10,17 @@ use Innmind\RabbitMQ\Management\Model\Count;
  */
 final class Messages
 {
-    private Count $total;
-    private Count $ready;
-    private Count $unacknowledged;
-
     private function __construct(
-        Count $total,
-        Count $ready,
-        Count $unacknowledged,
+        private Count $total,
+        private Count $ready,
+        private Count $unacknowledged,
     ) {
-        $this->total = $total;
-        $this->ready = $ready;
-        $this->unacknowledged = $unacknowledged;
     }
 
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Count $total,
         Count $ready,
@@ -35,16 +29,19 @@ final class Messages
         return new self($total, $ready, $unacknowledged);
     }
 
+    #[\NoDiscard]
     public function total(): Count
     {
         return $this->total;
     }
 
+    #[\NoDiscard]
     public function ready(): Count
     {
         return $this->ready;
     }
 
+    #[\NoDiscard]
     public function unacknowledged(): Count
     {
         return $this->unacknowledged;

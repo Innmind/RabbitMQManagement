@@ -36,7 +36,7 @@ $status->consumers();
 $status->queues();
 $status->nodes();
 
-$control = Control::of($server);
+$control = Control::of($os->control());
 $control->users();
 $control->vhosts();
 $control->permissions();

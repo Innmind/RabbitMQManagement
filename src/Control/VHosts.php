@@ -8,30 +8,29 @@ use Innmind\Server\Control\{
     Server\Command,
 };
 use Innmind\Immutable\{
-    Maybe,
+    Attempt,
     SideEffect,
 };
 
 final class VHosts
 {
-    private Server $server;
-    private Command $command;
-
-    private function __construct(Server $server)
-    {
-        $this->server = $server;
-        $this->command = Command::foreground('rabbitmqadmin');
+    private function __construct(
+        private Server $server,
+        private Command $command,
+    ) {
     }
 
+    #[\NoDiscard]
     public static function of(Server $server): self
     {
-        return new self($server);
+        return new self($server, Command::foreground('rabbitmqadmin'));
     }
 
     /**
-     * @return Maybe<SideEffect>
+     * @return Attempt<SideEffect>
      */
-    public function declare(string $name): Maybe
+    #[\NoDiscard]
+    public function declare(string $name): Attempt
     {
         return $this
             ->server
@@ -43,15 +42,17 @@ final class VHosts
                     ->withArgument('vhost')
                     ->withArgument('name='.$name),
             )
-            ->wait()
-            ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->attempt(
+                static fn($error) => new \RuntimeException($error::class),
+            ))
             ->map(static fn() => new SideEffect);
     }
 
     /**
-     * @return Maybe<SideEffect>
+     * @return Attempt<SideEffect>
      */
-    public function delete(string $name): Maybe
+    #[\NoDiscard]
+    public function delete(string $name): Attempt
     {
         return $this
             ->server
@@ -63,8 +64,9 @@ final class VHosts
                     ->withArgument('vhost')
                     ->withArgument('name='.$name),
             )
-            ->wait()
-            ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->attempt(
+                static fn($error) => new \RuntimeException($error::class),
+            ))
             ->map(static fn() => new SideEffect);
     }
 }

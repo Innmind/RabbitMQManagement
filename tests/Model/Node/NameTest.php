@@ -8,7 +8,7 @@ use Innmind\RabbitMQ\Management\{
     Exception\DomainException,
 };
 use Innmind\Url\Authority\Host;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class NameTest extends TestCase
 {

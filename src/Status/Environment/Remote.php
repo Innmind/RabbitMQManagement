@@ -13,26 +13,16 @@ use Innmind\Url\{
 
 final class Remote implements Environment
 {
-    private Host $host;
-    private Port $port;
-    private string $username;
-    private string $password;
-    private ?Path $vhost;
-
     private function __construct(
-        Host $host,
-        Port $port,
-        string $username,
-        string $password,
-        ?Path $vhost,
+        private Host $host,
+        private Port $port,
+        private string $username,
+        private string $password,
+        private ?Path $vhost,
     ) {
-        $this->host = $host;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
-        $this->vhost = $vhost;
     }
 
+    #[\Override]
     public function __invoke(Command $command): Command
     {
         if ($this->vhost) {
@@ -48,10 +38,10 @@ final class Remote implements Environment
 
     public static function of(
         Host $host,
-        Port $port = null,
-        string $username = null,
-        string $password = null,
-        Path $vhost = null,
+        ?Port $port = null,
+        ?string $username = null,
+        ?string $password = null,
+        ?Path $vhost = null,
     ): self {
         return new self(
             $host,

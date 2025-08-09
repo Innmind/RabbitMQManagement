@@ -13,35 +13,35 @@ use Innmind\RabbitMQ\Management\Model\Node\{
  */
 final class Node
 {
-    private Name $name;
-    private Type $type;
-    private bool $running;
-
-    private function __construct(Name $name, Type $type, bool $running)
-    {
-        $this->name = $name;
-        $this->type = $type;
-        $this->running = $running;
+    private function __construct(
+        private Name $name,
+        private Type $type,
+        private bool $running,
+    ) {
     }
 
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(Name $name, Type $type, bool $running): self
     {
         return new self($name, $type, $running);
     }
 
+    #[\NoDiscard]
     public function name(): Name
     {
         return $this->name;
     }
 
+    #[\NoDiscard]
     public function type(): Type
     {
         return $this->type;
     }
 
+    #[\NoDiscard]
     public function running(): bool
     {
         return $this->running;

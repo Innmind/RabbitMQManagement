@@ -11,7 +11,7 @@ use Innmind\RabbitMQ\Management\Model\{
     VHost\Name as VHostName,
     Connection\Name as ConnectionName
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ConsumerTest extends TestCase
 {

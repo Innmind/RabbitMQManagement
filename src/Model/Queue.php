@@ -15,40 +15,20 @@ use Innmind\Immutable\Maybe;
  */
 final class Queue
 {
-    private Identity $identity;
-    private Messages $messages;
-    /** @var Maybe<PointInTime> */
-    private Maybe $idleSince;
-    private Count $consumers;
-    private State $state;
-    private Node\Name $node;
-    private bool $exclusive;
-    private bool $autoDelete;
-    private bool $durable;
-
     /**
      * @param Maybe<PointInTime> $idleSince
      */
     private function __construct(
-        Identity $identity,
-        Messages $messages,
-        Maybe $idleSince,
-        Count $consumers,
-        State $state,
-        Node\Name $node,
-        bool $exclusive,
-        bool $autoDelete,
-        bool $durable,
+        private Identity $identity,
+        private Messages $messages,
+        private Maybe $idleSince,
+        private Count $consumers,
+        private State $state,
+        private Node\Name $node,
+        private bool $exclusive,
+        private bool $autoDelete,
+        private bool $durable,
     ) {
-        $this->identity = $identity;
-        $this->messages = $messages;
-        $this->idleSince = $idleSince;
-        $this->consumers = $consumers;
-        $this->state = $state;
-        $this->node = $node;
-        $this->exclusive = $exclusive;
-        $this->autoDelete = $autoDelete;
-        $this->durable = $durable;
     }
 
     /**
@@ -56,6 +36,7 @@ final class Queue
      *
      * @param Maybe<PointInTime> $idleSince
      */
+    #[\NoDiscard]
     public static function of(
         Identity $identity,
         Messages $messages,
@@ -80,11 +61,13 @@ final class Queue
         );
     }
 
+    #[\NoDiscard]
     public function identity(): Identity
     {
         return $this->identity;
     }
 
+    #[\NoDiscard]
     public function messages(): Messages
     {
         return $this->messages;
@@ -93,36 +76,43 @@ final class Queue
     /**
      * @return Maybe<PointInTime>
      */
+    #[\NoDiscard]
     public function idleSince(): Maybe
     {
         return $this->idleSince;
     }
 
+    #[\NoDiscard]
     public function consumers(): Count
     {
         return $this->consumers;
     }
 
+    #[\NoDiscard]
     public function state(): State
     {
         return $this->state;
     }
 
+    #[\NoDiscard]
     public function node(): Node\Name
     {
         return $this->node;
     }
 
+    #[\NoDiscard]
     public function exclusive(): bool
     {
         return $this->exclusive;
     }
 
+    #[\NoDiscard]
     public function autoDelete(): bool
     {
         return $this->autoDelete;
     }
 
+    #[\NoDiscard]
     public function durable(): bool
     {
         return $this->durable;

@@ -9,7 +9,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Exchange\Type,
     VHost\Name as VHostName
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ExchangeTest extends TestCase
 {

@@ -13,32 +13,20 @@ use Innmind\RabbitMQ\Management\Model\{
  */
 final class Exchange
 {
-    private Name $name;
-    private VHost\Name $vhost;
-    private Type $type;
-    private bool $durable;
-    private bool $autoDelete;
-    private bool $internal;
-
     private function __construct(
-        Name $name,
-        VHost\Name $vhost,
-        Type $type,
-        bool $durable,
-        bool $autoDelete,
-        bool $internal,
+        private Name $name,
+        private VHost\Name $vhost,
+        private Type $type,
+        private bool $durable,
+        private bool $autoDelete,
+        private bool $internal,
     ) {
-        $this->name = $name;
-        $this->vhost = $vhost;
-        $this->type = $type;
-        $this->durable = $durable;
-        $this->autoDelete = $autoDelete;
-        $this->internal = $internal;
     }
 
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Name $name,
         VHost\Name $vhost,
@@ -57,31 +45,37 @@ final class Exchange
         );
     }
 
+    #[\NoDiscard]
     public function name(): Name
     {
         return $this->name;
     }
 
+    #[\NoDiscard]
     public function vhost(): VHost\Name
     {
         return $this->vhost;
     }
 
+    #[\NoDiscard]
     public function type(): Type
     {
         return $this->type;
     }
 
+    #[\NoDiscard]
     public function durable(): bool
     {
         return $this->durable;
     }
 
+    #[\NoDiscard]
     public function autoDelete(): bool
     {
         return $this->autoDelete;
     }
 
+    #[\NoDiscard]
     public function internal(): bool
     {
         return $this->internal;

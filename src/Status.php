@@ -29,292 +29,650 @@ use Innmind\Server\Control\{
 };
 use Innmind\TimeContinuum\{
     Clock,
-    PointInTime,
+    Format,
 };
 use Innmind\Url\Authority\{
     Host,
     Port,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Sequence,
     Maybe,
+    Monoid\Concat,
 };
 
 final class Status
 {
-    private Server $server;
-    private Clock $clock;
-    private Environment $environment;
-    private Command $command;
-
     private function __construct(
-        Server $server,
-        Clock $clock,
-        Environment $environment = null,
+        private Server $server,
+        private Clock $clock,
+        private Environment $environment,
+        private Command $command,
     ) {
-        $this->server = $server;
-        $this->clock = $clock;
-        $this->environment = $environment ?? Environment\Local::of();
-        $this->command = Command::foreground('rabbitmqadmin')
-            ->withShortOption('f', 'raw_json')
-            ->withArgument('list');
     }
 
+    #[\NoDiscard]
     public static function of(
         Server $server,
         Clock $clock,
-        Environment $environment = null,
+        ?Environment $environment = null,
     ): self {
-        return new self($server, $clock, $environment);
+        return new self(
+            $server,
+            $clock,
+            $environment ?? Environment\Local::of(),
+            Command::foreground('rabbitmqadmin')
+                ->withShortOption('f', 'raw_json')
+                ->withArgument('list'),
+        );
     }
 
     /**
      * @return Sequence<User>
      */
+    #[\NoDiscard]
     public function users(): Sequence
     {
-        /** @var Sequence<array{name: string, password_hash: string, hashing_algorithm: string, tags: string}> */
-        $users = $this->list('users');
-
-        return $users->map(static fn($user) => User::of(
-            User\Name::of($user['name']),
-            User\Password::of(
-                $user['password_hash'],
-                $user['hashing_algorithm'],
-            ),
-            ...\explode(',', $user['tags']),
-        ));
+        /** @psalm-suppress MixedArgument */
+        return $this
+            ->list('users')
+            ->map(
+                Is::shape(
+                    'name',
+                    Is::string()->map(User\Name::of(...)),
+                )
+                    ->with(
+                        'password_hash',
+                        Is::string(),
+                    )
+                    ->with(
+                        'hashing_algorithm',
+                        Is::string(),
+                    )
+                    ->with(
+                        'tags',
+                        Is::string(),
+                    )
+                    ->map(static fn($shape) => User::of(
+                        $shape['name'],
+                        User\Password::of(
+                            $shape['password_hash'],
+                            $shape['hashing_algorithm'],
+                        ),
+                        ...\explode(',', $shape['tags']),
+                    )),
+            )
+            ->flatMap(static fn($user) => $user->maybe()->toSequence());
     }
 
     /**
      * @return Sequence<VHost>
      */
+    #[\NoDiscard]
     public function vhosts(): Sequence
     {
-        /** @var Sequence<array{name: string, messages: 0|positive-int, messages_ready: 0|positive-int, messages_unacknowledged: 0|positive-int, tracing: bool}> */
-        $vhosts = $this->list('vhosts');
-
-        return $vhosts->map(static fn($vhost) => VHost::of(
-            VHost\Name::of($vhost['name']),
-            VHost\Messages::of(
-                Count::of($vhost['messages']),
-                Count::of($vhost['messages_ready']),
-                Count::of($vhost['messages_unacknowledged']),
-            ),
-            $vhost['tracing'],
-        ));
+        /** @psalm-suppress MixedArgument */
+        return $this
+            ->list('vhosts')
+            ->map(
+                Is::shape(
+                    'name',
+                    Is::string()->map(VHost\Name::of(...)),
+                )
+                    ->with(
+                        'messages',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'messages_ready',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'messages_unacknowledged',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'tracing',
+                        Is::bool(),
+                    )
+                    ->map(static fn($shape) => VHost::of(
+                        $shape['name'],
+                        VHost\Messages::of(
+                            $shape['messages'],
+                            $shape['messages_ready'],
+                            $shape['messages_unacknowledged'],
+                        ),
+                        $shape['tracing'],
+                    )),
+            )
+            ->flatMap(static fn($vhost) => $vhost->maybe()->toSequence());
     }
 
     /**
      * @return Sequence<Connection>
      */
+    #[\NoDiscard]
     public function connections(): Sequence
     {
-        /** @var Sequence<array{name: string, connected_at: int, timeout: 0|positive-int, vhost: string, user: string, protocol: string, auth_mechanism: string, ssl: bool, peer_host: string, peer_port: int, host: string, port: int, node: string, type: 'network'|'direct', state: 'running'|'idle'}> */
-        $connections = $this->list('connections');
-
-        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
-        return $connections
+        /** @psalm-suppress MixedArgument */
+        return $this
+            ->list('connections')
             ->map(
-                fn($connection) => Maybe::all(
-                    $this
-                        ->clock
-                        ->at(\date(
-                            \DateTime::ATOM,
-                            (int) \round($connection['connected_at'] / 1000),
-                        )),
-                    Node\Name::maybe($connection['node']),
+                Is::shape(
+                    'name',
+                    Is::string()->map(Connection\Name::of(...)),
                 )
-                    ->map(static fn(PointInTime $connectedAt, Node\Name $node) => Connection::of(
-                        Connection\Name::of($connection['name']),
-                        $connectedAt,
-                        Timeout::of($connection['timeout']),
-                        VHost\Name::of($connection['vhost']),
-                        User\Name::of($connection['user']),
-                        Protocol::of($connection['protocol']),
-                        AuthenticationMechanism::of($connection['auth_mechanism']),
-                        $connection['ssl'],
+                    ->with(
+                        'connected_at',
+                        Is::int()
+                            ->map(static fn($value) => (string) (int) ($value / 1000))
+                            ->map(
+                                $this
+                                    ->clock
+                                    ->ofFormat(Format::of('U'))
+                                    ->at(...),
+                            )
+                            ->and(Is::just()),
+                    )
+                    ->with(
+                        'timeout',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Timeout::of(...)),
+                    )
+                    ->with(
+                        'vhost',
+                        Is::string()->map(VHost\Name::of(...)),
+                    )
+                    ->with(
+                        'user',
+                        Is::string()->map(User\Name::of(...)),
+                    )
+                    ->with(
+                        'protocol',
+                        Is::string()->map(Protocol::of(...)),
+                    )
+                    ->with(
+                        'auth_mechanism',
+                        Is::string()->map(AuthenticationMechanism::of(...)),
+                    )
+                    ->with(
+                        'ssl',
+                        Is::bool(),
+                    )
+                    ->with(
+                        'peer_host',
+                        Is::string()->map(Host::of(...)),
+                    )
+                    ->with(
+                        'peer_port',
+                        Is::int()->map(Port::of(...)),
+                    )
+                    ->with(
+                        'host',
+                        Is::string()->map(Host::of(...)),
+                    )
+                    ->with(
+                        'port',
+                        Is::int()->map(Port::of(...)),
+                    )
+                    ->with(
+                        'node',
+                        Is::string()
+                            ->map(Node\Name::maybe(...))
+                            ->and(Is::just()),
+                    )
+                    ->with(
+                        'type',
+                        Is::value('network')
+                            ->map(static fn() => Connection\Type::network)
+                            ->or(Is::value('direct')->map(
+                                static fn() => Connection\Type::direct,
+                            )),
+                    )
+                    ->with(
+                        'state',
+                        Is::value('running')
+                            ->map(static fn() => State::running)
+                            ->or(Is::value('idle')->map(
+                                static fn() => State::idle,
+                            )),
+                    )
+                    ->map(static fn($shape) => Connection::of(
+                        $shape['name'],
+                        $shape['connected_at'],
+                        $shape['timeout'],
+                        $shape['vhost'],
+                        $shape['user'],
+                        $shape['protocol'],
+                        $shape['auth_mechanism'],
+                        $shape['ssl'],
                         Peer::of(
-                            Host::of($connection['peer_host']),
-                            Port::of($connection['peer_port']),
+                            $shape['peer_host'],
+                            $shape['peer_port'],
                         ),
-                        Host::of($connection['host']),
-                        Port::of($connection['port']),
-                        $node,
-                        match ($connection['type']) {
-                            'network' => Connection\Type::network,
-                            'direct' => Connection\Type::direct,
-                        },
-                        match ($connection['state']) {
-                            'running' => State::running,
-                            'idle' => State::idle,
-                        },
+                        $shape['host'],
+                        $shape['port'],
+                        $shape['node'],
+                        $shape['type'],
+                        $shape['state'],
                     )),
             )
-            ->flatMap(static fn($maybe) => $maybe->match(
-                static fn($connection) => Sequence::of($connection),
-                static fn() => Sequence::of(),
-            ));
+            ->flatMap(static fn($connection) => $connection->maybe()->toSequence());
     }
 
     /**
      * @return Sequence<Exchange>
      */
+    #[\NoDiscard]
     public function exchanges(): Sequence
     {
-        /** @var Sequence<array{name: string, vhost: string, type: 'topic'|'headers'|'direct'|'fanout', durable: bool, auto_delete: bool, internal: bool}> */
-        $exchanges = $this->list('exchanges');
-
-        return $exchanges->map(static fn($exchange) => Exchange::of(
-            Exchange\Name::of($exchange['name']),
-            VHost\Name::of($exchange['vhost']),
-            match ($exchange['type']) {
-                'topic' => Exchange\Type::topic,
-                'headers' => Exchange\Type::headers,
-                'direct' => Exchange\Type::direct,
-                'fanout' => Exchange\Type::fanout,
-            },
-            $exchange['durable'],
-            $exchange['auto_delete'],
-            $exchange['internal'],
-        ));
+        /** @psalm-suppress MixedArgument */
+        return $this
+            ->list('exchanges')
+            ->map(
+                Is::shape(
+                    'name',
+                    Is::string()->map(Exchange\Name::of(...)),
+                )
+                    ->with(
+                        'vhost',
+                        Is::string()->map(VHost\Name::of(...)),
+                    )
+                    ->with(
+                        'type',
+                        Is::value('topic')
+                            ->map(static fn() => Exchange\Type::topic)
+                            ->or(Is::value('headers')->map(
+                                static fn() => Exchange\Type::headers,
+                            ))
+                            ->or(Is::value('direct')->map(
+                                static fn() => Exchange\Type::direct,
+                            ))
+                            ->or(Is::value('fanout')->map(
+                                static fn() => Exchange\Type::fanout,
+                            )),
+                    )
+                    ->with(
+                        'durable',
+                        Is::bool(),
+                    )
+                    ->with(
+                        'auto_delete',
+                        Is::bool(),
+                    )
+                    ->with(
+                        'internal',
+                        Is::bool(),
+                    )
+                    ->map(static fn($shape) => Exchange::of(
+                        $shape['name'],
+                        $shape['vhost'],
+                        $shape['type'],
+                        $shape['durable'],
+                        $shape['auto_delete'],
+                        $shape['internal'],
+                    )),
+            )
+            ->flatMap(static fn($exchange) => $exchange->maybe()->toSequence());
     }
 
     /**
      * @return Sequence<Permission>
      */
+    #[\NoDiscard]
     public function permissions(): Sequence
     {
-        /** @var Sequence<array{user: string, vhost: string, configure: string, write: string, read: string}> */
-        $permissions = $this->list('permissions');
-
-        return $permissions->map(static fn($permission) => Permission::of(
-            User\Name::of($permission['user']),
-            VHost\Name::of($permission['vhost']),
-            $permission['configure'],
-            $permission['write'],
-            $permission['read'],
-        ));
+        /** @psalm-suppress MixedArgument */
+        return $this
+            ->list('permissions')
+            ->map(
+                Is::shape(
+                    'user',
+                    Is::string()->map(User\Name::of(...)),
+                )
+                    ->with(
+                        'vhost',
+                        Is::string()->map(VHost\Name::of(...)),
+                    )
+                    ->with(
+                        'configure',
+                        Is::string(),
+                    )
+                    ->with(
+                        'write',
+                        Is::string(),
+                    )
+                    ->with(
+                        'read',
+                        Is::string(),
+                    )
+                    ->map(static fn($shape) => Permission::of(
+                        $shape['user'],
+                        $shape['vhost'],
+                        $shape['configure'],
+                        $shape['write'],
+                        $shape['read'],
+                    )),
+            )
+            ->flatMap(static fn($permission) => $permission->maybe()->toSequence());
     }
 
     /**
      * @return Sequence<Channel>
      */
+    #[\NoDiscard]
     public function channels(): Sequence
     {
-        /** @var Sequence<array{name: string, vhost: string, user: string, number: int, node: string, state: 'running'|'idle', messages_uncommitted: 0|positive-int, messages_unconfirmed: 0|positive-int, messages_unacknowledged: 0|positive-int, consumer_count: 0|positive-int, confirm: bool, transactional: bool, idle_since?: string}> */
-        $channels = $this->list('channels');
-
-        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
-        return $channels
-            ->map(fn($channel) => Node\Name::maybe($channel['node'])->map(
-                fn($node) => Channel::of(
-                    Channel\Name::of($channel['name']),
-                    VHost\Name::of($channel['vhost']),
-                    User\Name::of($channel['user']),
-                    $channel['number'],
-                    $node,
-                    match ($channel['state']) {
-                        'running' => State::running,
-                        'idle' => State::idle,
-                    },
-                    Channel\Messages::of(
-                        Count::of($channel['messages_uncommitted']),
-                        Count::of($channel['messages_unconfirmed']),
-                        Count::of($channel['messages_unacknowledged']),
-                    ),
-                    Count::of($channel['consumer_count']),
-                    $channel['confirm'],
-                    $channel['transactional'],
-                    Maybe::of($channel['idle_since'] ?? null)->flatMap(
-                        $this->clock->at(...),
-                    ),
-                ),
-            ))
-            ->flatMap(static fn($maybe) => $maybe->match(
-                static fn($channel) => Sequence::of($channel),
-                static fn() => Sequence::of(),
-            ));
+        /** @psalm-suppress MixedArgument */
+        return $this
+            ->list('channels')
+            ->map(
+                Is::shape(
+                    'name',
+                    Is::string()->map(Channel\Name::of(...)),
+                )
+                    ->with(
+                        'vhost',
+                        Is::string()->map(VHost\Name::of(...)),
+                    )
+                    ->with(
+                        'user',
+                        Is::string()->map(User\Name::of(...)),
+                    )
+                    ->with(
+                        'number',
+                        Is::int(),
+                    )
+                    ->with(
+                        'node',
+                        Is::string()
+                            ->map(Node\Name::maybe(...))
+                            ->and(Is::just()),
+                    )
+                    ->with(
+                        'state',
+                        Is::value('running')
+                            ->map(static fn() => State::running)
+                            ->or(Is::value('idle')->map(
+                                static fn() => State::idle,
+                            )),
+                    )
+                    ->with(
+                        'messages_uncommitted',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'messages_unconfirmed',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'messages_unacknowledged',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'consumer_count',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'confirm',
+                        Is::bool(),
+                    )
+                    ->with(
+                        'transactional',
+                        Is::bool(),
+                    )
+                    ->optional(
+                        'idle_since',
+                        Is::string()
+                            ->nonEmpty()
+                            ->map(
+                                $this
+                                    ->clock
+                                    ->ofFormat(Format::of('Y-m-d G:i:s'))
+                                    ->at(...),
+                            ),
+                    )
+                    ->default('idle_since', Maybe::nothing())
+                    ->map(static fn($shape) => Channel::of(
+                        $shape['name'],
+                        $shape['vhost'],
+                        $shape['user'],
+                        $shape['number'],
+                        $shape['node'],
+                        $shape['state'],
+                        Channel\Messages::of(
+                            $shape['messages_uncommitted'],
+                            $shape['messages_unconfirmed'],
+                            $shape['messages_unacknowledged'],
+                        ),
+                        $shape['consumer_count'],
+                        $shape['confirm'],
+                        $shape['transactional'],
+                        $shape['idle_since'],
+                    )),
+            )
+            ->flatMap(static fn($channel) => $channel->maybe()->toSequence());
     }
 
     /**
      * @return Sequence<Consumer>
      */
+    #[\NoDiscard]
     public function consumers(): Sequence
     {
-        /** @var Sequence<array{consumer_tag: string, channel_details: array{name: string, connection_name: string}, queue: array{name: string, vhost: string}, ack_required: bool, exclusive: bool}> */
-        $consumers = $this->list('consumers');
-
-        return $consumers->map(static fn($consumer) => Consumer::of(
-            Tag::of($consumer['consumer_tag']),
-            Channel\Name::of($consumer['channel_details']['name']),
-            Identity::of(
-                $consumer['queue']['name'],
-                VHost\Name::of($consumer['queue']['vhost']),
-            ),
-            Connection\Name::of($consumer['channel_details']['connection_name']),
-            $consumer['ack_required'],
-            $consumer['exclusive'],
-        ));
+        /** @psalm-suppress MixedArgument,MixedArrayAccess */
+        return $this
+            ->list('consumers')
+            ->map(
+                Is::shape(
+                    'consumer_tag',
+                    Is::string()->map(Tag::of(...)),
+                )
+                    ->with(
+                        'channel_details',
+                        Is::shape(
+                            'name',
+                            Is::string()->map(Channel\Name::of(...)),
+                        )
+                            ->with(
+                                'connection_name',
+                                Is::string()->map(Connection\Name::of(...)),
+                            ),
+                    )
+                    ->with(
+                        'queue',
+                        Is::shape(
+                            'name',
+                            Is::string(),
+                        )
+                            ->with(
+                                'vhost',
+                                Is::string()->map(VHost\Name::of(...)),
+                            ),
+                    )
+                    ->with(
+                        'ack_required',
+                        Is::bool(),
+                    )
+                    ->with(
+                        'exclusive',
+                        Is::bool(),
+                    )
+                    ->map(static fn($shape) => Consumer::of(
+                        $shape['consumer_tag'],
+                        $shape['channel_details']['name'],
+                        Identity::of(
+                            $shape['queue']['name'],
+                            $shape['queue']['vhost'],
+                        ),
+                        $shape['channel_details']['connection_name'],
+                        $shape['ack_required'],
+                        $shape['exclusive'],
+                    )),
+            )
+            ->flatMap(static fn($consumer) => $consumer->maybe()->toSequence());
     }
 
     /**
      * @return Sequence<Queue>
      */
+    #[\NoDiscard]
     public function queues(): Sequence
     {
-        /** @var Sequence<array{name: string, vhost: string, messages: 0|positive-int, messages_ready: 0|positive-int, messages_unacknowledged: 0|positive-int, idle_since?: string, consumers: 0|positive-int, state: 'running'|'idle', node: string, exclusive: bool, auto_delete: bool, durable: bool}> */
-        $queues = $this->list('queues');
-
-        return $queues->map(fn($queue) => Queue::of(
-            Identity::of(
-                $queue['name'],
-                VHost\Name::of($queue['vhost']),
-            ),
-            Queue\Messages::of(
-                Count::of($queue['messages']),
-                Count::of($queue['messages_ready']),
-                Count::of($queue['messages_unacknowledged']),
-            ),
-            Maybe::of($queue['idle_since'] ?? null)->flatMap(
-                $this->clock->at(...),
-            ),
-            Count::of($queue['consumers']),
-            match ($queue['state']) {
-                'running' => State::running,
-                'idle' => State::idle,
-            },
-            Node\Name::of($queue['node']),
-            $queue['exclusive'],
-            $queue['auto_delete'],
-            $queue['durable'],
-        ));
+        /** @psalm-suppress MixedArgument */
+        return $this
+            ->list('queues')
+            ->map(
+                Is::shape(
+                    'name',
+                    Is::string(),
+                )
+                    ->with(
+                        'vhost',
+                        Is::string()->map(VHost\Name::of(...)),
+                    )
+                    ->with(
+                        'messages',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'messages_ready',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'messages_unacknowledged',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->optional(
+                        'idle_since',
+                        Is::string()
+                            ->nonEmpty()
+                            ->map(
+                                $this
+                                    ->clock
+                                    ->ofFormat(Format::of('Y-m-d G:i:s'))
+                                    ->at(...),
+                            ),
+                    )
+                    ->default('idle_since', Maybe::nothing())
+                    ->with(
+                        'consumers',
+                        Is::int()
+                            ->positive()
+                            ->or(Is::value(0))
+                            ->map(Count::of(...)),
+                    )
+                    ->with(
+                        'state',
+                        Is::value('running')
+                            ->map(static fn() => State::running)
+                            ->or(Is::value('idle')->map(
+                                static fn() => State::idle,
+                            )),
+                    )
+                    ->with(
+                        'node',
+                        Is::string()->map(Node\Name::of(...)),
+                    )
+                    ->with(
+                        'exclusive',
+                        Is::bool(),
+                    )
+                    ->with(
+                        'auto_delete',
+                        Is::bool(),
+                    )
+                    ->with(
+                        'durable',
+                        Is::bool(),
+                    )
+                    ->map(static fn($shape) => Queue::of(
+                        Identity::of(
+                            $shape['name'],
+                            $shape['vhost'],
+                        ),
+                        Queue\Messages::of(
+                            $shape['messages'],
+                            $shape['messages_ready'],
+                            $shape['messages_unacknowledged'],
+                        ),
+                        $shape['idle_since'],
+                        $shape['consumers'],
+                        $shape['state'],
+                        $shape['node'],
+                        $shape['exclusive'],
+                        $shape['auto_delete'],
+                        $shape['durable'],
+                    )),
+            )
+            ->flatMap(static fn($queue) => $queue->maybe()->toSequence());
     }
 
     /**
      * @return Sequence<Node>
      */
+    #[\NoDiscard]
     public function nodes(): Sequence
     {
-        /** @var Sequence<array{name: string, type: 'disc'|'ram', running: bool}> */
-        $nodes = $this->list('nodes');
-
-        /** @psalm-suppress InvalidArgument Due to empty Sequence in the flatMap */
-        return $nodes
-            ->map(static fn($node) => Node\Name::maybe($node['name'])->map(
-                static fn($name) => Node::of(
-                    $name,
-                    match ($node['type']) {
-                        'disc' => Node\Type::disc,
-                        'ram' => Node\Type::ram,
-                    },
-                    $node['running'],
-                ),
-            ))
-            ->flatMap(static fn($maybe) => $maybe->match(
-                static fn($node) => Sequence::of($node),
-                static fn() => Sequence::of(),
-            ));
+        /** @psalm-suppress MixedArgument */
+        return $this
+            ->list('nodes')
+            ->map(
+                Is::shape(
+                    'name',
+                    Is::string()
+                        ->map(Node\Name::maybe(...))
+                        ->and(Is::just()),
+                )
+                    ->with(
+                        'type',
+                        Is::value('disc')
+                            ->map(static fn() => Node\Type::disc)
+                            ->or(Is::value('ram')->map(
+                                static fn() => Node\Type::ram,
+                            )),
+                    )
+                    ->with('running', Is::bool())
+                    ->map(static fn($shape) => Node::of(
+                        $shape['name'],
+                        $shape['type'],
+                        $shape['running'],
+                    )),
+            )
+            ->flatMap(static fn($node) => $node->maybe()->toSequence());
     }
 
     /**
@@ -322,26 +680,27 @@ final class Status
      */
     private function list(string $element): Sequence
     {
-        $process = $this
+        return $this
             ->server
             ->processes()
             ->execute(
                 ($this->environment)(
                     $this->command->withArgument($element),
                 ),
-            );
-
-        /**
-         * @psalm-suppress MixedArgument
-         * @var Sequence<array>
-         */
-        return $process
-            ->wait()
-            ->map(static fn(): mixed => \json_decode($process->output()->toString(), true))
-            ->map(static fn($elements) => Sequence::of(...$elements))
-            ->match(
-                static fn($elements) => $elements,
-                static fn() => Sequence::of(),
-            );
+            )
+            ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat)
+                    ->toString(),
+            )
+            ->map(static fn($output): mixed => \json_decode($output, true))
+            ->keep(Is::list()->asPredicate())
+            ->toSequence()
+            ->flatMap(static fn($elements) => Sequence::of(...$elements))
+            ->keep(Is::array()->asPredicate());
     }
 }

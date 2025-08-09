@@ -8,7 +8,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Node\Name,
     Node\Type
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class NodeTest extends TestCase
 {

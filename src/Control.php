@@ -12,32 +12,36 @@ use Innmind\Server\Control\Server;
 
 final class Control
 {
-    private Users $users;
-    private VHosts $vhosts;
-    private Permissions $permissions;
-
-    private function __construct(Server $server)
-    {
-        $this->users = Users::of($server);
-        $this->vhosts = VHosts::of($server);
-        $this->permissions = Permissions::of($server);
+    private function __construct(
+        private Users $users,
+        private VHosts $vhosts,
+        private Permissions $permissions,
+    ) {
     }
 
+    #[\NoDiscard]
     public static function of(Server $server): self
     {
-        return new self($server);
+        return new self(
+            Users::of($server),
+            VHosts::of($server),
+            Permissions::of($server),
+        );
     }
 
+    #[\NoDiscard]
     public function users(): Users
     {
         return $this->users;
     }
 
+    #[\NoDiscard]
     public function vhosts(): VHosts
     {
         return $this->vhosts;
     }
 
+    #[\NoDiscard]
     public function permissions(): Permissions
     {
         return $this->permissions;

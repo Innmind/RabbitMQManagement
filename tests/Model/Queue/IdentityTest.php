@@ -7,7 +7,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Queue\Identity,
     VHost\Name
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class IdentityTest extends TestCase
 {
