@@ -8,7 +8,7 @@ use Innmind\Server\Control\{
     Server\Command,
 };
 use Innmind\Immutable\{
-    Maybe,
+    Attempt,
     SideEffect,
 };
 
@@ -29,7 +29,7 @@ final class Permissions
     }
 
     /**
-     * @return Maybe<SideEffect>
+     * @return Attempt<SideEffect>
      */
     public function declare(
         string $vhost,
@@ -37,7 +37,7 @@ final class Permissions
         string $configure,
         string $write,
         string $read,
-    ): Maybe {
+    ): Attempt {
         return $this
             ->server
             ->processes()
@@ -52,15 +52,16 @@ final class Permissions
                     ->withArgument('write='.$write)
                     ->withArgument('read='.$read),
             )
-            ->maybe()
-            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->flatMap(static fn($process) => $process->wait()->attempt(
+                static fn($error) => new \RuntimeException($error::class),
+            ))
             ->map(static fn() => new SideEffect);
     }
 
     /**
-     * @return Maybe<SideEffect>
+     * @return Attempt<SideEffect>
      */
-    public function delete(string $vhost, string $user): Maybe
+    public function delete(string $vhost, string $user): Attempt
     {
         return $this
             ->server
@@ -73,8 +74,9 @@ final class Permissions
                     ->withArgument('vhost='.$vhost)
                     ->withArgument('user='.$user),
             )
-            ->maybe()
-            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->flatMap(static fn($process) => $process->wait()->attempt(
+                static fn($error) => new \RuntimeException($error::class),
+            ))
             ->map(static fn() => new SideEffect);
     }
 }
