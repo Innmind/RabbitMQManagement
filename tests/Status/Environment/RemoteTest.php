@@ -13,7 +13,7 @@ use Innmind\Url\{
     Authority\Port,
     Path,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class RemoteTest extends TestCase
 {

@@ -5,6 +5,7 @@
 ### Changed
 
 - Drop support for PHP `8.1`
+- Requires `innmind/foundation:^1.7.1`
 
 ### Fixed
 

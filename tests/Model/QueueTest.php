@@ -14,7 +14,7 @@ use Innmind\RabbitMQ\Management\Model\{
 };
 use Innmind\TimeContinuum\PointInTime;
 use Innmind\Immutable\Maybe;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class QueueTest extends TestCase
 {
@@ -27,7 +27,7 @@ class QueueTest extends TestCase
                 Count::of(0),
                 Count::of(0),
             ),
-            $idleSince = Maybe::of($this->createMock(PointInTime::class)),
+            $idleSince = Maybe::of(PointInTime::now()),
             $consumers = Count::of(0),
             $state = State::running,
             $node = NodeName::of('rabbit@foo'),

@@ -43,8 +43,8 @@ final class VHosts
                     ->withArgument('vhost')
                     ->withArgument('name='.$name),
             )
-            ->wait()
             ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
             ->map(static fn() => new SideEffect);
     }
 
@@ -63,8 +63,8 @@ final class VHosts
                     ->withArgument('vhost')
                     ->withArgument('name='.$name),
             )
-            ->wait()
             ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
             ->map(static fn() => new SideEffect);
     }
 }
