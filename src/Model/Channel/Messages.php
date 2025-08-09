@@ -20,6 +20,7 @@ final class Messages
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Count $uncommitted,
         Count $unconfirmed,
@@ -28,16 +29,19 @@ final class Messages
         return new self($uncommitted, $unconfirmed, $unacknowledged);
     }
 
+    #[\NoDiscard]
     public function uncommitted(): Count
     {
         return $this->uncommitted;
     }
 
+    #[\NoDiscard]
     public function unconfirmed(): Count
     {
         return $this->unconfirmed;
     }
 
+    #[\NoDiscard]
     public function unacknowledged(): Count
     {
         return $this->unacknowledged;

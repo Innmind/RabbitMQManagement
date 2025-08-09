@@ -36,6 +36,7 @@ final class Queue
      *
      * @param Maybe<PointInTime> $idleSince
      */
+    #[\NoDiscard]
     public static function of(
         Identity $identity,
         Messages $messages,
@@ -60,11 +61,13 @@ final class Queue
         );
     }
 
+    #[\NoDiscard]
     public function identity(): Identity
     {
         return $this->identity;
     }
 
+    #[\NoDiscard]
     public function messages(): Messages
     {
         return $this->messages;
@@ -73,36 +76,43 @@ final class Queue
     /**
      * @return Maybe<PointInTime>
      */
+    #[\NoDiscard]
     public function idleSince(): Maybe
     {
         return $this->idleSince;
     }
 
+    #[\NoDiscard]
     public function consumers(): Count
     {
         return $this->consumers;
     }
 
+    #[\NoDiscard]
     public function state(): State
     {
         return $this->state;
     }
 
+    #[\NoDiscard]
     public function node(): Node\Name
     {
         return $this->node;
     }
 
+    #[\NoDiscard]
     public function exclusive(): bool
     {
         return $this->exclusive;
     }
 
+    #[\NoDiscard]
     public function autoDelete(): bool
     {
         return $this->autoDelete;
     }
 
+    #[\NoDiscard]
     public function durable(): bool
     {
         return $this->durable;

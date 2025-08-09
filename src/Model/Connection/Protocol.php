@@ -16,6 +16,7 @@ enum Protocol
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return match ($value) {

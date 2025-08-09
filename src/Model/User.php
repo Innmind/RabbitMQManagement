@@ -28,6 +28,7 @@ final class User
      * @no-named-arguments
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function of(
         Name $name,
         Password $password,
@@ -40,11 +41,13 @@ final class User
         );
     }
 
+    #[\NoDiscard]
     public function name(): Name
     {
         return $this->name;
     }
 
+    #[\NoDiscard]
     public function password(): Password
     {
         return $this->password;
@@ -53,6 +56,7 @@ final class User
     /**
      * @return Set<string>
      */
+    #[\NoDiscard]
     public function tags(): Set
     {
         return $this->tags;
