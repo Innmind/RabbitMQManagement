@@ -11,7 +11,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Connection\AuthenticationMechanism,
     Connection\Type,
 };
-use Innmind\TimeContinuum\PointInTime;
+use Innmind\Time\Point;
 use Innmind\Url\Authority\{
     Host,
     Port,
@@ -24,7 +24,7 @@ final class Connection
 {
     private function __construct(
         private Name $name,
-        private PointInTime $connectedAt,
+        private Point $connectedAt,
         private Timeout $timeout,
         private VHost\Name $vhost,
         private User\Name $user,
@@ -46,7 +46,7 @@ final class Connection
     #[\NoDiscard]
     public static function of(
         Name $name,
-        PointInTime $connectedAt,
+        Point $connectedAt,
         Timeout $timeout,
         VHost\Name $vhost,
         User\Name $user,
@@ -85,7 +85,7 @@ final class Connection
     }
 
     #[\NoDiscard]
-    public function connectedAt(): PointInTime
+    public function connectedAt(): Point
     {
         return $this->connectedAt;
     }

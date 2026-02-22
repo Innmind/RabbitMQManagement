@@ -13,7 +13,7 @@ use Innmind\RabbitMQ\Management\Model\{
     State,
     Count
 };
-use Innmind\TimeContinuum\PointInTime;
+use Innmind\Time\Point;
 use Innmind\Immutable\Maybe;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -36,7 +36,7 @@ class ChannelTest extends TestCase
             $consumers = Count::of(0),
             true,
             false,
-            $idle = Maybe::of(PointInTime::now()),
+            $idle = Maybe::of(Point::now()),
         );
 
         $this->assertSame($name, $channel->name());

@@ -47,7 +47,7 @@ final class Users
             ->flatMap(static fn($process) => $process->wait()->attempt(
                 static fn($error) => new \RuntimeException($error::class),
             ))
-            ->map(static fn() => new SideEffect);
+            ->map(SideEffect::identity(...));
     }
 
     /**
@@ -69,6 +69,6 @@ final class Users
             ->flatMap(static fn($process) => $process->wait()->attempt(
                 static fn($error) => new \RuntimeException($error::class),
             ))
-            ->map(static fn() => new SideEffect);
+            ->map(SideEffect::identity(...));
     }
 }

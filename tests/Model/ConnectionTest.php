@@ -16,7 +16,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Node\Name as NodeName,
     State
 };
-use Innmind\TimeContinuum\PointInTime;
+use Innmind\Time\Point;
 use Innmind\Url\Authority\{
     Host,
     Port
@@ -29,7 +29,7 @@ class ConnectionTest extends TestCase
     {
         $connection = Connection::of(
             $name = Name::of('foo'),
-            $connectedAt = PointInTime::now(),
+            $connectedAt = Point::now(),
             $timeout = Timeout::of(42),
             $vhost = VHostName::of('foo'),
             $user = UserName::of('foo'),

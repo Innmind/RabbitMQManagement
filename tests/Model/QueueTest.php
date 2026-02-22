@@ -12,7 +12,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Node\Name as NodeName,
     State
 };
-use Innmind\TimeContinuum\PointInTime;
+use Innmind\Time\Point;
 use Innmind\Immutable\Maybe;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -27,7 +27,7 @@ class QueueTest extends TestCase
                 Count::of(0),
                 Count::of(0),
             ),
-            $idleSince = Maybe::of(PointInTime::now()),
+            $idleSince = Maybe::of(Point::now()),
             $consumers = Count::of(0),
             $state = State::running,
             $node = NodeName::of('rabbit@foo'),
