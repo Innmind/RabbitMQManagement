@@ -7,7 +7,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Queue\Identity,
     Queue\Messages,
 };
-use Innmind\TimeContinuum\PointInTime;
+use Innmind\Time\Point;
 use Innmind\Immutable\Maybe;
 
 /**
@@ -16,7 +16,7 @@ use Innmind\Immutable\Maybe;
 final class Queue
 {
     /**
-     * @param Maybe<PointInTime> $idleSince
+     * @param Maybe<Point> $idleSince
      */
     private function __construct(
         private Identity $identity,
@@ -34,7 +34,7 @@ final class Queue
     /**
      * @psalm-pure
      *
-     * @param Maybe<PointInTime> $idleSince
+     * @param Maybe<Point> $idleSince
      */
     #[\NoDiscard]
     public static function of(
@@ -74,7 +74,7 @@ final class Queue
     }
 
     /**
-     * @return Maybe<PointInTime>
+     * @return Maybe<Point>
      */
     #[\NoDiscard]
     public function idleSince(): Maybe

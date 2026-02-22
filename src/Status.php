@@ -27,7 +27,7 @@ use Innmind\Server\Control\{
     Server,
     Server\Command,
 };
-use Innmind\TimeContinuum\{
+use Innmind\Time\{
     Clock,
     Format,
 };
@@ -177,10 +177,10 @@ final class Status
                         Is::int()
                             ->map(static fn($value) => (string) (int) ($value / 1000))
                             ->map(
-                                $this
+                                fn($date) => $this
                                     ->clock
-                                    ->ofFormat(Format::of('U'))
-                                    ->at(...),
+                                    ->at($date, Format::of('U'))
+                                    ->maybe(),
                             )
                             ->and(Is::just()),
                     )
@@ -450,10 +450,10 @@ final class Status
                         Is::string()
                             ->nonEmpty()
                             ->map(
-                                $this
+                                fn($date) => $this
                                     ->clock
-                                    ->ofFormat(Format::of('Y-m-d G:i:s'))
-                                    ->at(...),
+                                    ->at($date, Format::of('Y-m-d G:i:s'))
+                                    ->maybe(),
                             ),
                     )
                     ->default('idle_since', Maybe::nothing())
@@ -581,10 +581,10 @@ final class Status
                         Is::string()
                             ->nonEmpty()
                             ->map(
-                                $this
+                                fn($date) => $this
                                     ->clock
-                                    ->ofFormat(Format::of('Y-m-d G:i:s'))
-                                    ->at(...),
+                                    ->at($date, Format::of('Y-m-d G:i:s'))
+                                    ->maybe(),
                             ),
                     )
                     ->default('idle_since', Maybe::nothing())
@@ -694,7 +694,7 @@ final class Status
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat)
+                    ->fold(Concat::monoid)
                     ->toString(),
             )
             ->map(static fn($output): mixed => \json_decode($output, true))
