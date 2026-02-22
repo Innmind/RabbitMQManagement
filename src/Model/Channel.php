@@ -7,7 +7,7 @@ use Innmind\RabbitMQ\Management\Model\{
     Channel\Name,
     Channel\Messages,
 };
-use Innmind\TimeContinuum\PointInTime;
+use Innmind\Time\Point;
 use Innmind\Immutable\Maybe;
 
 /**
@@ -16,7 +16,7 @@ use Innmind\Immutable\Maybe;
 final class Channel
 {
     /**
-     * @param Maybe<PointInTime> $idleSince
+     * @param Maybe<Point> $idleSince
      */
     private function __construct(
         private Name $name,
@@ -36,7 +36,7 @@ final class Channel
     /**
      * @psalm-pure
      *
-     * @param Maybe<PointInTime> $idleSince
+     * @param Maybe<Point> $idleSince
      */
     #[\NoDiscard]
     public static function of(
@@ -128,7 +128,7 @@ final class Channel
     }
 
     /**
-     * @return Maybe<PointInTime>
+     * @return Maybe<Point>
      */
     #[\NoDiscard]
     public function idleSince(): Maybe

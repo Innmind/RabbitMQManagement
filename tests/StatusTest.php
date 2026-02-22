@@ -7,30 +7,42 @@ use Innmind\RabbitMQ\Management\{
     Status,
     Status\Environment\Remote,
 };
-use Innmind\Server\Control\Servers\Mock;
-use Innmind\TimeContinuum\{
+use Innmind\Server\Control\{
+    Server,
+    Server\Process\Builder,
+};
+use Innmind\Time\{
     Clock,
     Format,
 };
 use Innmind\Url\Authority\Host;
-use Innmind\Immutable\Sequence;
+use Innmind\Immutable\{
+    Sequence,
+    Attempt,
+};
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class StatusTest extends TestCase
 {
     public function testUsers()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'users'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"name":"guest","password_hash":"ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+","hashing_algorithm":"rabbit_password_hashing_sha256","tags":"administrator"}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"name":"guest","password_hash":"ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+","hashing_algorithm":"rabbit_password_hashing_sha256","tags":"administrator"}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -39,7 +51,7 @@ class StatusTest extends TestCase
         $users = $status->users();
 
         $this->assertInstanceOf(Sequence::class, $users);
-        $this->assertCount(1, $users);
+        $this->assertSame(1, $users->size());
         $user = $users->find(static fn() => true)->match(
             static fn($user) => $user,
             static fn() => null,
@@ -53,23 +65,29 @@ class StatusTest extends TestCase
             'rabbit_password_hashing_sha256',
             $user->password()->algorithm(),
         );
-        $this->assertCount(1, $user->tags());
+        $this->assertSame(1, $user->tags()->size());
         $this->assertSame(['administrator'], $user->tags()->toList());
     }
 
     public function testRemoteUsers()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'users' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"name":"guest","password_hash":"ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+","hashing_algorithm":"rabbit_password_hashing_sha256","tags":"administrator"}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"name":"guest","password_hash":"ZbsaALrYfNHzlDnxzIZVSzP87B/sYM/lM+kZELz3qRk7vod+","hashing_algorithm":"rabbit_password_hashing_sha256","tags":"administrator"}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -79,7 +97,7 @@ class StatusTest extends TestCase
         $users = $status->users();
 
         $this->assertInstanceOf(Sequence::class, $users);
-        $this->assertCount(1, $users);
+        $this->assertSame(1, $users->size());
         $user = $users->find(static fn() => true)->match(
             static fn($user) => $user,
             static fn() => null,
@@ -93,41 +111,53 @@ class StatusTest extends TestCase
             'rabbit_password_hashing_sha256',
             $user->password()->algorithm(),
         );
-        $this->assertCount(1, $user->tags());
+        $this->assertSame(1, $user->tags()->size());
         $this->assertSame(['administrator'], $user->tags()->toList());
     }
 
     public function testThrowWhenFailToListUsers()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'users'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->users());
+        $this->assertSame(0, $status->users()->size());
     }
 
     public function testVhosts()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"name":"/","tracing":false}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"name":"/","tracing":false}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -136,7 +166,7 @@ class StatusTest extends TestCase
         $vhosts = $status->vhosts();
 
         $this->assertInstanceOf(Sequence::class, $vhosts);
-        $this->assertCount(1, $vhosts);
+        $this->assertSame(1, $vhosts->size());
         $vhost = $vhosts->find(static fn() => true)->match(
             static fn($vhost) => $vhost,
             static fn() => null,
@@ -150,17 +180,23 @@ class StatusTest extends TestCase
 
     public function testRemoteVhosts()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"name":"/","tracing":false}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"name":"/","tracing":false}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -170,7 +206,7 @@ class StatusTest extends TestCase
         $vhosts = $status->vhosts();
 
         $this->assertInstanceOf(Sequence::class, $vhosts);
-        $this->assertCount(1, $vhosts);
+        $this->assertSame(1, $vhosts->size());
         $vhost = $vhosts->find(static fn() => true)->match(
             static fn($vhost) => $vhost,
             static fn() => null,
@@ -184,35 +220,47 @@ class StatusTest extends TestCase
 
     public function testThrowWhenFailToListVhosts()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'vhosts'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->vhosts());
+        $this->assertSame(0, $status->vhosts()->size());
     }
 
     public function testConnections()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'connections'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"connected_at":1498810410111,"client_properties":{"product":"AMQPLib","platform":"PHP","version":"2.6","information":"","copyright":"","capabilities":{"authentication_failure_close":true,"publisher_confirms":true,"consumer_cancel_notify":true,"exchange_exchange_bindings":true,"basic.nack":true,"connection.blocked":true}},"channel_max":65535,"frame_max":131072,"timeout":60,"vhost":"/","user":"guest","protocol":"AMQP 0-9-1","ssl_hash":null,"ssl_cipher":null,"ssl_key_exchange":null,"ssl_protocol":null,"auth_mechanism":"AMQPLAIN","peer_cert_validity":null,"peer_cert_issuer":null,"peer_cert_subject":null,"ssl":false,"peer_host":"172.19.0.1","host":"172.19.0.2","peer_port":32788,"port":5672,"name":"172.19.0.1:32788 -> 172.19.0.2:5672","node":"rabbit@050becbb9cb3","type":"network","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":5},"reductions":3607,"channels":0,"state":"running","send_pend":0,"send_cnt":3,"recv_cnt":3,"recv_oct_details":{"rate":0.0},"recv_oct":357,"send_oct_details":{"rate":0.0},"send_oct":526,"reductions_details":{"rate":0.0},"reductions":3607}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"connected_at":1498810410111,"client_properties":{"product":"AMQPLib","platform":"PHP","version":"2.6","information":"","copyright":"","capabilities":{"authentication_failure_close":true,"publisher_confirms":true,"consumer_cancel_notify":true,"exchange_exchange_bindings":true,"basic.nack":true,"connection.blocked":true}},"channel_max":65535,"frame_max":131072,"timeout":60,"vhost":"/","user":"guest","protocol":"AMQP 0-9-1","ssl_hash":null,"ssl_cipher":null,"ssl_key_exchange":null,"ssl_protocol":null,"auth_mechanism":"AMQPLAIN","peer_cert_validity":null,"peer_cert_issuer":null,"peer_cert_subject":null,"ssl":false,"peer_host":"172.19.0.1","host":"172.19.0.2","peer_port":32788,"port":5672,"name":"172.19.0.1:32788 -> 172.19.0.2:5672","node":"rabbit@050becbb9cb3","type":"network","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":5},"reductions":3607,"channels":0,"state":"running","send_pend":0,"send_cnt":3,"recv_cnt":3,"recv_oct_details":{"rate":0.0},"recv_oct":357,"send_oct_details":{"rate":0.0},"send_oct":526,"reductions_details":{"rate":0.0},"reductions":3607}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -221,7 +269,7 @@ class StatusTest extends TestCase
         $connections = $status->connections();
 
         $this->assertInstanceOf(Sequence::class, $connections);
-        $this->assertCount(1, $connections);
+        $this->assertSame(1, $connections->size());
         $connection = $connections->find(static fn() => true)->match(
             static fn($connection) => $connection,
             static fn() => null,
@@ -248,17 +296,23 @@ class StatusTest extends TestCase
 
     public function testRemoteConnections()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'connections' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"connected_at":1498810410111,"client_properties":{"product":"AMQPLib","platform":"PHP","version":"2.6","information":"","copyright":"","capabilities":{"authentication_failure_close":true,"publisher_confirms":true,"consumer_cancel_notify":true,"exchange_exchange_bindings":true,"basic.nack":true,"connection.blocked":true}},"channel_max":65535,"frame_max":131072,"timeout":60,"vhost":"/","user":"guest","protocol":"AMQP 0-9-1","ssl_hash":null,"ssl_cipher":null,"ssl_key_exchange":null,"ssl_protocol":null,"auth_mechanism":"AMQPLAIN","peer_cert_validity":null,"peer_cert_issuer":null,"peer_cert_subject":null,"ssl":false,"peer_host":"172.19.0.1","host":"172.19.0.2","peer_port":32788,"port":5672,"name":"172.19.0.1:32788 -> 172.19.0.2:5672","node":"rabbit@050becbb9cb3","type":"network","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":5},"reductions":3607,"channels":0,"state":"running","send_pend":0,"send_cnt":3,"recv_cnt":3,"recv_oct_details":{"rate":0.0},"recv_oct":357,"send_oct_details":{"rate":0.0},"send_oct":526,"reductions_details":{"rate":0.0},"reductions":3607}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"connected_at":1498810410111,"client_properties":{"product":"AMQPLib","platform":"PHP","version":"2.6","information":"","copyright":"","capabilities":{"authentication_failure_close":true,"publisher_confirms":true,"consumer_cancel_notify":true,"exchange_exchange_bindings":true,"basic.nack":true,"connection.blocked":true}},"channel_max":65535,"frame_max":131072,"timeout":60,"vhost":"/","user":"guest","protocol":"AMQP 0-9-1","ssl_hash":null,"ssl_cipher":null,"ssl_key_exchange":null,"ssl_protocol":null,"auth_mechanism":"AMQPLAIN","peer_cert_validity":null,"peer_cert_issuer":null,"peer_cert_subject":null,"ssl":false,"peer_host":"172.19.0.1","host":"172.19.0.2","peer_port":32788,"port":5672,"name":"172.19.0.1:32788 -> 172.19.0.2:5672","node":"rabbit@050becbb9cb3","type":"network","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":5},"reductions":3607,"channels":0,"state":"running","send_pend":0,"send_cnt":3,"recv_cnt":3,"recv_oct_details":{"rate":0.0},"recv_oct":357,"send_oct_details":{"rate":0.0},"send_oct":526,"reductions_details":{"rate":0.0},"reductions":3607}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -268,7 +322,7 @@ class StatusTest extends TestCase
         $connections = $status->connections();
 
         $this->assertInstanceOf(Sequence::class, $connections);
-        $this->assertCount(1, $connections);
+        $this->assertSame(1, $connections->size());
         $connection = $connections->find(static fn() => true)->match(
             static fn($connection) => $connection,
             static fn() => null,
@@ -295,35 +349,47 @@ class StatusTest extends TestCase
 
     public function testReturnNothingWhenFailToListConnections()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'connections'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->connections());
+        $this->assertSame(0, $status->connections()->size());
     }
 
     public function testExchanges()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"name":"","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.direct","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.fanout","vhost":"/","type":"fanout","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.headers","vhost":"/","type":"headers","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.match","vhost":"/","type":"headers","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.rabbitmq.log","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":true,"arguments":{}},{"name":"amq.rabbitmq.trace","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":true,"arguments":{}},{"name":"amq.topic","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"crawl","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"name":"","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.direct","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.fanout","vhost":"/","type":"fanout","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.headers","vhost":"/","type":"headers","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.match","vhost":"/","type":"headers","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.rabbitmq.log","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":true,"arguments":{}},{"name":"amq.rabbitmq.trace","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":true,"arguments":{}},{"name":"amq.topic","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"crawl","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -332,7 +398,7 @@ class StatusTest extends TestCase
         $exchanges = $status->exchanges();
 
         $this->assertInstanceOf(Sequence::class, $exchanges);
-        $this->assertCount(9, $exchanges);
+        $this->assertSame(9, $exchanges->size());
         $exchange = $exchanges->find(static fn() => true)->match(
             static fn($exchange) => $exchange,
             static fn() => null,
@@ -347,17 +413,23 @@ class StatusTest extends TestCase
 
     public function testRemoteExchanges()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"name":"","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.direct","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.fanout","vhost":"/","type":"fanout","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.headers","vhost":"/","type":"headers","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.match","vhost":"/","type":"headers","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.rabbitmq.log","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":true,"arguments":{}},{"name":"amq.rabbitmq.trace","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":true,"arguments":{}},{"name":"amq.topic","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"crawl","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"name":"","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.direct","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.fanout","vhost":"/","type":"fanout","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.headers","vhost":"/","type":"headers","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.match","vhost":"/","type":"headers","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"amq.rabbitmq.log","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":true,"arguments":{}},{"name":"amq.rabbitmq.trace","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":true,"arguments":{}},{"name":"amq.topic","vhost":"/","type":"topic","durable":true,"auto_delete":false,"internal":false,"arguments":{}},{"name":"crawl","vhost":"/","type":"direct","durable":true,"auto_delete":false,"internal":false,"arguments":{}}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -367,7 +439,7 @@ class StatusTest extends TestCase
         $exchanges = $status->exchanges();
 
         $this->assertInstanceOf(Sequence::class, $exchanges);
-        $this->assertCount(9, $exchanges);
+        $this->assertSame(9, $exchanges->size());
         $exchange = $exchanges->find(static fn() => true)->match(
             static fn($exchange) => $exchange,
             static fn() => null,
@@ -382,35 +454,47 @@ class StatusTest extends TestCase
 
     public function testReturnNothingWhenFailToListExchanges()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'exchanges'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->exchanges());
+        $this->assertSame(0, $status->exchanges()->size());
     }
 
     public function testPermissions()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"user":"guest","vhost":"/","configure":".*","write":".*","read":".*"}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"user":"guest","vhost":"/","configure":".*","write":".*","read":".*"}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -419,7 +503,7 @@ class StatusTest extends TestCase
         $permissions = $status->permissions();
 
         $this->assertInstanceOf(Sequence::class, $permissions);
-        $this->assertCount(1, $permissions);
+        $this->assertSame(1, $permissions->size());
         $permission = $permissions->find(static fn() => true)->match(
             static fn($permission) => $permission,
             static fn() => null,
@@ -433,17 +517,23 @@ class StatusTest extends TestCase
 
     public function testRemotePermissions()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"user":"guest","vhost":"/","configure":".*","write":".*","read":".*"}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"user":"guest","vhost":"/","configure":".*","write":".*","read":".*"}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -453,7 +543,7 @@ class StatusTest extends TestCase
         $permissions = $status->permissions();
 
         $this->assertInstanceOf(Sequence::class, $permissions);
-        $this->assertCount(1, $permissions);
+        $this->assertSame(1, $permissions->size());
         $permission = $permissions->find(static fn() => true)->match(
             static fn($permission) => $permission,
             static fn() => null,
@@ -467,35 +557,47 @@ class StatusTest extends TestCase
 
     public function testReturnNothingWhenFailToListPermissions()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'permissions'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->permissions());
+        $this->assertSame(0, $status->permissions()->size());
     }
 
     public function testChannels()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'channels'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"vhost":"/","user":"guest","number":1,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":3},"reductions":2401,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":2,"messages_unconfirmed":3,"messages_unacknowledged":4,"consumer_count":1,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":2401,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}},{"vhost":"/","user":"guest","number":2,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (2)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":6},"reductions":905,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":0,"messages_unconfirmed":0,"messages_unacknowledged":0,"consumer_count":0,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":905,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"vhost":"/","user":"guest","number":1,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":3},"reductions":2401,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":2,"messages_unconfirmed":3,"messages_unacknowledged":4,"consumer_count":1,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":2401,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}},{"vhost":"/","user":"guest","number":2,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (2)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":6},"reductions":905,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":0,"messages_unconfirmed":0,"messages_unacknowledged":0,"consumer_count":0,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":905,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -504,7 +606,7 @@ class StatusTest extends TestCase
         $channels = $status->channels();
 
         $this->assertInstanceOf(Sequence::class, $channels);
-        $this->assertCount(2, $channels);
+        $this->assertSame(2, $channels->size());
         $channel = $channels->find(static fn() => true)->match(
             static fn($channel) => $channel,
             static fn() => null,
@@ -532,17 +634,23 @@ class StatusTest extends TestCase
 
     public function testRemoteChannels()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'channels' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"vhost":"/","user":"guest","number":1,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":3},"reductions":2401,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":2,"messages_unconfirmed":3,"messages_unacknowledged":4,"consumer_count":1,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":2401,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}},{"vhost":"/","user":"guest","number":2,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (2)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":6},"reductions":905,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":0,"messages_unconfirmed":0,"messages_unacknowledged":0,"consumer_count":0,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":905,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"vhost":"/","user":"guest","number":1,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":3},"reductions":2401,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":2,"messages_unconfirmed":3,"messages_unacknowledged":4,"consumer_count":1,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":2401,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}},{"vhost":"/","user":"guest","number":2,"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (2)","node":"rabbit@050becbb9cb3","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":6},"reductions":905,"state":"running","global_prefetch_count":0,"prefetch_count":0,"acks_uncommitted":0,"messages_uncommitted":0,"messages_unconfirmed":0,"messages_unacknowledged":0,"consumer_count":0,"confirm":false,"transactional":false,"idle_since":"2017-06-30 8:13:31","reductions_details":{"rate":0.0},"reductions":905,"connection_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             $clock = Clock::live(),
@@ -552,7 +660,7 @@ class StatusTest extends TestCase
         $channels = $status->channels();
 
         $this->assertInstanceOf(Sequence::class, $channels);
-        $this->assertCount(2, $channels);
+        $this->assertSame(2, $channels->size());
         $channel = $channels->find(static fn() => true)->match(
             static fn($channel) => $channel,
             static fn() => null,
@@ -580,35 +688,47 @@ class StatusTest extends TestCase
 
     public function testReturnNothingWhenFailToListChannels()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'channels'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->channels());
+        $this->assertSame(0, $status->channels()->size());
     }
 
     public function testConsumers()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"arguments":{},"prefetch_count":0,"ack_required":true,"exclusive":false,"consumer_tag":"PHPPROCESS_Baptouuuu.local_7267","queue":{"name":"crawl","vhost":"/"},"channel_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","number":1,"user":"guest","connection_name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"arguments":{},"prefetch_count":0,"ack_required":true,"exclusive":false,"consumer_tag":"PHPPROCESS_Baptouuuu.local_7267","queue":{"name":"crawl","vhost":"/"},"channel_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","number":1,"user":"guest","connection_name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -617,7 +737,7 @@ class StatusTest extends TestCase
         $consumers = $status->consumers();
 
         $this->assertInstanceOf(Sequence::class, $consumers);
-        $this->assertCount(1, $consumers);
+        $this->assertSame(1, $consumers->size());
         $consumer = $consumers->find(static fn() => true)->match(
             static fn($consumer) => $consumer,
             static fn() => null,
@@ -648,17 +768,23 @@ class StatusTest extends TestCase
 
     public function testRemoteConsumers()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"arguments":{},"prefetch_count":0,"ack_required":true,"exclusive":false,"consumer_tag":"PHPPROCESS_Baptouuuu.local_7267","queue":{"name":"crawl","vhost":"/"},"channel_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","number":1,"user":"guest","connection_name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"arguments":{},"prefetch_count":0,"ack_required":true,"exclusive":false,"consumer_tag":"PHPPROCESS_Baptouuuu.local_7267","queue":{"name":"crawl","vhost":"/"},"channel_details":{"name":"172.19.0.1:32788 -> 172.19.0.2:5672 (1)","number":1,"user":"guest","connection_name":"172.19.0.1:32788 -> 172.19.0.2:5672","peer_port":32788,"peer_host":"172.19.0.1"}}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -668,7 +794,7 @@ class StatusTest extends TestCase
         $consumers = $status->consumers();
 
         $this->assertInstanceOf(Sequence::class, $consumers);
-        $this->assertCount(1, $consumers);
+        $this->assertSame(1, $consumers->size());
         $consumer = $consumers->find(static fn() => true)->match(
             static fn($consumer) => $consumer,
             static fn() => null,
@@ -699,35 +825,47 @@ class StatusTest extends TestCase
 
     public function testReturnNothingWhenFailToListConsumers()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'consumers'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->consumers());
+        $this->assertSame(0, $status->consumers()->size());
     }
 
     public function testQueues()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'queues'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"memory":14184,"reductions":8715,"reductions_details":{"rate":0.0},"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"idle_since":"2017-06-30 8:13:31","consumer_utilisation":null,"policy":null,"exclusive_consumer_tag":null,"consumers":1,"recoverable_slaves":null,"state":"running","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":1},"messages_ram":0,"messages_ready_ram":0,"messages_unacknowledged_ram":0,"messages_persistent":0,"message_bytes":0,"message_bytes_ready":0,"message_bytes_unacknowledged":0,"message_bytes_ram":0,"message_bytes_persistent":0,"head_message_timestamp":null,"disk_reads":0,"disk_writes":0,"backing_queue_status":{"mode":"default","q1":0,"q2":0,"delta":["delta","undefined",0,"undefined"],"q3":0,"q4":0,"len":0,"target_ram_count":"infinity","next_seq_id":0,"avg_ingress_rate":0.0,"avg_egress_rate":0.0,"avg_ack_ingress_rate":0.0,"avg_ack_egress_rate":0.0},"node":"rabbit@050becbb9cb3","arguments":{},"exclusive":false,"auto_delete":false,"durable":true,"vhost":"/","name":"crawl"}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"memory":14184,"reductions":8715,"reductions_details":{"rate":0.0},"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"idle_since":"2017-06-30 8:13:31","consumer_utilisation":null,"policy":null,"exclusive_consumer_tag":null,"consumers":1,"recoverable_slaves":null,"state":"running","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":1},"messages_ram":0,"messages_ready_ram":0,"messages_unacknowledged_ram":0,"messages_persistent":0,"message_bytes":0,"message_bytes_ready":0,"message_bytes_unacknowledged":0,"message_bytes_ram":0,"message_bytes_persistent":0,"head_message_timestamp":null,"disk_reads":0,"disk_writes":0,"backing_queue_status":{"mode":"default","q1":0,"q2":0,"delta":["delta","undefined",0,"undefined"],"q3":0,"q4":0,"len":0,"target_ram_count":"infinity","next_seq_id":0,"avg_ingress_rate":0.0,"avg_egress_rate":0.0,"avg_ack_ingress_rate":0.0,"avg_ack_egress_rate":0.0},"node":"rabbit@050becbb9cb3","arguments":{},"exclusive":false,"auto_delete":false,"durable":true,"vhost":"/","name":"crawl"}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -736,7 +874,7 @@ class StatusTest extends TestCase
         $queues = $status->queues();
 
         $this->assertInstanceOf(Sequence::class, $queues);
-        $this->assertCount(1, $queues);
+        $this->assertSame(1, $queues->size());
         $queue = $queues->find(static fn() => true)->match(
             static fn($queue) => $queue,
             static fn() => null,
@@ -778,17 +916,23 @@ class StatusTest extends TestCase
 
     public function testRemoteQueues()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'queues' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"memory":14184,"reductions":8715,"reductions_details":{"rate":0.0},"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"idle_since":"2017-06-30 8:13:31","consumer_utilisation":null,"policy":null,"exclusive_consumer_tag":null,"consumers":1,"recoverable_slaves":null,"state":"running","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":1},"messages_ram":0,"messages_ready_ram":0,"messages_unacknowledged_ram":0,"messages_persistent":0,"message_bytes":0,"message_bytes_ready":0,"message_bytes_unacknowledged":0,"message_bytes_ram":0,"message_bytes_persistent":0,"head_message_timestamp":null,"disk_reads":0,"disk_writes":0,"backing_queue_status":{"mode":"default","q1":0,"q2":0,"delta":["delta","undefined",0,"undefined"],"q3":0,"q4":0,"len":0,"target_ram_count":"infinity","next_seq_id":0,"avg_ingress_rate":0.0,"avg_egress_rate":0.0,"avg_ack_ingress_rate":0.0,"avg_ack_egress_rate":0.0},"node":"rabbit@050becbb9cb3","arguments":{},"exclusive":false,"auto_delete":false,"durable":true,"vhost":"/","name":"crawl"}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"memory":14184,"reductions":8715,"reductions_details":{"rate":0.0},"messages":1,"messages_details":{"rate":0.0},"messages_ready":2,"messages_ready_details":{"rate":0.0},"messages_unacknowledged":3,"messages_unacknowledged_details":{"rate":0.0},"idle_since":"2017-06-30 8:13:31","consumer_utilisation":null,"policy":null,"exclusive_consumer_tag":null,"consumers":1,"recoverable_slaves":null,"state":"running","garbage_collection":{"max_heap_size":0,"min_bin_vheap_size":46422,"min_heap_size":233,"fullsweep_after":65535,"minor_gcs":1},"messages_ram":0,"messages_ready_ram":0,"messages_unacknowledged_ram":0,"messages_persistent":0,"message_bytes":0,"message_bytes_ready":0,"message_bytes_unacknowledged":0,"message_bytes_ram":0,"message_bytes_persistent":0,"head_message_timestamp":null,"disk_reads":0,"disk_writes":0,"backing_queue_status":{"mode":"default","q1":0,"q2":0,"delta":["delta","undefined",0,"undefined"],"q3":0,"q4":0,"len":0,"target_ram_count":"infinity","next_seq_id":0,"avg_ingress_rate":0.0,"avg_egress_rate":0.0,"avg_ack_ingress_rate":0.0,"avg_ack_egress_rate":0.0},"node":"rabbit@050becbb9cb3","arguments":{},"exclusive":false,"auto_delete":false,"durable":true,"vhost":"/","name":"crawl"}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -798,7 +942,7 @@ class StatusTest extends TestCase
         $queues = $status->queues();
 
         $this->assertInstanceOf(Sequence::class, $queues);
-        $this->assertCount(1, $queues);
+        $this->assertSame(1, $queues->size());
         $queue = $queues->find(static fn() => true)->match(
             static fn($queue) => $queue,
             static fn() => null,
@@ -840,35 +984,47 @@ class StatusTest extends TestCase
 
     public function testReturnNothingWhenFailToListQueues()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'queues'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->queues());
+        $this->assertSame(0, $status->queues()->size());
     }
 
     public function testNodes()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"cluster_links":[],"mem_used":65226200,"mem_used_details":{"rate":-1243.2},"fd_used":24,"fd_used_details":{"rate":0.0},"sockets_used":1,"sockets_used_details":{"rate":0.0},"proc_used":245,"proc_used_details":{"rate":0.0},"disk_free":56429953024,"disk_free_details":{"rate":0.0},"io_read_count":1,"io_read_count_details":{"rate":0.0},"io_read_bytes":1,"io_read_bytes_details":{"rate":0.0},"io_read_avg_time":0.677,"io_read_avg_time_details":{"rate":0.0},"io_write_count":0,"io_write_count_details":{"rate":0.0},"io_write_bytes":0,"io_write_bytes_details":{"rate":0.0},"io_write_avg_time":0.0,"io_write_avg_time_details":{"rate":0.0},"io_sync_count":0,"io_sync_count_details":{"rate":0.0},"io_sync_avg_time":0.0,"io_sync_avg_time_details":{"rate":0.0},"io_seek_count":0,"io_seek_count_details":{"rate":0.0},"io_seek_avg_time":0.0,"io_seek_avg_time_details":{"rate":0.0},"io_reopen_count":0,"io_reopen_count_details":{"rate":0.0},"mnesia_ram_tx_count":50,"mnesia_ram_tx_count_details":{"rate":0.0},"mnesia_disk_tx_count":1,"mnesia_disk_tx_count_details":{"rate":0.0},"msg_store_read_count":0,"msg_store_read_count_details":{"rate":0.0},"msg_store_write_count":0,"msg_store_write_count_details":{"rate":0.0},"queue_index_journal_write_count":0,"queue_index_journal_write_count_details":{"rate":0.0},"queue_index_write_count":0,"queue_index_write_count_details":{"rate":0.0},"queue_index_read_count":0,"queue_index_read_count_details":{"rate":0.0},"gc_num":108209,"gc_num_details":{"rate":10.2},"gc_bytes_reclaimed":1268145968,"gc_bytes_reclaimed_details":{"rate":148406.4},"context_switches":469344,"context_switches_details":{"rate":44.6},"io_file_handle_open_attempt_count":10,"io_file_handle_open_attempt_count_details":{"rate":0.0},"io_file_handle_open_attempt_avg_time":0.0837,"io_file_handle_open_attempt_avg_time_details":{"rate":0.0},"partitions":[],"os_pid":"117","fd_total":1048576,"sockets_total":943626,"mem_limit":838356172,"mem_alarm":false,"disk_free_limit":50000000,"disk_free_alarm":false,"proc_total":1048576,"rates_mode":"basic","uptime":7408973,"run_queue":0,"processors":4,"exchange_types":[{"name":"direct","description":"AMQP direct exchange, as per the AMQP specification","enabled":true},{"name":"fanout","description":"AMQP fanout exchange, as per the AMQP specification","enabled":true},{"name":"topic","description":"AMQP topic exchange, as per the AMQP specification","enabled":true},{"name":"headers","description":"AMQP headers exchange, as per the AMQP specification","enabled":true}],"auth_mechanisms":[{"name":"RABBIT-CR-DEMO","description":"RabbitMQ Demo challenge-response authentication mechanism","enabled":false},{"name":"AMQPLAIN","description":"QPid AMQPLAIN mechanism","enabled":true},{"name":"PLAIN","description":"SASL PLAIN authentication mechanism","enabled":true}],"applications":[{"name":"amqp_client","description":"RabbitMQ AMQP Client","version":"3.6.6"},{"name":"asn1","description":"The Erlang ASN1 compiler version 4.0.4","version":"4.0.4"},{"name":"compiler","description":"ERTS  CXC 138 10","version":"7.0.3"},{"name":"crypto","description":"CRYPTO","version":"3.7.2"},{"name":"inets","description":"INETS  CXC 138 49","version":"6.3.4"},{"name":"kernel","description":"ERTS  CXC 138 10","version":"5.1.1"},{"name":"mnesia","description":"MNESIA  CXC 138 12","version":"4.14.2"},{"name":"mochiweb","description":"MochiMedia Web Server","version":"2.13.1"},{"name":"os_mon","description":"CPO  CXC 138 46","version":"2.4.1"},{"name":"public_key","description":"Public key infrastructure","version":"1.3"},{"name":"rabbit","description":"RabbitMQ","version":"3.6.6"},{"name":"rabbit_common","description":"","version":"3.6.6"},{"name":"rabbitmq_management","description":"RabbitMQ Management Console","version":"3.6.6"},{"name":"rabbitmq_management_agent","description":"RabbitMQ Management Agent","version":"3.6.6"},{"name":"rabbitmq_web_dispatch","description":"RabbitMQ Web Dispatcher","version":"3.6.6"},{"name":"ranch","description":"Socket acceptor pool for TCP protocols.","version":"1.2.1"},{"name":"sasl","description":"SASL  CXC 138 11","version":"3.0.2"},{"name":"ssl","description":"Erlang/OTP SSL application","version":"8.1"},{"name":"stdlib","description":"ERTS  CXC 138 10","version":"3.2"},{"name":"syntax_tools","description":"Syntax tools","version":"2.1.1"},{"name":"webmachine","description":"webmachine","version":"1.10.3"},{"name":"xmerl","description":"XML parser","version":"1.3.12"}],"contexts":[{"description":"RabbitMQ Management","path":"/","port":"15672"}],"log_file":"tty","sasl_log_file":"tty","db_dir":"/var/lib/rabbitmq/mnesia/rabbit@050becbb9cb3","config_files":["/etc/rabbitmq/rabbitmq.config"],"net_ticktime":60,"enabled_plugins":["rabbitmq_management"],"name":"rabbit@050becbb9cb3","type":"disc","running":true}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"cluster_links":[],"mem_used":65226200,"mem_used_details":{"rate":-1243.2},"fd_used":24,"fd_used_details":{"rate":0.0},"sockets_used":1,"sockets_used_details":{"rate":0.0},"proc_used":245,"proc_used_details":{"rate":0.0},"disk_free":56429953024,"disk_free_details":{"rate":0.0},"io_read_count":1,"io_read_count_details":{"rate":0.0},"io_read_bytes":1,"io_read_bytes_details":{"rate":0.0},"io_read_avg_time":0.677,"io_read_avg_time_details":{"rate":0.0},"io_write_count":0,"io_write_count_details":{"rate":0.0},"io_write_bytes":0,"io_write_bytes_details":{"rate":0.0},"io_write_avg_time":0.0,"io_write_avg_time_details":{"rate":0.0},"io_sync_count":0,"io_sync_count_details":{"rate":0.0},"io_sync_avg_time":0.0,"io_sync_avg_time_details":{"rate":0.0},"io_seek_count":0,"io_seek_count_details":{"rate":0.0},"io_seek_avg_time":0.0,"io_seek_avg_time_details":{"rate":0.0},"io_reopen_count":0,"io_reopen_count_details":{"rate":0.0},"mnesia_ram_tx_count":50,"mnesia_ram_tx_count_details":{"rate":0.0},"mnesia_disk_tx_count":1,"mnesia_disk_tx_count_details":{"rate":0.0},"msg_store_read_count":0,"msg_store_read_count_details":{"rate":0.0},"msg_store_write_count":0,"msg_store_write_count_details":{"rate":0.0},"queue_index_journal_write_count":0,"queue_index_journal_write_count_details":{"rate":0.0},"queue_index_write_count":0,"queue_index_write_count_details":{"rate":0.0},"queue_index_read_count":0,"queue_index_read_count_details":{"rate":0.0},"gc_num":108209,"gc_num_details":{"rate":10.2},"gc_bytes_reclaimed":1268145968,"gc_bytes_reclaimed_details":{"rate":148406.4},"context_switches":469344,"context_switches_details":{"rate":44.6},"io_file_handle_open_attempt_count":10,"io_file_handle_open_attempt_count_details":{"rate":0.0},"io_file_handle_open_attempt_avg_time":0.0837,"io_file_handle_open_attempt_avg_time_details":{"rate":0.0},"partitions":[],"os_pid":"117","fd_total":1048576,"sockets_total":943626,"mem_limit":838356172,"mem_alarm":false,"disk_free_limit":50000000,"disk_free_alarm":false,"proc_total":1048576,"rates_mode":"basic","uptime":7408973,"run_queue":0,"processors":4,"exchange_types":[{"name":"direct","description":"AMQP direct exchange, as per the AMQP specification","enabled":true},{"name":"fanout","description":"AMQP fanout exchange, as per the AMQP specification","enabled":true},{"name":"topic","description":"AMQP topic exchange, as per the AMQP specification","enabled":true},{"name":"headers","description":"AMQP headers exchange, as per the AMQP specification","enabled":true}],"auth_mechanisms":[{"name":"RABBIT-CR-DEMO","description":"RabbitMQ Demo challenge-response authentication mechanism","enabled":false},{"name":"AMQPLAIN","description":"QPid AMQPLAIN mechanism","enabled":true},{"name":"PLAIN","description":"SASL PLAIN authentication mechanism","enabled":true}],"applications":[{"name":"amqp_client","description":"RabbitMQ AMQP Client","version":"3.6.6"},{"name":"asn1","description":"The Erlang ASN1 compiler version 4.0.4","version":"4.0.4"},{"name":"compiler","description":"ERTS  CXC 138 10","version":"7.0.3"},{"name":"crypto","description":"CRYPTO","version":"3.7.2"},{"name":"inets","description":"INETS  CXC 138 49","version":"6.3.4"},{"name":"kernel","description":"ERTS  CXC 138 10","version":"5.1.1"},{"name":"mnesia","description":"MNESIA  CXC 138 12","version":"4.14.2"},{"name":"mochiweb","description":"MochiMedia Web Server","version":"2.13.1"},{"name":"os_mon","description":"CPO  CXC 138 46","version":"2.4.1"},{"name":"public_key","description":"Public key infrastructure","version":"1.3"},{"name":"rabbit","description":"RabbitMQ","version":"3.6.6"},{"name":"rabbit_common","description":"","version":"3.6.6"},{"name":"rabbitmq_management","description":"RabbitMQ Management Console","version":"3.6.6"},{"name":"rabbitmq_management_agent","description":"RabbitMQ Management Agent","version":"3.6.6"},{"name":"rabbitmq_web_dispatch","description":"RabbitMQ Web Dispatcher","version":"3.6.6"},{"name":"ranch","description":"Socket acceptor pool for TCP protocols.","version":"1.2.1"},{"name":"sasl","description":"SASL  CXC 138 11","version":"3.0.2"},{"name":"ssl","description":"Erlang/OTP SSL application","version":"8.1"},{"name":"stdlib","description":"ERTS  CXC 138 10","version":"3.2"},{"name":"syntax_tools","description":"Syntax tools","version":"2.1.1"},{"name":"webmachine","description":"webmachine","version":"1.10.3"},{"name":"xmerl","description":"XML parser","version":"1.3.12"}],"contexts":[{"description":"RabbitMQ Management","path":"/","port":"15672"}],"log_file":"tty","sasl_log_file":"tty","db_dir":"/var/lib/rabbitmq/mnesia/rabbit@050becbb9cb3","config_files":["/etc/rabbitmq/rabbitmq.config"],"net_ticktime":60,"enabled_plugins":["rabbitmq_management"],"name":"rabbit@050becbb9cb3","type":"disc","running":true}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -877,7 +1033,7 @@ class StatusTest extends TestCase
         $nodes = $status->nodes();
 
         $this->assertInstanceOf(Sequence::class, $nodes);
-        $this->assertCount(1, $nodes);
+        $this->assertSame(1, $nodes->size());
         $node = $nodes->find(static fn() => true)->match(
             static fn($node) => $node,
             static fn() => null,
@@ -895,17 +1051,23 @@ class StatusTest extends TestCase
 
     public function testRemoteNodes()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes' '--host=rabbit.innmind.com' '--port=15672' '--username=guest' '--password=guest'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([[
-                    '[{"cluster_links":[],"mem_used":65226200,"mem_used_details":{"rate":-1243.2},"fd_used":24,"fd_used_details":{"rate":0.0},"sockets_used":1,"sockets_used_details":{"rate":0.0},"proc_used":245,"proc_used_details":{"rate":0.0},"disk_free":56429953024,"disk_free_details":{"rate":0.0},"io_read_count":1,"io_read_count_details":{"rate":0.0},"io_read_bytes":1,"io_read_bytes_details":{"rate":0.0},"io_read_avg_time":0.677,"io_read_avg_time_details":{"rate":0.0},"io_write_count":0,"io_write_count_details":{"rate":0.0},"io_write_bytes":0,"io_write_bytes_details":{"rate":0.0},"io_write_avg_time":0.0,"io_write_avg_time_details":{"rate":0.0},"io_sync_count":0,"io_sync_count_details":{"rate":0.0},"io_sync_avg_time":0.0,"io_sync_avg_time_details":{"rate":0.0},"io_seek_count":0,"io_seek_count_details":{"rate":0.0},"io_seek_avg_time":0.0,"io_seek_avg_time_details":{"rate":0.0},"io_reopen_count":0,"io_reopen_count_details":{"rate":0.0},"mnesia_ram_tx_count":50,"mnesia_ram_tx_count_details":{"rate":0.0},"mnesia_disk_tx_count":1,"mnesia_disk_tx_count_details":{"rate":0.0},"msg_store_read_count":0,"msg_store_read_count_details":{"rate":0.0},"msg_store_write_count":0,"msg_store_write_count_details":{"rate":0.0},"queue_index_journal_write_count":0,"queue_index_journal_write_count_details":{"rate":0.0},"queue_index_write_count":0,"queue_index_write_count_details":{"rate":0.0},"queue_index_read_count":0,"queue_index_read_count_details":{"rate":0.0},"gc_num":108209,"gc_num_details":{"rate":10.2},"gc_bytes_reclaimed":1268145968,"gc_bytes_reclaimed_details":{"rate":148406.4},"context_switches":469344,"context_switches_details":{"rate":44.6},"io_file_handle_open_attempt_count":10,"io_file_handle_open_attempt_count_details":{"rate":0.0},"io_file_handle_open_attempt_avg_time":0.0837,"io_file_handle_open_attempt_avg_time_details":{"rate":0.0},"partitions":[],"os_pid":"117","fd_total":1048576,"sockets_total":943626,"mem_limit":838356172,"mem_alarm":false,"disk_free_limit":50000000,"disk_free_alarm":false,"proc_total":1048576,"rates_mode":"basic","uptime":7408973,"run_queue":0,"processors":4,"exchange_types":[{"name":"direct","description":"AMQP direct exchange, as per the AMQP specification","enabled":true},{"name":"fanout","description":"AMQP fanout exchange, as per the AMQP specification","enabled":true},{"name":"topic","description":"AMQP topic exchange, as per the AMQP specification","enabled":true},{"name":"headers","description":"AMQP headers exchange, as per the AMQP specification","enabled":true}],"auth_mechanisms":[{"name":"RABBIT-CR-DEMO","description":"RabbitMQ Demo challenge-response authentication mechanism","enabled":false},{"name":"AMQPLAIN","description":"QPid AMQPLAIN mechanism","enabled":true},{"name":"PLAIN","description":"SASL PLAIN authentication mechanism","enabled":true}],"applications":[{"name":"amqp_client","description":"RabbitMQ AMQP Client","version":"3.6.6"},{"name":"asn1","description":"The Erlang ASN1 compiler version 4.0.4","version":"4.0.4"},{"name":"compiler","description":"ERTS  CXC 138 10","version":"7.0.3"},{"name":"crypto","description":"CRYPTO","version":"3.7.2"},{"name":"inets","description":"INETS  CXC 138 49","version":"6.3.4"},{"name":"kernel","description":"ERTS  CXC 138 10","version":"5.1.1"},{"name":"mnesia","description":"MNESIA  CXC 138 12","version":"4.14.2"},{"name":"mochiweb","description":"MochiMedia Web Server","version":"2.13.1"},{"name":"os_mon","description":"CPO  CXC 138 46","version":"2.4.1"},{"name":"public_key","description":"Public key infrastructure","version":"1.3"},{"name":"rabbit","description":"RabbitMQ","version":"3.6.6"},{"name":"rabbit_common","description":"","version":"3.6.6"},{"name":"rabbitmq_management","description":"RabbitMQ Management Console","version":"3.6.6"},{"name":"rabbitmq_management_agent","description":"RabbitMQ Management Agent","version":"3.6.6"},{"name":"rabbitmq_web_dispatch","description":"RabbitMQ Web Dispatcher","version":"3.6.6"},{"name":"ranch","description":"Socket acceptor pool for TCP protocols.","version":"1.2.1"},{"name":"sasl","description":"SASL  CXC 138 11","version":"3.0.2"},{"name":"ssl","description":"Erlang/OTP SSL application","version":"8.1"},{"name":"stdlib","description":"ERTS  CXC 138 10","version":"3.2"},{"name":"syntax_tools","description":"Syntax tools","version":"2.1.1"},{"name":"webmachine","description":"webmachine","version":"1.10.3"},{"name":"xmerl","description":"XML parser","version":"1.3.12"}],"contexts":[{"description":"RabbitMQ Management","path":"/","port":"15672"}],"log_file":"tty","sasl_log_file":"tty","db_dir":"/var/lib/rabbitmq/mnesia/rabbit@050becbb9cb3","config_files":["/etc/rabbitmq/rabbitmq.config"],"net_ticktime":60,"enabled_plugins":["rabbitmq_management"],"name":"rabbit@050becbb9cb3","type":"disc","running":true}]',
-                    'output',
-                ]]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([[
+                            '[{"cluster_links":[],"mem_used":65226200,"mem_used_details":{"rate":-1243.2},"fd_used":24,"fd_used_details":{"rate":0.0},"sockets_used":1,"sockets_used_details":{"rate":0.0},"proc_used":245,"proc_used_details":{"rate":0.0},"disk_free":56429953024,"disk_free_details":{"rate":0.0},"io_read_count":1,"io_read_count_details":{"rate":0.0},"io_read_bytes":1,"io_read_bytes_details":{"rate":0.0},"io_read_avg_time":0.677,"io_read_avg_time_details":{"rate":0.0},"io_write_count":0,"io_write_count_details":{"rate":0.0},"io_write_bytes":0,"io_write_bytes_details":{"rate":0.0},"io_write_avg_time":0.0,"io_write_avg_time_details":{"rate":0.0},"io_sync_count":0,"io_sync_count_details":{"rate":0.0},"io_sync_avg_time":0.0,"io_sync_avg_time_details":{"rate":0.0},"io_seek_count":0,"io_seek_count_details":{"rate":0.0},"io_seek_avg_time":0.0,"io_seek_avg_time_details":{"rate":0.0},"io_reopen_count":0,"io_reopen_count_details":{"rate":0.0},"mnesia_ram_tx_count":50,"mnesia_ram_tx_count_details":{"rate":0.0},"mnesia_disk_tx_count":1,"mnesia_disk_tx_count_details":{"rate":0.0},"msg_store_read_count":0,"msg_store_read_count_details":{"rate":0.0},"msg_store_write_count":0,"msg_store_write_count_details":{"rate":0.0},"queue_index_journal_write_count":0,"queue_index_journal_write_count_details":{"rate":0.0},"queue_index_write_count":0,"queue_index_write_count_details":{"rate":0.0},"queue_index_read_count":0,"queue_index_read_count_details":{"rate":0.0},"gc_num":108209,"gc_num_details":{"rate":10.2},"gc_bytes_reclaimed":1268145968,"gc_bytes_reclaimed_details":{"rate":148406.4},"context_switches":469344,"context_switches_details":{"rate":44.6},"io_file_handle_open_attempt_count":10,"io_file_handle_open_attempt_count_details":{"rate":0.0},"io_file_handle_open_attempt_avg_time":0.0837,"io_file_handle_open_attempt_avg_time_details":{"rate":0.0},"partitions":[],"os_pid":"117","fd_total":1048576,"sockets_total":943626,"mem_limit":838356172,"mem_alarm":false,"disk_free_limit":50000000,"disk_free_alarm":false,"proc_total":1048576,"rates_mode":"basic","uptime":7408973,"run_queue":0,"processors":4,"exchange_types":[{"name":"direct","description":"AMQP direct exchange, as per the AMQP specification","enabled":true},{"name":"fanout","description":"AMQP fanout exchange, as per the AMQP specification","enabled":true},{"name":"topic","description":"AMQP topic exchange, as per the AMQP specification","enabled":true},{"name":"headers","description":"AMQP headers exchange, as per the AMQP specification","enabled":true}],"auth_mechanisms":[{"name":"RABBIT-CR-DEMO","description":"RabbitMQ Demo challenge-response authentication mechanism","enabled":false},{"name":"AMQPLAIN","description":"QPid AMQPLAIN mechanism","enabled":true},{"name":"PLAIN","description":"SASL PLAIN authentication mechanism","enabled":true}],"applications":[{"name":"amqp_client","description":"RabbitMQ AMQP Client","version":"3.6.6"},{"name":"asn1","description":"The Erlang ASN1 compiler version 4.0.4","version":"4.0.4"},{"name":"compiler","description":"ERTS  CXC 138 10","version":"7.0.3"},{"name":"crypto","description":"CRYPTO","version":"3.7.2"},{"name":"inets","description":"INETS  CXC 138 49","version":"6.3.4"},{"name":"kernel","description":"ERTS  CXC 138 10","version":"5.1.1"},{"name":"mnesia","description":"MNESIA  CXC 138 12","version":"4.14.2"},{"name":"mochiweb","description":"MochiMedia Web Server","version":"2.13.1"},{"name":"os_mon","description":"CPO  CXC 138 46","version":"2.4.1"},{"name":"public_key","description":"Public key infrastructure","version":"1.3"},{"name":"rabbit","description":"RabbitMQ","version":"3.6.6"},{"name":"rabbit_common","description":"","version":"3.6.6"},{"name":"rabbitmq_management","description":"RabbitMQ Management Console","version":"3.6.6"},{"name":"rabbitmq_management_agent","description":"RabbitMQ Management Agent","version":"3.6.6"},{"name":"rabbitmq_web_dispatch","description":"RabbitMQ Web Dispatcher","version":"3.6.6"},{"name":"ranch","description":"Socket acceptor pool for TCP protocols.","version":"1.2.1"},{"name":"sasl","description":"SASL  CXC 138 11","version":"3.0.2"},{"name":"ssl","description":"Erlang/OTP SSL application","version":"8.1"},{"name":"stdlib","description":"ERTS  CXC 138 10","version":"3.2"},{"name":"syntax_tools","description":"Syntax tools","version":"2.1.1"},{"name":"webmachine","description":"webmachine","version":"1.10.3"},{"name":"xmerl","description":"XML parser","version":"1.3.12"}],"contexts":[{"description":"RabbitMQ Management","path":"/","port":"15672"}],"log_file":"tty","sasl_log_file":"tty","db_dir":"/var/lib/rabbitmq/mnesia/rabbit@050becbb9cb3","config_files":["/etc/rabbitmq/rabbitmq.config"],"net_ticktime":60,"enabled_plugins":["rabbitmq_management"],"name":"rabbit@050becbb9cb3","type":"disc","running":true}]',
+                            'output',
+                        ]])
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
@@ -915,7 +1077,7 @@ class StatusTest extends TestCase
         $nodes = $status->nodes();
 
         $this->assertInstanceOf(Sequence::class, $nodes);
-        $this->assertCount(1, $nodes);
+        $this->assertSame(1, $nodes->size());
         $node = $nodes->find(static fn() => true)->match(
             static fn($node) => $node,
             static fn() => null,
@@ -933,19 +1095,25 @@ class StatusTest extends TestCase
 
     public function testReturnNothingWhenFailToListNodes()
     {
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "rabbitmqadmin '-f' 'raw_json' 'list' 'nodes'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
         $status = Status::of(
             $server,
             Clock::live(),
         );
 
-        $this->assertCount(0, $status->nodes());
+        $this->assertSame(0, $status->nodes()->size());
     }
 }

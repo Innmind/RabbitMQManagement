@@ -9,14 +9,14 @@ use Innmind\RabbitMQ\Management\{
     Control\VHosts,
     Control\Permissions,
 };
-use Innmind\Server\Control\Servers\Mock;
+use Innmind\Server\Control\Server;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ControlTest extends TestCase
 {
     public function testInterface()
     {
-        $control = Control::of(Mock::new($this->assert()));
+        $control = Control::of(Server::via(static fn() => null));
 
         $this->assertInstanceOf(Users::class, $control->users());
         $this->assertInstanceOf(VHosts::class, $control->vhosts());
